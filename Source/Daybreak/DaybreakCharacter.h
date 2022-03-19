@@ -28,6 +28,9 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
     float BaseLookUpRate;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
+    UAnimMontage* AttackMontage;
+
 protected:
 
     /** Called for forwards/backward input */
@@ -63,6 +66,9 @@ protected:
 
     /** Handler for when a touch input stops. */
     void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
+
+    /** Called for attacking with sword */
+    void Attack();
 
 protected:
     // APawn interface
