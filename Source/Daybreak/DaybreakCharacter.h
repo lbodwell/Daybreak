@@ -28,9 +28,12 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
     float BaseLookUpRate;
 	
-	/** Montage to play for attacking. */
+	/** Montages to play for attacking. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
-    UAnimMontage* AttackMontage;
+    UAnimMontage* AttackLeftMontage;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
+    UAnimMontage* AttackRightMontage;
 	
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
 	bool Attacking;
@@ -72,6 +75,7 @@ protected:
     void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
     /** Called for attacking with sword */
+    int lastAttack;
     void Attack();
 
 protected:

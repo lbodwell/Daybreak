@@ -23,6 +23,7 @@ ADaybreakCharacter::ADaybreakCharacter() {
 
     sprinting = false;
     Attacking = false;
+    lastAttack = 1;
 
     // Don't rotate when the controller rotates. Let that just affect the camera.
     bUseControllerRotationPitch = false;
@@ -150,10 +151,11 @@ void ADaybreakCharacter::StopSprinting() {
 }
 
 void ADaybreakCharacter::Attack() {
-	if (AttackMontage && !Attacking) {
-		float const duration = PlayAnimMontage(AttackMontage, 1, NAME_None);
+	if (AttackLeftMontage && AttackRightMontage && !Attacking) {
+		float const duration = PlayAnimMontage(lastAttack == 0 ? AttackRightMontage : AttackLeftMontage, 1, NAME_None);
         if (duration > 0.f) {
             Attacking = true; // will be unset by AnimNotify::AttackHitEnd in AnimBP
+            lastAttack = lastAttack == 0 ? 1 : 0; // alternate between left and right attacks
         }
 	}
 }
