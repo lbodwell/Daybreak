@@ -22,6 +22,7 @@ ADaybreakCharacter::ADaybreakCharacter() {
     BaseLookUpRate = 45.f;
 
     sprinting = false;
+    Attacking = false;
 
     // Don't rotate when the controller rotates. Let that just affect the camera.
     bUseControllerRotationPitch = false;
@@ -149,7 +150,10 @@ void ADaybreakCharacter::StopSprinting() {
 }
 
 void ADaybreakCharacter::Attack() {
-	if (AttackMontage && !GetCurrentMontage()) {
-		PlayAnimMontage(AttackMontage, 1, NAME_None);
+	if (AttackMontage && !Attacking) {
+		float const duration = PlayAnimMontage(AttackMontage, 1, NAME_None);
+        if (duration > 0.f) {
+            Attacking = true; // will be unset by AnimNotify::AttackHitEnd in AnimBP
+        }
 	}
 }

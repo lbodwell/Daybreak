@@ -27,9 +27,13 @@ public:
     /** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
     float BaseLookUpRate;
-
+	
+	/** Montage to play for attacking. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
     UAnimMontage* AttackMontage;
+	
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
+	bool Attacking;
 
 protected:
 
