@@ -13,8 +13,7 @@
 //////////////////////////////////////////////////////////////////////////
 // ADaybreakCharacter
 
-ADaybreakCharacter::ADaybreakCharacter()
-{
+ADaybreakCharacter::ADaybreakCharacter() {
     // Set size for collision capsule
     GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -23,6 +22,8 @@ ADaybreakCharacter::ADaybreakCharacter()
     BaseLookUpRate = 45.f;
 
     sprinting = false;
+    Attacking = false;
+    lastAttack = 1;
 
     // Don't rotate when the controller rotates. Let that just affect the camera.
     bUseControllerRotationPitch = false;
@@ -60,11 +61,11 @@ void ADaybreakCharacter::SetupPlayerInputComponent(class UInputComponent* Player
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
     PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
-    PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ADaybreakCharacter::StartSprinting);
-    PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ADaybreakCharacter::StopSprinting);
-
     PlayerInputComponent->BindAxis("MoveForward", this, &ADaybreakCharacter::MoveForward);
     PlayerInputComponent->BindAxis("MoveRight", this, &ADaybreakCharacter::MoveRight);
+
+    PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ADaybreakCharacter::StartSprinting);
+    PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ADaybreakCharacter::StopSprinting);
 
     // We have 2 versions of the rotation bindings to handle different kinds of devices differently
     // "turn" handles devices that provide an absolute delta, such as a mouse.
@@ -77,6 +78,9 @@ void ADaybreakCharacter::SetupPlayerInputComponent(class UInputComponent* Player
     // handle touch devices
     PlayerInputComponent->BindTouch(IE_Pressed, this, &ADaybreakCharacter::TouchStarted);
     PlayerInputComponent->BindTouch(IE_Released, this, &ADaybreakCharacter::TouchStopped);
+
+    // combat
+    PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ADaybreakCharacter::Attack);
 }
 
 void ADaybreakCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location) {
@@ -144,4 +148,14 @@ void ADaybreakCharacter::StartSprinting() {
 
 void ADaybreakCharacter::StopSprinting() {
     sprinting = false;
+}
+
+void ADaybreakCharacter::Attack() {
+	if (AttackLeftMontage && AttackRightMontage && !Attacking) {
+		float const duration = PlayAnimMontage(lastAttack == 0 ? AttackRightMontage : AttackLeftMontage, 1, NAME_None);
+        if (duration > 0.f) {
+            Attacking = true; // will be unset by AnimNotify::AttackHitEnd in AnimBP
+            lastAttack = lastAttack == 0 ? 1 : 0; // alternate between left and right attacks
+        }
+	}
 }
