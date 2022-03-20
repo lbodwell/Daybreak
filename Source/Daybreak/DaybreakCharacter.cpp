@@ -82,13 +82,7 @@ void ADaybreakCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 
 void ADaybreakCharacter::Turn(float Value) {
     AddControllerYawInput(Value);
-	float const speed = GetVelocity().Size();
-	if (Value != 0 && speed < 0.1) {
-		TurningDirection = Value < 0 ? 1 : 2;
-	} else {
-		TurningDirection = 0;
-	}
-    UE_LOG(LogTemp, Warning, TEXT("The float value is: %d"), TurningDirection);
+	TurningSpeed = Value;
 }
 
 void ADaybreakCharacter::TurnAtRate(float Rate) {

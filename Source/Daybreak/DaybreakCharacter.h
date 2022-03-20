@@ -42,6 +42,10 @@ public:
     /**  Whether the player is actively turning. */
     UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
     int TurningDirection; // 0 = no turn, 1 = left, 2 = right
+	
+	/**  Directional turning speed. */
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
+    float TurningSpeed;
 
 protected:
 	
