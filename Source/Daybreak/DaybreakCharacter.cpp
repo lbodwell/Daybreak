@@ -24,6 +24,7 @@ ADaybreakCharacter::ADaybreakCharacter() {
     sprinting = false;
     Attacking = false;
     lastAttack = 1;
+	TurningDirection = 0;
 
     // Don't rotate when the controller rotates. Let that just affect the camera.
     bUseControllerRotationPitch = false;
@@ -70,25 +71,18 @@ void ADaybreakCharacter::SetupPlayerInputComponent(class UInputComponent* Player
     // We have 2 versions of the rotation bindings to handle different kinds of devices differently
     // "turn" handles devices that provide an absolute delta, such as a mouse.
     // "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-    PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+    PlayerInputComponent->BindAxis("Turn", this, &ADaybreakCharacter::Turn);
     PlayerInputComponent->BindAxis("TurnRate", this, &ADaybreakCharacter::TurnAtRate);
     PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
     PlayerInputComponent->BindAxis("LookUpRate", this, &ADaybreakCharacter::LookUpAtRate);
-
-    // handle touch devices
-    PlayerInputComponent->BindTouch(IE_Pressed, this, &ADaybreakCharacter::TouchStarted);
-    PlayerInputComponent->BindTouch(IE_Released, this, &ADaybreakCharacter::TouchStopped);
 
     // combat
     PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ADaybreakCharacter::Attack);
 }
 
-void ADaybreakCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location) {
-    Jump();
-}
-
-void ADaybreakCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location) {
-    StopJumping();
+void ADaybreakCharacter::Turn(float Value) {
+    AddControllerYawInput(Value);
+	TurningSpeed = Value;
 }
 
 void ADaybreakCharacter::TurnAtRate(float Rate) {

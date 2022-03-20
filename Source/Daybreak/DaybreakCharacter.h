@@ -34,11 +34,23 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
     UAnimMontage* AttackRightMontage;
-	
+
+    /** Whether player is currently attacking and should not be able to attack again yet. */
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
 	bool Attacking;
 
+    /**  Whether the player is actively turning. */
+    UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
+    int TurningDirection; // 0 = no turn, 1 = left, 2 = right
+	
+	/**  Directional turning speed. */
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
+    float TurningSpeed;
+
 protected:
+	
+	/** Called for yaw input */
+	void Turn(float Value);
 
     /** Called for forwards/backward input */
     float moveForwardValue;
