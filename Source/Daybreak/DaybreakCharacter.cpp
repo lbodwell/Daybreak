@@ -24,7 +24,7 @@ ADaybreakCharacter::ADaybreakCharacter() {
     sprinting = false;
     Attacking = false;
     lastAttack = 1;
-	TurningDirection = 0;
+	TurningVelocity = 0;
 
     // Don't rotate when the controller rotates. Let that just affect the camera.
     bUseControllerRotationPitch = false;
@@ -79,7 +79,7 @@ void ADaybreakCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 
 void ADaybreakCharacter::Turn(float Value) {
     AddControllerYawInput(Value);
-	TurningSpeed = Value;
+    TurningVelocity = Value;
 }
 
 void ADaybreakCharacter::TurnAtRate(float Rate) {

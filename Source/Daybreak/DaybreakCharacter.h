@@ -31,14 +31,22 @@ public:
     /** Whether player is currently attacking and should not be able to attack again yet. */
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
 	bool Attacking;
-
-    /**  Whether the player is actively turning. */
-    UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
-    int TurningDirection; // 0 = no turn, 1 = left, 2 = right
 	
-	/**  Directional turning speed. */
+	/** Directional turning speed. */
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
-    float TurningSpeed;
+    float TurningVelocity;
+	
+	/** Player base health at full. */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category=State)
+    float BaseHealth;
+	
+	/** Player health currently. */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category=State)
+    float Health;
+	
+	/** Player Dark Stone storage. */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category=State)
+    float DarkStone;
 
 protected:
 
