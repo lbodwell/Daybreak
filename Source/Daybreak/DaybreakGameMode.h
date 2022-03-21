@@ -7,12 +7,18 @@
 #include "DaybreakGameMode.generated.h"
 
 UCLASS(minimalapi)
-class ADaybreakGameMode : public AGameModeBase
-{
+class ADaybreakGameMode : public AGameModeBase {
 	GENERATED_BODY()
+	
+	virtual void BeginPlay() override;
 
 public:
 	ADaybreakGameMode();
+
+protected:
+	/**  HUD widget. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Widgets)
+    TSubclassOf<class UUserWidget> HUDWidget;
 };
 
 

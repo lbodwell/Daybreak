@@ -27,13 +27,6 @@ public:
     /** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
     float BaseLookUpRate;
-	
-	/** Montages to play for attacking. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
-    UAnimMontage* AttackLeftMontage;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
-    UAnimMontage* AttackRightMontage;
 
     /** Whether player is currently attacking and should not be able to attack again yet. */
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
@@ -48,6 +41,13 @@ public:
     float TurningSpeed;
 
 protected:
+
+	/** Montages to play for attacking. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
+    UAnimMontage* AttackLeftMontage;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
+    UAnimMontage* AttackRightMontage;
 	
 	/** Called for yaw input */
 	void Turn(float Value);
