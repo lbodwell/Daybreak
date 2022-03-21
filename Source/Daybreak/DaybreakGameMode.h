@@ -14,6 +14,14 @@ class ADaybreakGameMode : public AGameModeBase {
 
 public:
 	ADaybreakGameMode();
+	
+	/** Player base health at full. */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category=State)
+    float BasePortalHealth;
+	
+	/** Player health currently. */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category=State)
+    float PortalHealth;
 
 protected:
 	/**  HUD widget. */
