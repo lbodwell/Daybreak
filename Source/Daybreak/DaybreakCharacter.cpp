@@ -24,7 +24,7 @@ ADaybreakCharacter::ADaybreakCharacter() {
     sprinting = false;
     Attacking = false;
     lastAttack = 1;
-	TurningDirection = 0;
+	TurningVelocity = 0;
 
     // Don't rotate when the controller rotates. Let that just affect the camera.
     bUseControllerRotationPitch = false;
@@ -48,9 +48,6 @@ ADaybreakCharacter::ADaybreakCharacter() {
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
     FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-
-    // Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character)
-    // are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -82,7 +79,7 @@ void ADaybreakCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 
 void ADaybreakCharacter::Turn(float Value) {
     AddControllerYawInput(Value);
-	TurningSpeed = Value;
+    TurningVelocity = Value;
 }
 
 void ADaybreakCharacter::TurnAtRate(float Rate) {
