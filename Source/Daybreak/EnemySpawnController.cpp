@@ -1,14 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
-#include "EnemySpawnController.h"
 #include <math.h>
+#include "Engine.h"
+#include "EnemySpawnController.h"
+
 
 // Sets default values
 AEnemySpawnController::AEnemySpawnController()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	enemyCount = 0;
 
 }
 
@@ -33,6 +35,8 @@ void AEnemySpawnController::SpawnActor()
 
 
 	GetWorld()->SpawnActor<APawn>(ActorToSpawn, Location, Rotation);
+	enemyCount++;
+	DayNightCycle->AdvanceTime(15);
 }
 
 

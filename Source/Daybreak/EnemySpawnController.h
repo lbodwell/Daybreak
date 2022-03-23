@@ -6,6 +6,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "DayNightCycle.h"
 #include "EnemySpawnController.generated.h"
 
 
@@ -20,6 +21,9 @@ private:
 
 	//UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	//std::vector<ASpawnField> SpawnFields;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	ADayNightCycle* DayNightCycle;
 
 	FTimerHandle TimerHandle;
 
