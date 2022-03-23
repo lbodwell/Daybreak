@@ -54,8 +54,8 @@ void ADaybreakCharacter::BeginPlay() {
     Super::BeginPlay();
 	
 	FVector socketLocation = GetMesh()->GetSocketLocation(FName(TEXT("WeaponSocket")));
-	AActor* swordActor = GetWorld()->SpawnActor<AActor>(SwordActor, socketLocation, socketLocation.Rotation());
-	swordActor->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName(TEXT("WeaponSocket")));
+	Sword = GetWorld()->SpawnActor<ADaybreakSword>(SwordActor, socketLocation, socketLocation.Rotation());
+	Sword->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName(TEXT("WeaponSocket")));
 }
 
 //////////////////////////////////////////////////////////////////////////

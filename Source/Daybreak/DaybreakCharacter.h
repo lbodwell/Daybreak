@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "DaybreakSword.h"
 #include "DaybreakCharacter.generated.h"
 
 UCLASS(config=Game)
@@ -35,7 +36,7 @@ public:
 	bool Attacking;
 	
 	/** Directional turning speed. */
-	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=State)
     float TurningVelocity;
 	
 	/** Player base health at full. */
@@ -49,6 +50,9 @@ public:
 	/** Player Dark Stone storage. */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category=State)
     float DarkStone;
+	
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=Weapons)
+    ADaybreakSword* Sword;
 
 protected:
 
