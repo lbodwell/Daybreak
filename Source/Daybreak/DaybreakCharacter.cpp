@@ -50,6 +50,14 @@ ADaybreakCharacter::ADaybreakCharacter() {
     FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 }
 
+void ADaybreakCharacter::BeginPlay() {
+    Super::BeginPlay();
+	
+	FVector socketLocation = GetMesh()->GetSocketLocation(FName(TEXT("WeaponSocket")));
+	AActor* swordActor = GetWorld()->SpawnActor<AActor>(SwordActor, socketLocation, socketLocation.Rotation());
+	swordActor->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName(TEXT("WeaponSocket")));
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 

@@ -8,7 +8,9 @@
 
 UCLASS(config=Game)
 class ADaybreakCharacter : public ACharacter {
-GENERATED_BODY()
+    GENERATED_BODY()
+
+    virtual void BeginPlay() override;
 
     /** Camera boom positioning the camera behind the character */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -56,6 +58,10 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
     UAnimMontage* AttackRightMontage;
+	
+	/** Sword actor */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapons)
+	TSubclassOf<class AActor> SwordActor;
 	
 	/** Called for yaw input */
 	void Turn(float Value);
