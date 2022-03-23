@@ -20,7 +20,7 @@ void ADayNightCycle::BeginPlay() {
 
 	// Advances time by 1 hour every second at night. Alternates between advancing time by 2 hours and rewinding time by 1 hour every second during the day.
 	// Uncomment for testing time manipulation.
-	FTimerHandle timerHandle;
+	/*FTimerHandle timerHandle;
 	GetWorld()->GetTimerManager().SetTimer(timerHandle, [&]() {
 		if (IsDayTime) {
 			if (TestAlternator == 0) {
@@ -36,7 +36,7 @@ void ADayNightCycle::BeginPlay() {
 			UE_LOG(LogActor, Warning, TEXT("Advancing..."));
 			AdvanceTime(15);
 		}
-	}, 1, true);
+	}, 1, true);*/
 }
 
 // Called every frame
