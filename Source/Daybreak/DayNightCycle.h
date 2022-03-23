@@ -49,12 +49,13 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Sky)
 	ADirectionalLight* LightSource;
+	
+	// Returns the current rotation of the sun in degrees (0-180 for night, 180-360 for day).
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Sky)
+	float CurrentRotation;
 
 	// Returns true if it is currently daytime, false if it night-time.
 	bool IsDayTime;
-
-	// Returns the current rotation of the sun in degrees (0-180 for night, 180-360 for day).
-	float CurrentRotation;
 
 	// Temporary variable that needs to be in the global scope for timeout-based testing.
 	int TestAlternator;
