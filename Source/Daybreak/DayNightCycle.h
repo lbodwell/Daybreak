@@ -27,17 +27,35 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void AdvanceTime(float Amount);
-	void RewindTime(float Amount);
+	/**
+	* Advances time by the specified angle relative to the position of the sun.
+	* @param Angle  The angle in degrees to move the sun's position by (0-180 for night, 180-360 for day).
+	*/
+	void AdvanceTime(float Angle);
 
-	UPROPERTY(EditAnywhere, Category = "Sky")
+	/**
+	* Extends the current day by rewinding time by the specified angle relative to the position of the sun.
+	* @param Angle  The angle in degrees to move the sun's position by (0-180 for night, 180-360 for day).
+	*/
+	void RewindTime(float Angle);
+
+	/**
+	* Gets the current time in hours based on the rotation of the sun.
+	*/
+	float GetTimeInHours();
+
+	UPROPERTY(EditAnywhere, Category = Sky)
 	AActor* Sun;
 
-	UPROPERTY(EditAnywhere, Category = "Sky")
+	UPROPERTY(EditAnywhere, Category = Sky)
 	ADirectionalLight* LightSource;
 
-	UPROPERTY(EditAnywhere, Category = "Sky")
-	float TurnRate;
-
+	// Returns true if it is currently daytime, false if it night-time.
 	bool IsDayTime;
+
+	// Returns the current rotation of the sun in degrees (0-180 for night, 180-360 for day).
+	float CurrentRotation;
+
+	// Temporary variable that needs to be in the global scope for timeout-based testing.
+	int TestAlternator;
 };
