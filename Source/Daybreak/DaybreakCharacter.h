@@ -4,11 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "DaybreakSword.h"
 #include "DaybreakCharacter.generated.h"
 
 UCLASS(config=Game)
 class ADaybreakCharacter : public ACharacter {
-GENERATED_BODY()
+    GENERATED_BODY()
+
+    virtual void BeginPlay() override;
 
     /** Camera boom positioning the camera behind the character */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -33,7 +36,7 @@ public:
 	bool Attacking;
 	
 	/** Directional turning speed. */
-	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=State)
     float TurningVelocity;
 	
 	/** Player base health at full. */
@@ -47,6 +50,9 @@ public:
 	/** Player Dark Stone storage. */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category=State)
     float DarkStone;
+	
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=Weapons)
+    ADaybreakSword* Sword;
 
 protected:
 
@@ -56,6 +62,10 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
     UAnimMontage* AttackRightMontage;
+	
+	/** Sword actor */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapons)
+	TSubclassOf<class AActor> SwordActor;
 	
 	/** Called for yaw input */
 	void Turn(float Value);
