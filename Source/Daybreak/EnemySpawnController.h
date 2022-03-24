@@ -19,8 +19,8 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<APawn> ActorToSpawn;
 
-	//UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
-	//std::vector<ASpawnField> SpawnFields;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	std::vector<AEnemySpawnField> SpawnFields;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	ADayNightCycle* DayNightCycle;
