@@ -50,6 +50,14 @@ ADaybreakCharacter::ADaybreakCharacter() {
     FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 }
 
+void ADaybreakCharacter::BeginPlay() {
+    Super::BeginPlay();
+	
+	FVector socketLocation = GetMesh()->GetSocketLocation(FName(TEXT("WeaponSocket")));
+	Sword = GetWorld()->SpawnActor<ADaybreakSword>(SwordActor, socketLocation, socketLocation.Rotation());
+	Sword->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName(TEXT("WeaponSocket")));
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -130,7 +138,7 @@ void ADaybreakCharacter::CalculateMoveSpeed() {
     if (moveForwardValue != 0 && moveRightValue != 0) {
         speed *= 0.75; // 3/4 diagonal speed
     }
-    GetCharacterMovement()->MaxWalkSpeed = moveForwardValue < 0.0f ? 150 : speed; // backward speed = 150
+    GetCharacterMovement()->MaxWalkSpeed = moveForwardValue < 0.0f ? 225 : speed; // backward speed = 225
 }
 
 void ADaybreakCharacter::StartSprinting() {
