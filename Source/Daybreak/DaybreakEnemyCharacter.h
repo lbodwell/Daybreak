@@ -25,9 +25,11 @@ protected:
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
 	bool Attacking;
 
-	void Attack();
-
 public:	
+	void Attack();
+	
+	bool GetAttacking();
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

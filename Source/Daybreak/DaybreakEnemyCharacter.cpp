@@ -20,7 +20,6 @@ void ADaybreakEnemyCharacter::BeginPlay() {
 // Called every frame
 void ADaybreakEnemyCharacter::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
-	Attack();
 }
 
 // Called to bind functionality to input
@@ -30,7 +29,6 @@ void ADaybreakEnemyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 
 void ADaybreakEnemyCharacter::Attack() {
 	if (AttackMontage && !Attacking) {
-		UE_LOG(LogActor, Warning, TEXT("Attack..."));
 		float const duration = PlayAnimMontage(AttackMontage, 1, NAME_None);
         if (duration > 0.f) {
             Attacking = true; // will be unset by AnimNotify::AttackHitEnd in AnimBP
@@ -38,3 +36,6 @@ void ADaybreakEnemyCharacter::Attack() {
 	}
 }
 
+bool ADaybreakEnemyCharacter::GetAttacking() {
+	return Attacking;
+}
