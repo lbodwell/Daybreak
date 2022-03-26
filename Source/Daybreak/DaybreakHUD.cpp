@@ -6,6 +6,8 @@
 #include "Runtime/MediaAssets/Public/MediaPlayer.h"
 #include <math.h> 
 #include <string>
+#include "DaybreakCharacter.h"
+#include "DaybreakSword.h"
 
 bool UDaybreakHUD::Initialize() {
 	const bool success = Super::Initialize();
@@ -29,10 +31,14 @@ void UDaybreakHUD::NativeConstruct() {
 	// open media source for day/night rotator
 	MediaPlayer->OnMediaOpened.AddDynamic(this, &UDaybreakHUD::OnMediaPlayerOpen);
 	MediaPlayer->OpenSource(MediaSource);
-		
+	
+	player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	
+	// track rate of rotation every 0.05 seconds
 	FTimerHandle timerHandle;
 	GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &UDaybreakHUD::TrackRateOfRotation, 0.05, true);
 	
+	// update day/night indicator every second
 	FTimerHandle timerHandle2;
 	GetWorld()->GetTimerManager().SetTimer(timerHandle2, this, &UDaybreakHUD::UpdateDayNightIndicator, 1, true);
 }
@@ -86,4 +92,26 @@ void UDaybreakHUD::UpdateDayNightIndicator() {
 	else {
 		DayNightText = FString(TEXT("0"));
 	}
+}
+
+FString UDaybreakHUD::GetSwordName() {
+	if (sword == nullptr) {
+		sword = player->GetSword();
+	}
+	
+	if (sword != nullptr) {
+		return sword->CurrentLevel.Name;
+	}
+	return "";
+}
+
+FLinearColor UDaybreakHUD::GetSwordColor() {
+	if (sword == nullptr) {
+		sword = player->GetSword();
+	}
+	
+	if (sword != nullptr) {
+		return sword->CurrentLevel.Color;
+	}
+	return FLinearColor(0, 0, 0, 0);
 }

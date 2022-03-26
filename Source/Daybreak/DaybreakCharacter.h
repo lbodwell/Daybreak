@@ -53,6 +53,8 @@ public:
 	
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=Weapons)
     ADaybreakSword* Sword;
+	
+	ADaybreakSword* GetSword();
 
 protected:
 

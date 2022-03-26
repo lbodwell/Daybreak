@@ -158,3 +158,7 @@ void ADaybreakCharacter::Attack() {
         }
 	}
 }
+
+ADaybreakSword* ADaybreakCharacter::GetSword() {
+	return Sword;
+}
