@@ -21,13 +21,13 @@ struct FSwordLevel {
 	FLinearColor Color;
 
     UPROPERTY()
-    int Damage;
+    float Damage;
 
     UPROPERTY()
-    int Speed;
+    float Speed;
 	
 	UPROPERTY()
-    int Range;
+    float Range;
 
     FSwordLevel() {
         Index = 0;

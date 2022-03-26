@@ -9,11 +9,11 @@ ADaybreakSword::ADaybreakSword() {
 	PrimaryActorTick.bCanEverTick = true;
 	
 	Levels.Emplace(); // default
-	Levels.Emplace(1, "Darkened Steel Sword", FLinearColor(0.05, 0.1, 1, 1), 0, 0, 0);
-	Levels.Emplace(2, "Draconic Steel Sword", FLinearColor(0, 0.6, 0.15, 1), 0, 0, 0);
-	Levels.Emplace(3, "Darkinium Sword", FLinearColor(0.3, 0.05, 1, 1), 0, 0, 0);
-	Levels.Emplace(4, "Emblazened Darkinium Sword", FLinearColor(0.5, 0.15, 1, 1), 0, 0, 0);
-	Levels.Emplace(5, "Sword of Darkisius", FLinearColor(1, 0.2, 0.1, 1), 0, 0, 0);
+	Levels.Emplace(1, "Darkened Steel Sword", FLinearColor(0.05, 0.1, 1, 1), 0.1, 0.1, 0.1);
+	Levels.Emplace(2, "Draconic Steel Sword", FLinearColor(0, 0.6, 0.15, 1), 0.3, 0.2, 0.2);
+	Levels.Emplace(3, "Darkinium Sword", FLinearColor(0.3, 0.05, 1, 1), 0.6, 0.4, 0.5);
+	Levels.Emplace(4, "Emblazened Darkinium Sword", FLinearColor(0.5, 0.15, 1, 1), 0.75, 0.8, 0.75);
+	Levels.Emplace(5, "Sword of Darkisius", FLinearColor(1, 0.2, 0.1, 1), 1, 1, 1);
 	
 	CurrentLevel = Levels[0];
 }
