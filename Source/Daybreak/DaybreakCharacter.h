@@ -61,9 +61,6 @@ public:
 	ADaybreakSword* GetSword();
 
 protected:
-	
-	/**  Checks if input is enabled (disabled while a menu is open) */
-	bool InputEnabled();
 
 	/**  Upgrade menu widget class. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Widgets)
@@ -115,6 +112,14 @@ protected:
 
     /** Calculates max walk speed for movement. */
     void CalculateMoveSpeed();
+	
+	/**  Checks if input is enabled (disabled while a menu is open) */
+	bool InputEnabled();
+	
+	/** Sphere traces for Interactable objects and outlines them */
+	AActor* interactable;
+	UPrimitiveComponent* interactableOutline;
+	void SphereTraceForInteractables();
 
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 };

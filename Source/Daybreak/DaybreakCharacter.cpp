@@ -11,6 +11,7 @@
 #include <math.h>
 #include "DaybreakGameMode.h"
 #include "Blueprint/UserWidget.h"
+#include "DrawDebugHelpers.h"
 
 
 ADaybreakCharacter::ADaybreakCharacter() {
@@ -53,9 +54,14 @@ ADaybreakCharacter::ADaybreakCharacter() {
 void ADaybreakCharacter::BeginPlay() {
     Super::BeginPlay();
 	
+	// attach sword to WeaponSocket
 	FVector socketLocation = GetMesh()->GetSocketLocation(FName(TEXT("WeaponSocket")));
 	Sword = GetWorld()->SpawnActor<ADaybreakSword>(SwordActor, socketLocation, socketLocation.Rotation());
 	Sword->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName(TEXT("WeaponSocket")));
+	
+	// start sphere tracing for interactables
+	FTimerHandle timerHandle;
+	GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &ADaybreakCharacter::SphereTraceForInteractables, 0.25, true);
 }
 
 // --- MOVEMENT INPUT --- //
@@ -169,12 +175,15 @@ void ADaybreakCharacter::Attack() {
 }
 
 void ADaybreakCharacter::Interact() {
-	if (InputEnabled()) {
-		// add upgrade menu widget to viewport
-		if (UpgradeMenuWidget != nullptr) {
-			UpgradeMenu = CreateWidget<UUserWidget>(GetWorld(), UpgradeMenuWidget);
-			if (UpgradeMenu) {
-				UpgradeMenu->AddToViewport();
+	if (InputEnabled() && interactable) {
+		UE_LOG(LogActor, Warning, TEXT("Interactable: %s"), *(interactable->GetName()));
+		if (interactable->GetName().StartsWith("_Anvil")) {
+			// add upgrade menu widget to viewport
+			if (UpgradeMenuWidget != nullptr) {
+				UpgradeMenu = CreateWidget<UUserWidget>(GetWorld(), UpgradeMenuWidget);
+				if (UpgradeMenu) {
+					UpgradeMenu->AddToViewport();
+				}
 			}
 		}
 	}
@@ -184,6 +193,53 @@ void ADaybreakCharacter::Exit() {
 	if (UpgradeMenu != nullptr) {
 		UpgradeMenu->RemoveFromViewport();
 		UpgradeMenu = nullptr;
+	}
+}
+
+// --- TIMERS --- //
+
+void ADaybreakCharacter::SphereTraceForInteractables() {
+	// get viewpoint
+	FVector viewpointLocation;
+	FRotator viewpointRotation;
+	GetController()->GetPlayerViewPoint(viewpointLocation, viewpointRotation);
+	
+	// start and end of sphere trace
+	FVector start = viewpointLocation;
+	FVector end = start + (viewpointRotation.Vector() * 750);
+	
+	// sphere shape and rotation
+	FCollisionShape sphere = FCollisionShape::MakeSphere(75);
+	FQuat sphereRotation = FQuat::Identity;
+	
+	// trace for Interactable (ECC_GameTraceChannel1) object types
+	FCollisionQueryParams traceParams;
+	FHitResult hitResult;
+	bool hit = GetWorld()->SweepSingleByObjectType(hitResult, start, end, sphereRotation, ECC_GameTraceChannel1, sphere, traceParams);
+	
+	AActor* actor = hit ? hitResult.GetActor() : nullptr;
+	bool newInteractable = hit && (interactable == nullptr || actor->GetName() != interactable->GetName());
+	
+	// check if existing interactable outline should be removed
+	if (interactable != nullptr && (newInteractable || !hit)) {
+		interactable = nullptr;
+		
+		if (interactableOutline != nullptr) {
+			interactableOutline->SetRenderCustomDepth(false);
+			interactableOutline = nullptr;
+		}
+	}
+	
+	// check if new interactable should be outlined
+	if (newInteractable) {
+		interactable = actor;
+		
+		// outline actor's static mesh component tagged with "Outline"
+		TArray<UActorComponent*> outlines = interactable->GetComponentsByTag(UStaticMeshComponent::StaticClass(), "Outline");
+		if (outlines[0] != nullptr) {
+			interactableOutline = Cast<UPrimitiveComponent>(outlines[0]);
+			interactableOutline->SetRenderCustomDepth(true);
+		}
 	}
 }
 
