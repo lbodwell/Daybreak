@@ -28,6 +28,7 @@ class DAYBREAK_API UDaybreakUpgradeMenu : public UUserWidget {
 	protected:
 		virtual bool Initialize() override;
 		virtual void NativeConstruct() override;
+		virtual void NativeDestruct() override;
 		
 		ADaybreakCharacter* player;
 		ADaybreakSword* sword;

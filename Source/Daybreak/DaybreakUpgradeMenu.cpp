@@ -9,6 +9,9 @@ bool UDaybreakUpgradeMenu::Initialize() {
 	const bool success = Super::Initialize();
 	if (!success) return false;
 	
+	UpgradeProgress = 0;
+	isUpgrading = false;
+	
 	return true;
 }
 
@@ -23,17 +26,26 @@ void UDaybreakUpgradeMenu::NativeConstruct() {
 	UpdateUI();
 }
 
+void UDaybreakUpgradeMenu::NativeDestruct() {
+	Super::NativeDestruct();
+	
+	// unbind upgrade actions
+	int lastIndex = player->GetPlayerInputComponent()->GetNumActionBindings() - 1;
+	player->GetPlayerInputComponent()->RemoveActionBinding(lastIndex);
+	player->GetPlayerInputComponent()->RemoveActionBinding(lastIndex - 1);
+}
+
 void UDaybreakUpgradeMenu::StartUpgrading() {
 	isUpgrading = true;
-	GetWorld()->GetTimerManager().SetTimer(upgradeTimerHandle, [&]() { 
+	GetWorld()->GetTimerManager().SetTimer(upgradeTimerHandle, [&]() {
 		if (isUpgrading) {
 			UpgradeProgress += 0.01;
 			if (UpgradeProgress >= 1) {
+				StopUpgrading();
+				GetWorld()->GetTimerManager().ClearTimer(upgradeTimerHandle);
 				player->GetSword()->Upgrade();
 				UpdateUI();
 				UpgradeProgress = 0;
-				StopUpgrading();
-				GetWorld()->GetTimerManager().ClearTimer(upgradeTimerHandle);
 			}
 		} else {
 			UpgradeProgress -= 0.01;
