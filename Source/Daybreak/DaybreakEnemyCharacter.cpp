@@ -14,7 +14,6 @@ ADaybreakEnemyCharacter::ADaybreakEnemyCharacter() {
 // Called when the game starts or when spawned
 void ADaybreakEnemyCharacter::BeginPlay() {
 	Super::BeginPlay();
-    //Attack();
 }
 
 // Called every frame

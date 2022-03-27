@@ -17,7 +17,35 @@ void UDaybreakUpgradeMenu::NativeConstruct() {
 	
 	player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	
+	player->GetPlayerInputComponent()->BindAction("Interact", IE_Pressed, this, &UDaybreakUpgradeMenu::StartUpgrading);
+    player->GetPlayerInputComponent()->BindAction("Interact", IE_Released, this, &UDaybreakUpgradeMenu::StopUpgrading);
+	
 	UpdateUI();
+}
+
+void UDaybreakUpgradeMenu::StartUpgrading() {
+	isUpgrading = true;
+	GetWorld()->GetTimerManager().SetTimer(upgradeTimerHandle, [&]() { 
+		if (isUpgrading) {
+			UpgradeProgress += 0.01;
+			if (UpgradeProgress >= 1) {
+				player->GetSword()->Upgrade();
+				UpdateUI();
+				UpgradeProgress = 0;
+				StopUpgrading();
+				GetWorld()->GetTimerManager().ClearTimer(upgradeTimerHandle);
+			}
+		} else {
+			UpgradeProgress -= 0.01;
+			if (UpgradeProgress <= 0) {
+				GetWorld()->GetTimerManager().ClearTimer(upgradeTimerHandle);
+			}
+		}
+	}, 0.01, true);
+}
+
+void UDaybreakUpgradeMenu::StopUpgrading() {
+	isUpgrading = false;
 }
 
 FSwordLevel UDaybreakUpgradeMenu::GetCurrentSwordLevel() {

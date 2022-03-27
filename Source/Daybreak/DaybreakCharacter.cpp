@@ -66,7 +66,9 @@ void ADaybreakCharacter::BeginPlay() {
 
 // --- MOVEMENT INPUT --- //
 
-void ADaybreakCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) {
+void ADaybreakCharacter::SetupPlayerInputComponent(class UInputComponent* playerInputComponent) {
+	PlayerInputComponent = playerInputComponent;
+	
     // Set up gameplay key bindings
     check(PlayerInputComponent);
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ADaybreakCharacter::StartJumping);
@@ -251,4 +253,8 @@ ADaybreakSword* ADaybreakCharacter::GetSword() {
 
 bool ADaybreakCharacter::InputEnabled() {
 	return UpgradeMenu == nullptr;
+}
+
+UInputComponent* ADaybreakCharacter::GetPlayerInputComponent() {
+	return PlayerInputComponent;
 }

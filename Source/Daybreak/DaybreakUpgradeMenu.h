@@ -31,4 +31,13 @@ class DAYBREAK_API UDaybreakUpgradeMenu : public UUserWidget {
 		
 		ADaybreakCharacter* player;
 		ADaybreakSword* sword;
+		
+		bool isUpgrading;
+		FTimerHandle upgradeTimerHandle;
+		
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		float UpgradeProgress;
+		
+		void StartUpgrading();
+		void StopUpgrading();
 };

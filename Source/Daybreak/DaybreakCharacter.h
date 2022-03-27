@@ -59,6 +59,8 @@ public:
 	
 	/** Player sword object for C++. */
 	ADaybreakSword* GetSword();
+	
+	UInputComponent* GetPlayerInputComponent();
 
 protected:
 
@@ -121,5 +123,7 @@ protected:
 	UPrimitiveComponent* interactableOutline;
 	void SphereTraceForInteractables();
 
-    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+    virtual void SetupPlayerInputComponent(class UInputComponent* playerInputComponent) override;
+	
+	UInputComponent* PlayerInputComponent;
 };
