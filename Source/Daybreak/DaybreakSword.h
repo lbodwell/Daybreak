@@ -7,27 +7,30 @@
 #include <vector>
 #include "DaybreakSword.generated.h"
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FSwordLevel {
     GENERATED_BODY()
 
-    UPROPERTY()
+    UPROPERTY(BlueprintReadOnly)
     int Index;
 
-    UPROPERTY()
+    UPROPERTY(BlueprintReadOnly)
     FString Name;
 	
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	FLinearColor Color;
 
-    UPROPERTY()
+    UPROPERTY(BlueprintReadOnly)
     float Damage;
 
-    UPROPERTY()
+    UPROPERTY(BlueprintReadOnly)
     float Speed;
 	
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
     float Range;
+	
+	UPROPERTY(BlueprintReadOnly)
+    int Cost;
 
     FSwordLevel() {
         Index = 0;
@@ -36,15 +39,17 @@ struct FSwordLevel {
         Damage = 0;
         Speed = 0;
         Range = 0;
+		Cost = 0;
     }
 	
-	FSwordLevel(int index, FString name, FLinearColor color, int damage, int speed, int range) {
+	FSwordLevel(int index, FString name, FLinearColor color, float damage, float speed, float range, int cost) {
         Index = index;
         Name = name;
 		Color = color;
         Damage = damage;
         Speed = speed;
         Range = range;
+		Cost = cost;
     }
 };
 
@@ -56,10 +61,8 @@ public:
 	// Sets default values for this actor's properties
 	ADaybreakSword();
 	
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Stats)
 	FSwordLevel CurrentLevel;
 	
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Stats)
 	TArray<struct FSwordLevel> Levels;
 	
 	void Upgrade();

@@ -94,24 +94,13 @@ void UDaybreakHUD::UpdateDayNightIndicator() {
 	}
 }
 
-FString UDaybreakHUD::GetSwordName() {
+FSwordLevel UDaybreakHUD::GetCurrentSwordLevel() {
 	if (sword == nullptr) {
 		sword = player->GetSword();
 	}
 	
 	if (sword != nullptr) {
-		return sword->CurrentLevel.Name;
+		return sword->CurrentLevel;
 	}
-	return "";
-}
-
-FLinearColor UDaybreakHUD::GetSwordColor() {
-	if (sword == nullptr) {
-		sword = player->GetSword();
-	}
-	
-	if (sword != nullptr) {
-		return sword->CurrentLevel.Color;
-	}
-	return FLinearColor(0, 0, 0, 0);
+	return FSwordLevel();
 }

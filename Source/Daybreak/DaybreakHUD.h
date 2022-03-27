@@ -20,10 +20,7 @@ public:
 	ADayNightCycle* DayNightController;
 	
 	UFUNCTION(BlueprintCallable)
-	FString GetSwordName();
-	
-	UFUNCTION(BlueprintCallable)
-	FLinearColor GetSwordColor();
+	FSwordLevel GetCurrentSwordLevel();
 
 protected:
 	virtual bool Initialize() override;
