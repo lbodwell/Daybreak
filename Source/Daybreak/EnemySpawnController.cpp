@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "EnemySpawnController.h"
 #include <math.h>
 #include "Engine.h"
 #include "EnemySpawnController.h"

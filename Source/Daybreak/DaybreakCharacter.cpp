@@ -138,7 +138,7 @@ void ADaybreakCharacter::CalculateMoveSpeed() {
     if (moveForwardValue != 0 && moveRightValue != 0) {
         speed *= 0.75; // 3/4 diagonal speed
     }
-    GetCharacterMovement()->MaxWalkSpeed = moveForwardValue < 0.0f ? 150 : speed; // backward speed = 150
+    GetCharacterMovement()->MaxWalkSpeed = moveForwardValue < 0.0f ? 225 : speed; // backward speed = 225
 }
 
 void ADaybreakCharacter::StartSprinting() {
