@@ -43,7 +43,20 @@ void ADestructibleResource::Tick(float DeltaTime) {
 
 // Called whenever damage is dealt to the Destructible Resource
 void ADestructibleResource::Damage(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange, __FUNCTION__);
+	// GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange, __FUNCTION__);
+
+	if (Cast<ADaybreakCharacter>(OtherActor)) {
+
+		UWorld* WorldRef = GetWorld();
+		ADaybreakCharacter* CharacterRef = Cast<ADaybreakCharacter>(OtherActor);
+
+		if (CharacterRef) {
+			CharacterRef->DarkStone += 10;
+		}
+	}
+
+	// ADaybreakCharacter::DarkStone += 10;
+
 
 	// Adjust this using math and the sword to ensure the player can only mine when the sword hits the resource.
 	if (!IsDestroyed && OtherComp->ComponentHasTag("Weapon")) {
