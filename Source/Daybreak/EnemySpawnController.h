@@ -7,6 +7,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "DayNightCycle.h"
+#include "EnemySpawnField.h"
 #include "EnemySpawnController.generated.h"
 
 
@@ -19,13 +20,15 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<APawn> ActorToSpawn;
 
-	//UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
-	//std::vector<ASpawnField> SpawnFields;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	TArray<AActor*> SpawnFields;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	ADayNightCycle* DayNightCycle;
 
 	FTimerHandle TimerHandle;
+
+	AEnemySpawnField* GetRandomSpawnField();
 
 protected:
 	// Called when the game starts or when spawned
