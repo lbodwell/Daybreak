@@ -31,5 +31,9 @@ void ADaybreakSword::Tick(float DeltaTime) {
 void ADaybreakSword::Upgrade() {
 	if (CurrentLevel.Index < 5) {
 		CurrentLevel = Levels[CurrentLevel.Index + 1];
+		UpdateEffect();
 	}
 }
+
+void ADaybreakSword::UpdateEffect_Implementation() {
+ } 

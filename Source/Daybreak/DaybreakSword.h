@@ -61,7 +61,11 @@ public:
 	// Sets default values for this actor's properties
 	ADaybreakSword();
 	
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	FSwordLevel CurrentLevel;
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void UpdateEffect();
 	
 	TArray<struct FSwordLevel> Levels;
 	
