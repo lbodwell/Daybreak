@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "Engine.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "DayNightCycle.h"
@@ -28,6 +29,10 @@ private:
 	ADayNightCycle* DayNightCycle;
 
 	FTimerHandle TimerHandle;
+
+	ACharacter* Player;
+	UCameraComponent* PlayerCamera;
+	FMinimalViewInfo CameraInfo;
 
 	AEnemySpawnField* GetRandomSpawnField();
 
