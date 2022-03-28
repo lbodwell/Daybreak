@@ -21,10 +21,18 @@ void ADaybreakAIController::BeginPlay() {
 }
 
 void ADaybreakAIController::ChasePlayer() {
-	if (!pawn->GetAttacking()) {
-		EPathFollowingRequestResult::Type result = MoveToActor(playerActor, 10.0f, true, true, true, NULL, true);
-		if (result == EPathFollowingRequestResult::Type::AlreadyAtGoal) {
-			pawn->Attack();
+	if (pawn != nullptr) {
+		if (!pawn->GetAttacking()) {
+			EPathFollowingRequestResult::Type result = MoveToActor(playerActor, 10.0f, true, true, true, NULL, true);
+			if (result == EPathFollowingRequestResult::Type::AlreadyAtGoal) {
+				pawn->Attack();
+			}
 		}
+	}
+	else {
+		pawn = Cast<ADaybreakEnemyCharacter>(GetPawn());
+
+		ACharacter* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+		playerActor = Cast<AActor>(player);
 	}
 }
