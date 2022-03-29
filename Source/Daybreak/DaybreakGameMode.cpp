@@ -4,7 +4,6 @@
 #include "DaybreakCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Blueprint/UserWidget.h"
-//#include "Kismet/GameplayStatics.h"
 
 ADaybreakGameMode::ADaybreakGameMode() {
 	// set default pawn class to our Blueprinted character
@@ -16,8 +15,6 @@ ADaybreakGameMode::ADaybreakGameMode() {
 
 void ADaybreakGameMode::BeginPlay() {
 	Super::BeginPlay();
-	
-	// ADaybreakCharacter* Character = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerPawn(this, 0)); // don't think we actually need this (yet)
 	
 	// add HUD widget to viewport
 	if (HUDWidget != nullptr) {

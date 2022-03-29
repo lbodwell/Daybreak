@@ -9,9 +9,10 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include <math.h>
+#include "DaybreakGameMode.h"
+#include "Blueprint/UserWidget.h"
+#include "DrawDebugHelpers.h"
 
-//////////////////////////////////////////////////////////////////////////
-// ADaybreakCharacter
 
 ADaybreakCharacter::ADaybreakCharacter() {
     // Set size for collision capsule
@@ -20,7 +21,7 @@ ADaybreakCharacter::ADaybreakCharacter() {
     // set our turn rates for input
     BaseTurnRate = 45.f;
     BaseLookUpRate = 45.f;
-
+	
     sprinting = false;
     Attacking = false;
     lastAttack = 1;
@@ -28,7 +29,7 @@ ADaybreakCharacter::ADaybreakCharacter() {
 
     // Don't rotate when the controller rotates. Let that just affect the camera.
     bUseControllerRotationPitch = false;
-    bUseControllerRotationYaw = false;
+    bUseControllerRotationYaw = true;
     bUseControllerRotationRoll = false;
 
     // Configure character movement
@@ -53,18 +54,24 @@ ADaybreakCharacter::ADaybreakCharacter() {
 void ADaybreakCharacter::BeginPlay() {
     Super::BeginPlay();
 	
+	// attach sword to WeaponSocket
 	FVector socketLocation = GetMesh()->GetSocketLocation(FName(TEXT("WeaponSocket")));
 	Sword = GetWorld()->SpawnActor<ADaybreakSword>(SwordActor, socketLocation, socketLocation.Rotation());
 	Sword->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName(TEXT("WeaponSocket")));
+	
+	// start sphere tracing for interactables
+	FTimerHandle timerHandle;
+	GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &ADaybreakCharacter::SphereTraceForInteractables, 0.25, true);
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Input
+// --- MOVEMENT INPUT --- //
 
-void ADaybreakCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) {
+void ADaybreakCharacter::SetupPlayerInputComponent(class UInputComponent* playerInputComponent) {
+	PlayerInputComponent = playerInputComponent;
+	
     // Set up gameplay key bindings
     check(PlayerInputComponent);
-    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ADaybreakCharacter::StartJumping);
     PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
     PlayerInputComponent->BindAxis("MoveForward", this, &ADaybreakCharacter::MoveForward);
@@ -72,62 +79,70 @@ void ADaybreakCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 
     PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ADaybreakCharacter::StartSprinting);
     PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ADaybreakCharacter::StopSprinting);
+	
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ADaybreakCharacter::Interact);
+	PlayerInputComponent->BindAction("Exit", IE_Pressed, this, &ADaybreakCharacter::Exit);
 
-    // We have 2 versions of the rotation bindings to handle different kinds of devices differently
-    // "turn" handles devices that provide an absolute delta, such as a mouse.
-    // "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
     PlayerInputComponent->BindAxis("Turn", this, &ADaybreakCharacter::Turn);
-    PlayerInputComponent->BindAxis("TurnRate", this, &ADaybreakCharacter::TurnAtRate);
-    PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-    PlayerInputComponent->BindAxis("LookUpRate", this, &ADaybreakCharacter::LookUpAtRate);
+    PlayerInputComponent->BindAxis("LookUp", this, &ADaybreakCharacter::LookUp);
 
     // combat
     PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ADaybreakCharacter::Attack);
 }
 
+void ADaybreakCharacter::StartJumping() {
+	if (InputEnabled()) {
+		Jump();
+	}
+}
+
 void ADaybreakCharacter::Turn(float Value) {
-    AddControllerYawInput(Value);
-    TurningVelocity = Value;
+	if (InputEnabled()) {
+		AddControllerYawInput(Value);
+		TurningVelocity = Value;
+	} else {
+		TurningVelocity = 0;
+	}
 }
 
-void ADaybreakCharacter::TurnAtRate(float Rate) {
-    // calculate delta for this frame from the rate information
-    AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
-}
-
-void ADaybreakCharacter::LookUpAtRate(float Rate) {
-    // calculate delta for this frame from the rate information
-    AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+void ADaybreakCharacter::LookUp(float Value) {
+	if (InputEnabled()) {
+		AddControllerPitchInput(Value);
+	}
 }
 
 void ADaybreakCharacter::MoveForward(float Value) {
-    moveForwardValue = Value;
-    if (Controller != nullptr && Value != 0.0f) {
-        CalculateMoveSpeed();
+	if (InputEnabled()) {
+		moveForwardValue = Value;
+		if (Controller != nullptr && Value != 0.0f) {
+			CalculateMoveSpeed();
 
-        // find out which way is forward
-        const FRotator Rotation = Controller->GetControlRotation();
-        const FRotator YawRotation(0, Rotation.Yaw, 0);
+			// find out which way is forward
+			const FRotator Rotation = Controller->GetControlRotation();
+			const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-        // get forward vector
-        const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-        AddMovementInput(Direction, Value);
-    }
+			// get forward vector
+			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+			AddMovementInput(Direction, Value);
+		}
+	}
 }
 
 void ADaybreakCharacter::MoveRight(float Value) {
-    moveRightValue = Value;
-    if (Controller != nullptr && Value != 0.0f) {
-        CalculateMoveSpeed();
+	if (InputEnabled()) {
+		moveRightValue = Value;
+		if (Controller != nullptr && Value != 0.0f) {
+			CalculateMoveSpeed();
 
-        // find out which way is right
-        const FRotator Rotation = Controller->GetControlRotation();
-        const FRotator YawRotation(0, Rotation.Yaw, 0);
+			// find out which way is right
+			const FRotator Rotation = Controller->GetControlRotation();
+			const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-        // get right vector
-        const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-        AddMovementInput(Direction, Value);
-    }
+			// get right vector
+			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+			AddMovementInput(Direction, Value);
+		}
+	}
 }
 
 void ADaybreakCharacter::CalculateMoveSpeed() {
@@ -149,12 +164,97 @@ void ADaybreakCharacter::StopSprinting() {
     sprinting = false;
 }
 
+// --- ACTION INPUT --- //
+
 void ADaybreakCharacter::Attack() {
-	if (AttackLeftMontage && AttackRightMontage && !Attacking) {
+	if (InputEnabled() && AttackLeftMontage && AttackRightMontage && !Attacking) {
 		float const duration = PlayAnimMontage(lastAttack == 0 ? AttackRightMontage : AttackLeftMontage, 1, NAME_None);
         if (duration > 0.f) {
             Attacking = true; // will be unset by AnimNotify::AttackHitEnd in AnimBP
             lastAttack = lastAttack == 0 ? 1 : 0; // alternate between left and right attacks
         }
 	}
+}
+
+void ADaybreakCharacter::Interact() {
+	if (InputEnabled() && interactable) {
+		UE_LOG(LogActor, Warning, TEXT("Interactable: %s"), *(interactable->GetName()));
+		if (interactable->GetName().StartsWith("_Anvil")) {
+			// add upgrade menu widget to viewport
+			if (UpgradeMenuWidget != nullptr) {
+				UpgradeMenu = CreateWidget<UUserWidget>(GetWorld(), UpgradeMenuWidget);
+				if (UpgradeMenu) {
+					UpgradeMenu->AddToViewport();
+				}
+			}
+		}
+	}
+}
+
+void ADaybreakCharacter::Exit() {
+	if (UpgradeMenu != nullptr) {
+		UpgradeMenu->RemoveFromViewport();
+		UpgradeMenu = nullptr;
+	}
+}
+
+// --- TIMERS --- //
+
+void ADaybreakCharacter::SphereTraceForInteractables() {
+	// get viewpoint
+	FVector viewpointLocation;
+	FRotator viewpointRotation;
+	GetController()->GetPlayerViewPoint(viewpointLocation, viewpointRotation);
+	
+	// start and end of sphere trace
+	FVector start = viewpointLocation;
+	FVector end = start + (viewpointRotation.Vector() * 750);
+	
+	// sphere shape and rotation
+	FCollisionShape sphere = FCollisionShape::MakeSphere(75);
+	FQuat sphereRotation = FQuat::Identity;
+	
+	// trace for Interactable (ECC_GameTraceChannel1) object types
+	FCollisionQueryParams traceParams;
+	FHitResult hitResult;
+	bool hit = GetWorld()->SweepSingleByObjectType(hitResult, start, end, sphereRotation, ECC_GameTraceChannel1, sphere, traceParams);
+	
+	AActor* actor = hit ? hitResult.GetActor() : nullptr;
+	bool newInteractable = hit && (interactable == nullptr || actor->GetName() != interactable->GetName());
+	
+	// check if existing interactable outline should be removed
+	if (interactable != nullptr && (newInteractable || !hit)) {
+		interactable = nullptr;
+		
+		if (interactableOutline != nullptr) {
+			interactableOutline->SetRenderCustomDepth(false);
+			interactableOutline = nullptr;
+		}
+	}
+	
+	// check if new interactable should be outlined
+	if (newInteractable) {
+		interactable = actor;
+		
+		// outline actor's static mesh component tagged with "Outline"
+		TArray<UActorComponent*> outlines = interactable->GetComponentsByTag(UStaticMeshComponent::StaticClass(), "Outline");
+		if (outlines[0] != nullptr) {
+			interactableOutline = Cast<UPrimitiveComponent>(outlines[0]);
+			interactableOutline->SetRenderCustomDepth(true);
+		}
+	}
+}
+
+// --- HELPERS --- //
+
+ADaybreakSword* ADaybreakCharacter::GetSword() {
+	return Sword;
+}
+
+bool ADaybreakCharacter::InputEnabled() {
+	return UpgradeMenu == nullptr;
+}
+
+UInputComponent* ADaybreakCharacter::GetPlayerInputComponent() {
+	return PlayerInputComponent;
 }
