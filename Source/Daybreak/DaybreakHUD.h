@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "DayNightCycle.h"
+#include "DaybreakCharacter.h"
+#include "DaybreakSword.h"
 #include "DaybreakHUD.generated.h"
 
 /**
@@ -16,6 +18,9 @@ class DAYBREAK_API UDaybreakHUD : public UUserWidget {
 	
 public:
 	ADayNightCycle* DayNightController;
+	
+	UFUNCTION(BlueprintCallable)
+	FSwordLevel GetCurrentSwordLevel();
 
 protected:
 	virtual bool Initialize() override;
@@ -36,6 +41,9 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Variables)
     FString DayNightText;
+	
+	ADaybreakCharacter* player;
+	ADaybreakSword* sword;
 	
 	bool mediaPlayerReady;
 	
