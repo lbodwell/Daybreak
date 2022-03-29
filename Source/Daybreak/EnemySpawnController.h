@@ -4,10 +4,12 @@
 
 #include <vector>
 
+#include "Engine.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "DayNightCycle.h"
 #include "EnemySpawnField.h"
+#include "DaybreakEnemyCharacter.h"
 #include "EnemySpawnController.generated.h"
 
 
@@ -18,7 +20,7 @@ class DAYBREAK_API AEnemySpawnController : public AActor
 
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<APawn> ActorToSpawn;
+	TSubclassOf<ADaybreakEnemyCharacter> EnemyToSpawn;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	TArray<AActor*> SpawnFields;
@@ -27,6 +29,10 @@ private:
 	ADayNightCycle* DayNightCycle;
 
 	FTimerHandle TimerHandle;
+
+	ACharacter* Player;
+	UCameraComponent* PlayerCamera;
+	FMinimalViewInfo CameraInfo;
 
 	AEnemySpawnField* GetRandomSpawnField();
 
