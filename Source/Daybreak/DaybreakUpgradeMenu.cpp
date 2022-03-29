@@ -4,6 +4,7 @@
 #include "DaybreakUpgradeMenu.h"
 #include "DaybreakSword.h"
 #include "Kismet/GameplayStatics.h"
+#include "Daybreak2DSwordCamera.h"
 
 bool UDaybreakUpgradeMenu::Initialize() {
 	const bool success = Super::Initialize();
@@ -18,11 +19,19 @@ bool UDaybreakUpgradeMenu::Initialize() {
 void UDaybreakUpgradeMenu::NativeConstruct() {
 	Super::NativeConstruct();
 	
+	// bind player and upgrade actions
 	player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	
 	player->GetPlayerInputComponent()->BindAction("Interact", IE_Pressed, this, &UDaybreakUpgradeMenu::StartUpgrading);
     player->GetPlayerInputComponent()->BindAction("Interact", IE_Released, this, &UDaybreakUpgradeMenu::StopUpgrading);
 	
+	// get 2DSwordCameras and update their colors
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADaybreak2DSwordCamera::StaticClass(), SwordCameras);
+	for (int i = 0; i < 2; i++) {
+		ADaybreak2DSwordCamera* swordCamera = Cast<ADaybreak2DSwordCamera>(SwordCameras[i]);
+		swordCamera->UpdateLevel(swordCamera->ID == 1 ? GetCurrentSwordLevel() : GetNextSwordLevel());
+	} 
+
 	UpdateUI();
 }
 
@@ -41,10 +50,7 @@ void UDaybreakUpgradeMenu::StartUpgrading() {
 		if (isUpgrading) {
 			UpgradeProgress += 0.01;
 			if (UpgradeProgress >= 1) {
-				StopUpgrading();
-				GetWorld()->GetTimerManager().ClearTimer(upgradeTimerHandle);
-				player->GetSword()->Upgrade();
-				UpdateUI();
+				Upgrade();
 				UpgradeProgress = 0;
 			}
 		} else {
@@ -60,6 +66,15 @@ void UDaybreakUpgradeMenu::StopUpgrading() {
 	isUpgrading = false;
 }
 
+void UDaybreakUpgradeMenu::Upgrade() {
+	player->GetSword()->Upgrade();
+	UpdateUI();
+	for (int i = 0; i < 2; i++) {
+		ADaybreak2DSwordCamera* swordCamera = Cast<ADaybreak2DSwordCamera>(SwordCameras[i]);
+		swordCamera->UpdateLevel(swordCamera->ID == 1 ? GetCurrentSwordLevel() : GetNextSwordLevel());
+	} 
+}
+
 FSwordLevel UDaybreakUpgradeMenu::GetCurrentSwordLevel() {
 	sword = player->GetSword();
 	
@@ -71,10 +86,13 @@ FSwordLevel UDaybreakUpgradeMenu::GetCurrentSwordLevel() {
 
 FSwordLevel UDaybreakUpgradeMenu::GetNextSwordLevel() {
 	sword = player->GetSword();
-	int index = sword->CurrentLevel.Index;
 	
-	if (sword != nullptr && index < 5) {
-		return sword->Levels[index + 1];
+	if (sword != nullptr) {
+		int index = sword->CurrentLevel.Index;
+		
+		if (index < 5) {
+			return sword->Levels[index + 1];
+		}
 	}
 	return FSwordLevel();
 }

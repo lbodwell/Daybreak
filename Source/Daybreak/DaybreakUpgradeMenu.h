@@ -33,6 +33,8 @@ class DAYBREAK_API UDaybreakUpgradeMenu : public UUserWidget {
 		ADaybreakCharacter* player;
 		ADaybreakSword* sword;
 		
+		TArray<AActor*> SwordCameras;
+		
 		bool isUpgrading;
 		FTimerHandle upgradeTimerHandle;
 		
@@ -41,4 +43,5 @@ class DAYBREAK_API UDaybreakUpgradeMenu : public UUserWidget {
 		
 		void StartUpgrading();
 		void StopUpgrading();
+		void Upgrade();
 };
