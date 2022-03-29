@@ -17,14 +17,14 @@ void ADaybreakAIController::BeginPlay() {
 	playerActor = Cast<AActor>(player);
 	
 	FTimerHandle timerHandle;
-	GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &ADaybreakAIController::ChasePlayer, 0.25, true);
+	GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &ADaybreakAIController::ChasePlayer, 0.1, true);
 }
 
 void ADaybreakAIController::ChasePlayer() {
-	if (!pawn->GetAttacking()) {
-		EPathFollowingRequestResult::Type result = MoveToActor(playerActor, 10.0f, true, true, true, NULL, true);
-		if (result == EPathFollowingRequestResult::Type::AlreadyAtGoal) {
-			pawn->Attack();
-		}
+	MoveToActor(playerActor, 0.0f, true, true, true, NULL, true);
+	float capsuleRadius = 35;
+	float distance = (pawn->GetActorLocation() - playerActor->GetActorLocation()).Size() - capsuleRadius * 2;
+	if (distance < 25) {
+		pawn->Attack();
 	}
 }
