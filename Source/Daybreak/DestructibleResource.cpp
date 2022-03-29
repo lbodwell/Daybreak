@@ -19,6 +19,7 @@ ADestructibleResource::ADestructibleResource() {
 	DestructibleComponent->SetNotifyRigidBodyCollision(true);
 
 	IsDestroyed = false;
+	GotResources = false;
 
 	MaxHealth = 10.f;
 
@@ -45,32 +46,36 @@ void ADestructibleResource::Tick(float DeltaTime) {
 void ADestructibleResource::Damage(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
 	// GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange, __FUNCTION__);
 
-	if (Cast<ADaybreakCharacter>(OtherActor)) {
-
-		UWorld* WorldRef = GetWorld();
-		ADaybreakCharacter* CharacterRef = Cast<ADaybreakCharacter>(OtherActor);
-
-		if (CharacterRef) {
-			CharacterRef->DarkStone += 10;
-		}
-	}
-
-	// ADaybreakCharacter::DarkStone += 10;
-
-
-	// Adjust this using math and the sword to ensure the player can only mine when the sword hits the resource.
-	if (!IsDestroyed && OtherComp->ComponentHasTag("Weapon")) {
+	if (!IsDestroyed) {//&& OtherComp->ComponentHasTag("Weapon")) {
 		CurrentHealth -= 1.f;
 
+		if (Cast<ADaybreakCharacter>(OtherActor)) {
+			OtherActorRef = OtherActor;
+		}
+
 		if (CurrentHealth <= 0.f) {
-			Destroy();
+			Destroy(DefaultDamage, Hit.Location, NormalImpulse, DefaultImpulse);
 		}
 	}
-
 }
 
 // Called whenever the destructible resource is completely destroyed
-void ADestructibleResource::Destroy() {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, __FUNCTION__);
+void ADestructibleResource::Destroy(float Damage, FVector HitLocation, FVector ImpulseDir, float Impulse) {
+	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, __FUNCTION__);
+
+	if (!IsDestroyed) {
+		IsDestroyed = true;
+
+		if (!GotResources) {
+			ADaybreakCharacter* CharacterRef = Cast<ADaybreakCharacter>(OtherActorRef);
+
+			if (CharacterRef) {
+				CharacterRef->DarkStone += 100;
+				GotResources = true;
+			}
+		}
+
+		//DestructibleComponent->ApplyDamage(Damage, HitLocation, ImpulseDir, Impulse);
+	}
 }
 

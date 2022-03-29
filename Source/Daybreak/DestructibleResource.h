@@ -19,13 +19,19 @@ public:
 	UFUNCTION()
 		void Damage(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	UFUNCTION()
-		void Destroy();
+		void Destroy(float Damage, FVector HitLocation, FVector ImpulseDir, float Impulse);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Destructible)
 		class UDestructibleComponent* DestructibleComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Destructible)
 		bool IsDestroyed;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Destructible)
+		bool GotResources;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Destructible)
+		AActor* OtherActorRef;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Destructible)
 		float MaxHealth;
