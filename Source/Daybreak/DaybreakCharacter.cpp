@@ -26,6 +26,8 @@ ADaybreakCharacter::ADaybreakCharacter() {
     Attacking = false;
     lastAttack = 1;
 	TurningVelocity = 0;
+	BaseHealth = 100;
+	Health = BaseHealth;
 
     // Don't rotate when the controller rotates. Let that just affect the camera.
     bUseControllerRotationPitch = false;
@@ -205,6 +207,13 @@ void ADaybreakCharacter::Exit() {
 	if (UpgradeMenu != nullptr) {
 		UpgradeMenu->RemoveFromViewport();
 		UpgradeMenu = nullptr;
+	}
+}
+
+void ADaybreakCharacter::ReceiveDamage(int amount) {
+	if (Health > 0) {
+		Health -= amount;
+		UE_LOG(LogTemp, Warning, TEXT("Taking %d damage. Current Health is: %d"), amount, Health);
 	}
 }
 

@@ -62,6 +62,9 @@ public:
 	/** Player sword object for blueprints. */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=Weapons)
     ADaybreakSword* Sword;
+
+	UFUNCTION(BlueprintCallable)
+	void ReceiveDamage(int amount);
 	
 	/** Player sword object for C++. */
 	ADaybreakSword* GetSword();
@@ -132,4 +135,5 @@ protected:
     virtual void SetupPlayerInputComponent(class UInputComponent* playerInputComponent) override;
 	
 	UInputComponent* PlayerInputComponent;
+
 };
