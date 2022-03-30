@@ -23,12 +23,16 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
     UAnimMontage* HitReactionMontage;
-	
+
 	/** Whether enemy is currently attacking and should not be able to attack again yet. */
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
 	bool Attacking;
-	
+
 	bool canReceiveDamage;
+	bool IsAlive;
+
+	void KillCharacter(float CorpsePersistanceTime);
+	void DestroyCharacter();
 
 public:	
 	void Attack();

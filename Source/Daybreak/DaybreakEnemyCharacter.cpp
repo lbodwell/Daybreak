@@ -10,6 +10,7 @@ ADaybreakEnemyCharacter::ADaybreakEnemyCharacter() {
 	Health = 20;
 	canReceiveDamage = true;
 	Attacking = false;
+	IsAlive = true;
 }
 
 // Called when the game starts or when spawned
@@ -38,16 +39,16 @@ void ADaybreakEnemyCharacter::Attack() {
 
 void ADaybreakEnemyCharacter::ReceiveDamage(int DamageAmount) {
 	if (!canReceiveDamage) return;
-	
+
 	Health -= DamageAmount;
 
-	if (Health <= 0) {
-		Destroy();
+	if (Health <= 0 && IsAlive) {
+        KillCharacter(5.f);
 	} else {
 		if (HitReactionMontage) {
 			PlayAnimMontage(HitReactionMontage, 1, NAME_None);
 		}
-		
+
 		canReceiveDamage = false;
 		FTimerHandle timerHandle;
 		GetWorld()->GetTimerManager().SetTimer(timerHandle, [&]() { canReceiveDamage = true; }, 0.2, false, 0.2);
@@ -56,4 +57,21 @@ void ADaybreakEnemyCharacter::ReceiveDamage(int DamageAmount) {
 
 bool ADaybreakEnemyCharacter::GetAttacking() {
 	return Attacking;
+}
+
+void ADaybreakEnemyCharacter::KillCharacter(float CorpsePersistanceTime) {
+	UE_LOG(LogTemp, Warning, TEXT("Killing enemy in 5 seconds"));
+	IsAlive = false;
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ADaybreakEnemyCharacter::DestroyCharacter, 0.1, false, CorpsePersistanceTime);
+
+	GetController()->UnPossess();
+	GetMesh()->SetSimulatePhysics(true);
+
+	((UPrimitiveComponent*)GetRootComponent())->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+}
+
+void ADaybreakEnemyCharacter::DestroyCharacter() {
+	UE_LOG(LogTemp, Warning, TEXT("Destroying Enemy"));
+	Destroy();
 }
