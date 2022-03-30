@@ -13,6 +13,8 @@ class DAYBREAK_API ADaybreakEnemyCharacter : public ACharacter {
 public:
 	// Sets default values for this character's properties
 	ADaybreakEnemyCharacter();
+	
+	bool IsAlive;
 
 protected:
 	// Called when the game starts or when spawned
@@ -29,7 +31,6 @@ protected:
 	bool Attacking;
 
 	bool canReceiveDamage;
-	bool IsAlive;
 
 	void KillCharacter(float CorpsePersistanceTime);
 	void DestroyCharacter();

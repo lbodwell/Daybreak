@@ -43,7 +43,7 @@ void ADaybreakEnemyCharacter::ReceiveDamage(int DamageAmount) {
 	Health -= DamageAmount;
 
 	if (Health <= 0 && IsAlive) {
-        KillCharacter(5.f);
+        KillCharacter(60.f);
 	} else {
 		if (HitReactionMontage) {
 			PlayAnimMontage(HitReactionMontage, 1, NAME_None);
@@ -60,7 +60,6 @@ bool ADaybreakEnemyCharacter::GetAttacking() {
 }
 
 void ADaybreakEnemyCharacter::KillCharacter(float CorpsePersistanceTime) {
-	UE_LOG(LogTemp, Warning, TEXT("Killing enemy in 5 seconds"));
 	IsAlive = false;
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ADaybreakEnemyCharacter::DestroyCharacter, 0.1, false, CorpsePersistanceTime);
@@ -72,6 +71,5 @@ void ADaybreakEnemyCharacter::KillCharacter(float CorpsePersistanceTime) {
 }
 
 void ADaybreakEnemyCharacter::DestroyCharacter() {
-	UE_LOG(LogTemp, Warning, TEXT("Destroying Enemy"));
 	Destroy();
 }
