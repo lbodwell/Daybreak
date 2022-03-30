@@ -44,6 +44,10 @@ void ADaybreakEnemyCharacter::ReceiveDamage(int DamageAmount) {
 	if (Health <= 0) {
 		Destroy();
 	} else {
+		if (HitReactionMontage) {
+			PlayAnimMontage(HitReactionMontage, 1, NAME_None);
+		}
+		
 		canReceiveDamage = false;
 		FTimerHandle timerHandle;
 		GetWorld()->GetTimerManager().SetTimer(timerHandle, [&]() { canReceiveDamage = true; }, 0.2, false, 0.2);
