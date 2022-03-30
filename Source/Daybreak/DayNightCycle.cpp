@@ -45,7 +45,7 @@ void ADayNightCycle::Tick(float DeltaTime){
 }
 
 void ADayNightCycle::AdvanceTime(float Angle) {
-	if (LightSource != NULL && Sun != NULL) {
+	if (LightSource != nullptr && Sun != nullptr) {
 		// Used for calling blueprint functions.
 		FOutputDeviceNull outDevice;
 		// Apply local rotation to light source pitch. Angle needs to be negative to go in the right direction.
