@@ -41,8 +41,6 @@ void UDaybreakUpgradeMenu::StartUpgrading() {
 		if (isUpgrading) {
 			UpgradeProgress += 0.01;
 			if (UpgradeProgress >= 1) {
-				StopUpgrading();
-				GetWorld()->GetTimerManager().ClearTimer(upgradeTimerHandle);
 				player->GetSword()->Upgrade();
 				UpdateUI();
 				UpgradeProgress = 0;
