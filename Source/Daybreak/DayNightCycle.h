@@ -39,7 +39,7 @@ public:
 	ADirectionalLight* Moon;
 	
 	// The current rotation of the sun in degrees (0-180 for night, 180-360 for day).
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Sky)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sky)
 	float CurrentRotation;
 
 	// Ttrue if it the sun's current rotation indicates that it is daytime and false if it is night-time.
