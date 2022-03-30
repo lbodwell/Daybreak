@@ -42,12 +42,10 @@ void ADaybreakSword::Attack(class AActor* overlappedActor, class AActor* otherAc
 	if (otherActor != nullptr && otherActor != this) {
 		ADaybreakEnemyCharacter* enemy = Cast<ADaybreakEnemyCharacter>(otherActor);
 		if (enemy != nullptr && IsAttacking) {
-			// CurrentLevel.Damage is 0 for some reason?
-			//enemy->ReceiveDamage(CurrentLevel.Damage);
-			enemy->ReceiveDamage(10);
+			enemy->ReceiveDamage(10 + CurrentLevel.Damage * 10);
 		}
 	}
 }
 
 void ADaybreakSword::UpdateEffect_Implementation() {
- } 
+}
