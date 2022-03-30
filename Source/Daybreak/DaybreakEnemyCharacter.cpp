@@ -7,7 +7,7 @@
 ADaybreakEnemyCharacter::ADaybreakEnemyCharacter() {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	Health = 30;
+	Health = 20;
 	Attacking = false;
 }
 
@@ -37,11 +37,10 @@ void ADaybreakEnemyCharacter::Attack() {
 
 void ADaybreakEnemyCharacter::ReceiveDamage(int DamageAmount) {
 	Health -= DamageAmount;
-
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::FromInt(Health));
+	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::FromInt(Health));
 
 	if (Health <= 0) {
-		this->Destroy();
+		Destroy();
 	}
 }
 
