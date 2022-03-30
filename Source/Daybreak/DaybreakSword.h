@@ -66,14 +66,14 @@ public:
 	FSwordLevel CurrentLevel;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	bool IsAttacking;
+	bool Hitting;
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void UpdateEffect();
 
 	UFUNCTION()
 	void Attack(class AActor* overlappedActor, class AActor* otherActor);
-	
+		
 	TArray<struct FSwordLevel> Levels;
 	
 	void Upgrade();

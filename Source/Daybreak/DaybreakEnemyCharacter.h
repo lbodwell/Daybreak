@@ -13,6 +13,8 @@ class DAYBREAK_API ADaybreakEnemyCharacter : public ACharacter {
 public:
 	// Sets default values for this character's properties
 	ADaybreakEnemyCharacter();
+	
+	bool IsAlive;
 
 protected:
 	// Called when the game starts or when spawned
@@ -21,9 +23,17 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
     UAnimMontage* AttackMontage;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
+    UAnimMontage* HitReactionMontage;
+
 	/** Whether enemy is currently attacking and should not be able to attack again yet. */
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
 	bool Attacking;
+
+	bool canReceiveDamage;
+
+	void KillCharacter(float CorpsePersistanceTime);
+	void DestroyCharacter();
 
 public:	
 	void Attack();

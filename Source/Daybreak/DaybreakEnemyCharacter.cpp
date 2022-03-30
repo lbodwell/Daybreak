@@ -8,7 +8,9 @@ ADaybreakEnemyCharacter::ADaybreakEnemyCharacter() {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	Health = 20;
+	canReceiveDamage = true;
 	Attacking = false;
+	IsAlive = true;
 }
 
 // Called when the game starts or when spawned
@@ -36,14 +38,38 @@ void ADaybreakEnemyCharacter::Attack() {
 }
 
 void ADaybreakEnemyCharacter::ReceiveDamage(int DamageAmount) {
-	Health -= DamageAmount;
-	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::FromInt(Health));
+	if (!canReceiveDamage) return;
 
-	if (Health <= 0) {
-		Destroy();
+	Health -= DamageAmount;
+
+	if (Health <= 0 && IsAlive) {
+        KillCharacter(60.f);
+	} else {
+		if (HitReactionMontage) {
+			PlayAnimMontage(HitReactionMontage, 1, NAME_None);
+		}
+
+		canReceiveDamage = false;
+		FTimerHandle timerHandle;
+		GetWorld()->GetTimerManager().SetTimer(timerHandle, [&]() { canReceiveDamage = true; }, 0.2, false, 0.2);
 	}
 }
 
 bool ADaybreakEnemyCharacter::GetAttacking() {
 	return Attacking;
+}
+
+void ADaybreakEnemyCharacter::KillCharacter(float CorpsePersistanceTime) {
+	IsAlive = false;
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ADaybreakEnemyCharacter::DestroyCharacter, 0.1, false, CorpsePersistanceTime);
+
+	GetController()->UnPossess();
+	GetMesh()->SetSimulatePhysics(true);
+
+	((UPrimitiveComponent*)GetRootComponent())->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+}
+
+void ADaybreakEnemyCharacter::DestroyCharacter() {
+	Destroy();
 }

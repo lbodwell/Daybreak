@@ -21,11 +21,11 @@ void ADaybreakAIController::BeginPlay() {
 }
 
 void ADaybreakAIController::ChasePlayer() {
-	if (pawn != nullptr) {
+	if (pawn != nullptr && pawn->IsAlive && playerActor != nullptr) {
 		MoveToActor(playerActor, 0.0f, true, true, true, NULL, true);
 		float capsuleRadius = 35;
 		float distance = (pawn->GetActorLocation() - playerActor->GetActorLocation()).Size() - capsuleRadius * 2;
-		if (distance < 25) {
+		if (distance < 40) {
 		  pawn->Attack();
 		}
 	}

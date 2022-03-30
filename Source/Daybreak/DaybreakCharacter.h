@@ -39,6 +39,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
 	bool Attacking;
 	
+	/** Whether player is currently hitting and enemies should receive damage. */
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
+	bool Hitting;
+	
 	/** Directional turning speed. */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=State)
     float TurningVelocity;

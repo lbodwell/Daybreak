@@ -70,7 +70,7 @@ void ADaybreakCharacter::Tick(float DeltaTime) {
 
 	// This can probably be event-based and not happen on every tick
 	if (Sword != nullptr) {
-		Sword->IsAttacking = Attacking;
+		Sword->Hitting = Hitting;
 	}
 }
 
