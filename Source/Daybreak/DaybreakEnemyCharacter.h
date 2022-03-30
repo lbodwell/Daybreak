@@ -24,6 +24,8 @@ protected:
 	/** Whether enemy is currently attacking and should not be able to attack again yet. */
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
 	bool Attacking;
+	
+	bool canReceiveDamage;
 
 public:	
 	void Attack();
