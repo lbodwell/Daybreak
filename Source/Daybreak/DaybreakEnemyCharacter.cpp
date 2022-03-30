@@ -9,6 +9,7 @@ ADaybreakEnemyCharacter::ADaybreakEnemyCharacter() {
 	PrimaryActorTick.bCanEverTick = true;
 	Health = 20;
 	Attacking = false;
+	IsAlive = true;
 }
 
 // Called when the game starts or when spawned
@@ -39,11 +40,28 @@ void ADaybreakEnemyCharacter::ReceiveDamage(int DamageAmount) {
 	Health -= DamageAmount;
 	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::FromInt(Health));
 
-	if (Health <= 0) {
-		Destroy();
+	if (Health <= 0 && IsAlive) {
+		KillCharacter(5.f);
 	}
 }
 
 bool ADaybreakEnemyCharacter::GetAttacking() {
 	return Attacking;
+}
+
+void ADaybreakEnemyCharacter::KillCharacter(float CorpsePersistanceTime) {
+	UE_LOG(LogTemp, Warning, TEXT("Killing enemy in 5 seconds"));
+	IsAlive = false;
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ADaybreakEnemyCharacter::DestroyCharacter, 0.1, false, CorpsePersistanceTime);
+
+	GetController()->UnPossess();
+	GetMesh()->SetSimulatePhysics(true);
+
+	((UPrimitiveComponent*)GetRootComponent())->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+}
+
+void ADaybreakEnemyCharacter::DestroyCharacter() {
+	UE_LOG(LogTemp, Warning, TEXT("Destroying Enemy"));
+	Destroy();
 }
