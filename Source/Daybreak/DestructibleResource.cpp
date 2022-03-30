@@ -46,24 +46,24 @@ void ADestructibleResource::Tick(float DeltaTime) {
 void ADestructibleResource::Damage(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
 	// GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange, __FUNCTION__);
 
-	if (!IsDestroyed) {//&& OtherComp->ComponentHasTag("Weapon")) {
-		CurrentHealth -= 1.f;
+	//if (!IsDestroyed) {
+	//	CurrentHealth -= 1.f;
 
-		if (Cast<ADaybreakCharacter>(OtherActor)) {
-			OtherActorRef = OtherActor;
-		}
+	//	if (Cast<ADaybreakCharacter>(OtherActor)) {
+	//		OtherActorRef = OtherActor;
+	//	}
 
-		if (CurrentHealth <= 0.f) {
-			Destroy(DefaultDamage, Hit.Location, NormalImpulse, DefaultImpulse);
-		}
-	}
+	//	if (CurrentHealth <= 0.f) {
+	//		Destroy(DefaultDamage, Hit.Location, NormalImpulse, DefaultImpulse);
+	//	}
+	//}
 }
 
 // Called whenever the destructible resource is completely destroyed
 void ADestructibleResource::Destroy(float Damage, FVector HitLocation, FVector ImpulseDir, float Impulse) {
 	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, __FUNCTION__);
 
-	if (!IsDestroyed) {
+	/*if (!IsDestroyed) {
 		IsDestroyed = true;
 
 		if (!GotResources) {
@@ -75,7 +75,7 @@ void ADestructibleResource::Destroy(float Damage, FVector HitLocation, FVector I
 			}
 		}
 
-		//DestructibleComponent->ApplyDamage(Damage, HitLocation, ImpulseDir, Impulse);
-	}
+		DestructibleComponent->ApplyDamage(Damage, HitLocation, ImpulseDir, Impulse);
+	}*/
 }
 

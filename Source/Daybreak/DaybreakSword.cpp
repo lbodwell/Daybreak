@@ -2,6 +2,8 @@
 
 
 #include "DaybreakSword.h"
+#include "DaybreakCharacter.h"
+#include <Engine.h>
 
 // Sets default values
 ADaybreakSword::ADaybreakSword() {
@@ -41,8 +43,29 @@ void ADaybreakSword::Upgrade() {
 void ADaybreakSword::Attack(class AActor* overlappedActor, class AActor* otherActor) {
 	if (otherActor != nullptr && otherActor != this) {
 		ADaybreakEnemyCharacter* enemy = Cast<ADaybreakEnemyCharacter>(otherActor);
+		ADestructibleResource* resource = Cast<ADestructibleResource>(otherActor);
 		if (enemy != nullptr && Hitting) {
 			enemy->ReceiveDamage(10 + CurrentLevel.Damage * 10);
+		}
+
+		// If sword hits a resource depost...
+		if (resource != nullptr && Hitting) {
+
+			// Locate the player (Should move outside later for optimization)
+			TSubclassOf<ADaybreakCharacter> classToFind;
+			classToFind = ADaybreakCharacter::StaticClass();
+			TArray<AActor*> foundCharacter;
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), classToFind, foundCharacter);
+			AActor** CharPtr = foundCharacter.GetData();
+			ADaybreakCharacter* player = Cast<ADaybreakCharacter>(CharPtr[0]);
+
+			// Add DarkStone
+			if (player != nullptr) {
+				player->DarkStone += 100;
+			}
+
+			// Change to DestructibleResource stuff later
+			resource->ConditionalBeginDestroy();
 		}
 	}
 }
