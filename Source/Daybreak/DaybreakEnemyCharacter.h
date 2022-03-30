@@ -34,7 +34,7 @@ protected:
 	bool canReceiveDamage;
 	bool canGiveDamage;
 
-	void KillCharacter(float CorpsePersistanceTime);
+	void KillCharacter(float CorpsePersistenceTime);
 	void DestroyCharacter();
 
 	ADaybreakCharacter* player;

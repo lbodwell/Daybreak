@@ -132,7 +132,15 @@ protected:
 	UPrimitiveComponent* interactableOutline;
 	void SphereTraceForInteractables();
 
+	/**Removes the controller and ragdolls the player */
+	void KillPlayer(float CorpsePersistenceTime);
+
+	/**Destroys the player and exits the game */
+	void DestroyPlayer();
+
     virtual void SetupPlayerInputComponent(class UInputComponent* playerInputComponent) override;
+
+	FTimerHandle InteractableSphereTraceTimerHandle;
 	
 	UInputComponent* PlayerInputComponent;
 

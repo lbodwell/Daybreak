@@ -64,9 +64,9 @@ void ADaybreakEnemyCharacter::ReceiveDamage(int DamageAmount) {
 	if (Health <= 0 && IsAlive) {
         KillCharacter(60.f);
 	} else {
-		//if (HitReactionMontage) {
-			//PlayAnimMontage(HitReactionMontage, 1, NAME_None);
-		//}
+		if (HitReactionMontage) {
+			PlayAnimMontage(HitReactionMontage, 1, NAME_None);
+		}
 
 		canReceiveDamage = false;
 		FTimerHandle timerHandle;
@@ -78,10 +78,10 @@ bool ADaybreakEnemyCharacter::GetAttacking() {
 	return Attacking;
 }
 
-void ADaybreakEnemyCharacter::KillCharacter(float CorpsePersistanceTime) {
+void ADaybreakEnemyCharacter::KillCharacter(float CorpsePersistenceTime) {
 	IsAlive = false;
 	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ADaybreakEnemyCharacter::DestroyCharacter, 0.1, false, CorpsePersistanceTime);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ADaybreakEnemyCharacter::DestroyCharacter, 0.1, false, CorpsePersistenceTime);
 
 	GetController()->UnPossess();
 	GetMesh()->SetSimulatePhysics(true);

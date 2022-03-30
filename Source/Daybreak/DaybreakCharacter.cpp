@@ -62,8 +62,7 @@ void ADaybreakCharacter::BeginPlay() {
 	Sword->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName(TEXT("WeaponSocket")));
 	
 	// start sphere tracing for interactables
-	FTimerHandle timerHandle;
-	GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &ADaybreakCharacter::SphereTraceForInteractables, 0.25, true);
+	GetWorld()->GetTimerManager().SetTimer(InteractableSphereTraceTimerHandle, this, &ADaybreakCharacter::SphereTraceForInteractables, 0.25, true);
 }
 
 // Called ever frame
@@ -211,11 +210,37 @@ void ADaybreakCharacter::Exit() {
 }
 
 void ADaybreakCharacter::ReceiveDamage(int amount) {
-	if (Health > 0) {
-		Health -= amount;
-		UE_LOG(LogTemp, Warning, TEXT("Taking %d damage. Current Health is: %d"), amount, Health);
+	Health -= amount;
+
+	if (Health <= 0) {
+		KillPlayer(0.2);
 	}
 }
+
+void ADaybreakCharacter::KillPlayer(float CorpsePersistenceTime) {
+
+	GetWorldTimerManager().ClearTimer(InteractableSphereTraceTimerHandle);
+
+	//This makes the player fall throught the world for some reason
+	/*
+	GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	GetController()->UnPossess();
+	
+	GetMesh()->SetSimulatePhysics(true);
+	*/
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ADaybreakCharacter::DestroyPlayer, 0.1, false, CorpsePersistenceTime);
+	
+}
+
+void ADaybreakCharacter::DestroyPlayer() {
+	//Destroy();
+
+	//Quit the game
+	//FGenericPlatformMisc::RequestExit(false);
+}
+
 
 // --- TIMERS --- //
 
