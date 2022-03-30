@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "DaybreakEnemyCharacter.h"
 #include <vector>
 #include "DaybreakSword.generated.h"
 
@@ -63,9 +64,15 @@ public:
 	
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	FSwordLevel CurrentLevel;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	bool IsAttacking;
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void UpdateEffect();
+
+	UFUNCTION()
+	void Attack(class AActor* overlappedActor, class AActor* otherActor);
 	
 	TArray<struct FSwordLevel> Levels;
 	

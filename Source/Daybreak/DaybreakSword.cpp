@@ -16,6 +16,9 @@ ADaybreakSword::ADaybreakSword() {
 	Levels.Emplace(5, "The Sword of Darkosius", FLinearColor(1, 1, 1, 1), 1, 1, 1, 2400);
 	
 	CurrentLevel = Levels[0];
+
+	OnActorBeginOverlap.AddDynamic(this, &ADaybreakSword::Attack);
+	IsAttacking = false;
 }
 
 // Called when the game starts or when spawned
@@ -32,6 +35,17 @@ void ADaybreakSword::Upgrade() {
 	if (CurrentLevel.Index < 5) {
 		CurrentLevel = Levels[CurrentLevel.Index + 1];
 		UpdateEffect();
+	}
+}
+
+void ADaybreakSword::Attack(class AActor* overlappedActor, class AActor* otherActor) {
+	if (otherActor != nullptr && otherActor != this) {
+		ADaybreakEnemyCharacter* enemy = Cast<ADaybreakEnemyCharacter>(otherActor);
+		if (enemy != nullptr && IsAttacking) {
+			// CurrentLevel.Damage is 0 for some reason?
+			//enemy->ReceiveDamage(CurrentLevel.Damage);
+			enemy->ReceiveDamage(10);
+		}
 	}
 }
 
