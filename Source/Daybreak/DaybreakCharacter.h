@@ -30,6 +30,8 @@ class ADaybreakCharacter : public ACharacter {
 public:
     ADaybreakCharacter();
 
+	virtual void Tick(float DeltaTime) override;
+
     float BaseTurnRate;
     float BaseLookUpRate;
 
