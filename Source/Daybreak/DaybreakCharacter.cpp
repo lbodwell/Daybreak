@@ -64,6 +64,16 @@ void ADaybreakCharacter::BeginPlay() {
 	GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &ADaybreakCharacter::SphereTraceForInteractables, 0.25, true);
 }
 
+// Called ever frame
+void ADaybreakCharacter::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
+
+	// This can probably be event-based and not happen on every tick
+	if (Sword != nullptr) {
+		Sword->Hitting = Hitting;
+	}
+}
+
 // --- MOVEMENT INPUT --- //
 
 void ADaybreakCharacter::SetupPlayerInputComponent(class UInputComponent* playerInputComponent) {

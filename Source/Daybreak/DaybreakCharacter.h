@@ -30,12 +30,18 @@ class ADaybreakCharacter : public ACharacter {
 public:
     ADaybreakCharacter();
 
+	virtual void Tick(float DeltaTime) override;
+
     float BaseTurnRate;
     float BaseLookUpRate;
 
     /** Whether player is currently attacking and should not be able to attack again yet. */
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
 	bool Attacking;
+	
+	/** Whether player is currently hitting and enemies should receive damage. */
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
+	bool Hitting;
 	
 	/** Directional turning speed. */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=State)
