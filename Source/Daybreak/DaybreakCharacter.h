@@ -4,69 +4,126 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "DaybreakSword.h"
 #include "DaybreakCharacter.generated.h"
 
 UCLASS(config=Game)
-class ADaybreakCharacter : public ACharacter
-{
-	GENERATED_BODY()
+class ADaybreakCharacter : public ACharacter {
+    GENERATED_BODY()
 
-	/** Camera boom positioning the camera behind the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
+    virtual void BeginPlay() override;
 
-	/** Follow camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* FollowCamera;
-public:
-	ADaybreakCharacter();
+    /** Camera boom positioning the camera behind the character */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+    class USpringArmComponent* CameraBoom;
 
-	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
-	float BaseTurnRate;
-
-	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
-	float BaseLookUpRate;
-
-protected:
-
-	/** Resets HMD orientation in VR. */
-	void OnResetVR();
-
-	/** Called for forwards/backward input */
-	void MoveForward(float Value);
-
-	/** Called for side to side input */
-	void MoveRight(float Value);
-
-	/** 
-	 * Called via input to turn at a given rate. 
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
-	void TurnAtRate(float Rate);
-
-	/**
-	 * Called via input to turn look up/down at a given rate. 
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
-	void LookUpAtRate(float Rate);
-
-	/** Handler for when a touch input begins. */
-	void TouchStarted(ETouchIndex::Type FingerIndex, FVector Location);
-
-	/** Handler for when a touch input stops. */
-	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
-
-protected:
-	// APawn interface
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	// End of APawn interface
-
-public:
+    /** Follow camera */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+    class UCameraComponent* FollowCamera;
+	
 	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-};
+    FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	
+    /** Returns FollowCamera subobject **/
+    FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+public:
+    ADaybreakCharacter();
+
+    float BaseTurnRate;
+    float BaseLookUpRate;
+
+    /** Whether player is currently attacking and should not be able to attack again yet. */
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
+	bool Attacking;
+	
+	/** Directional turning speed. */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=State)
+    float TurningVelocity;
+	
+	/** Player base health at full. */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category=State)
+    float BaseHealth;
+	
+	/** Player health currently. */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category=State)
+    float Health;
+	
+	/** Player Dark Stone storage. */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category=State)
+    float DarkStone;
+	
+	/** Player sword object for blueprints. */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=Weapons)
+    ADaybreakSword* Sword;
+	
+	/** Player sword object for C++. */
+	ADaybreakSword* GetSword();
+	
+	UInputComponent* GetPlayerInputComponent();
+
+protected:
+
+	/**  Upgrade menu widget class. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Widgets)
+    TSubclassOf<class UUserWidget> UpgradeMenuWidget;
+	
+	/**  Upgrade menu widget object reference. */
+	UUserWidget* UpgradeMenu;
+	
+	/** Montages to play for attacking. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
+    UAnimMontage* AttackLeftMontage;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
+    UAnimMontage* AttackRightMontage;
+	
+	/** Sword actor class. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapons)
+	TSubclassOf<class AActor> SwordActor;
+	
+	/** Called to start and stop sprinting */
+    bool sprinting;
+    void StartSprinting();
+    void StopSprinting();
+	
+	/** Called for attacking with sword. */
+    int lastAttack;
+    void Attack();
+	
+	/** Called for interacting with objects and exiting menus. */
+	void Interact();
+	void Exit();
+	
+	/** Called for jumping. */
+	void StartJumping();
+	
+	/** Called for yaw input. */
+	void Turn(float Value);
+	
+	/** Called for pitch input. */
+	void LookUp(float Value);
+
+    /** Called for forwards/backward input. */
+    float moveForwardValue;
+    void MoveForward(float Value);
+
+    /** Called for side to side input. */
+    float moveRightValue;
+    void MoveRight(float Value);
+
+    /** Calculates max walk speed for movement. */
+    void CalculateMoveSpeed();
+	
+	/**  Checks if input is enabled (disabled while a menu is open) */
+	bool InputEnabled();
+	
+	/** Sphere traces for Interactable objects and outlines them */
+	AActor* interactable;
+	UPrimitiveComponent* interactableOutline;
+	void SphereTraceForInteractables();
+
+    virtual void SetupPlayerInputComponent(class UInputComponent* playerInputComponent) override;
+	
+	UInputComponent* PlayerInputComponent;
+};
