@@ -2,6 +2,7 @@
 
 
 #include "DaybreakSword.h"
+#include "DaybreakEnemyCharacter.h"
 
 // Sets default values
 ADaybreakSword::ADaybreakSword() {

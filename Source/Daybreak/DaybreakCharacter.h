@@ -62,6 +62,9 @@ public:
 	/** Player sword object for blueprints. */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=Weapons)
     ADaybreakSword* Sword;
+
+	UFUNCTION(BlueprintCallable)
+	void ReceiveDamage(int amount);
 	
 	/** Player sword object for C++. */
 	ADaybreakSword* GetSword();
@@ -129,7 +132,16 @@ protected:
 	UPrimitiveComponent* interactableOutline;
 	void SphereTraceForInteractables();
 
+	/**Removes the controller and ragdolls the player */
+	void KillPlayer(float CorpsePersistenceTime);
+
+	/**Destroys the player and exits the game */
+	void DestroyPlayer();
+
     virtual void SetupPlayerInputComponent(class UInputComponent* playerInputComponent) override;
+
+	FTimerHandle InteractableSphereTraceTimerHandle;
 	
 	UInputComponent* PlayerInputComponent;
+
 };
