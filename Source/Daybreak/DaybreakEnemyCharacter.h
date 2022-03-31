@@ -16,7 +16,6 @@ public:
 	// Sets default values for this character's properties
 	ADaybreakEnemyCharacter();
 	
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -42,7 +41,7 @@ protected:
 public:	
 	void Attack();
 
-	UFUNCTION(BlueprintCallable, Category = Attack)
+	UFUNCTION(BlueprintCallable, Category=Attack)
 	void GiveDamage();
 	
 	bool GetAttacking();

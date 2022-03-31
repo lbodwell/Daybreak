@@ -43,9 +43,8 @@ void ADaybreakEnemyCharacter::Attack() {
 	}
 }
 
-//Called by AnimNotify::AttackFarthestReach in AnimBP
+// Called by AnimNotify::AttackFarthestReach in AnimBP
 void ADaybreakEnemyCharacter::GiveDamage() {
-
 	float capsuleRadius = 35;
 	float distance = (GetActorLocation() - player->GetActorLocation()).Size() - capsuleRadius * 2;
 	

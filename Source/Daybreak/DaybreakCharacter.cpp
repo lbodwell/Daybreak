@@ -12,6 +12,7 @@
 #include "DaybreakGameMode.h"
 #include "Blueprint/UserWidget.h"
 #include "DrawDebugHelpers.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 
 ADaybreakCharacter::ADaybreakCharacter() {
@@ -211,14 +212,13 @@ void ADaybreakCharacter::Exit() {
 
 void ADaybreakCharacter::ReceiveDamage(int amount) {
 	Health -= amount;
-
+	
 	if (Health <= 0) {
 		KillPlayer(0.2);
 	}
 }
 
 void ADaybreakCharacter::KillPlayer(float CorpsePersistenceTime) {
-
 	GetWorldTimerManager().ClearTimer(InteractableSphereTraceTimerHandle);
 
 	//This makes the player fall throught the world for some reason
@@ -230,15 +230,12 @@ void ADaybreakCharacter::KillPlayer(float CorpsePersistenceTime) {
 	*/
 
 	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ADaybreakCharacter::DestroyPlayer, 0.1, false, CorpsePersistenceTime);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ADaybreakCharacter::Destroy, 0.1, false, CorpsePersistenceTime);
 	
 }
 
-void ADaybreakCharacter::DestroyPlayer() {
-	//Destroy();
-
-	//Quit the game
-	//FGenericPlatformMisc::RequestExit(false);
+void ADaybreakCharacter::Destroy() {
+	UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Type::Quit, false);
 }
 
 
