@@ -19,8 +19,9 @@ public:
 
 	UFUNCTION()
 		void Damage(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-	UFUNCTION()
-		void Destroy(float Damage, FVector HitLocation, FVector ImpulseDir, float Impulse);
+	
+	void Destroy(float Damage, FVector HitLocation, FVector ImpulseDir, float Impulse);
+	void Destroy();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Destructible)
 		class UDestructibleComponent* DestructibleComponent;
@@ -45,6 +46,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Destructible)
 		float DefaultImpulse;
+		
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+		void Explode();
 
 protected:
 	// Called when the game starts or when spawned

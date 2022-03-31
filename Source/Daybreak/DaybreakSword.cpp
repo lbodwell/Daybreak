@@ -45,28 +45,15 @@ void ADaybreakSword::Attack(class AActor* overlappedActor, class AActor* otherAc
 	if (otherActor != nullptr && otherActor != this) {
 		ADaybreakEnemyCharacter* enemy = Cast<ADaybreakEnemyCharacter>(otherActor);
 		ADestructibleResource* resource = Cast<ADestructibleResource>(otherActor);
+		
+		// if sword hits an enemy
 		if (enemy != nullptr && Hitting) {
 			enemy->ReceiveDamage(10 + CurrentLevel.Damage * 10);
 		}
 
-		// If sword hits a resource depost...
+		// if sword hits a resource
 		if (resource != nullptr && Hitting) {
-
-			// Locate the player (Should move outside later for optimization)
-			TSubclassOf<ADaybreakCharacter> classToFind;
-			classToFind = ADaybreakCharacter::StaticClass();
-			TArray<AActor*> foundCharacter;
-			UGameplayStatics::GetAllActorsOfClass(GetWorld(), classToFind, foundCharacter);
-			AActor** CharPtr = foundCharacter.GetData();
-			ADaybreakCharacter* player = Cast<ADaybreakCharacter>(CharPtr[0]);
-
-			// Add DarkStone
-			if (player != nullptr) {
-				player->DarkStone += 100;
-			}
-
-			// Change to DestructibleResource stuff later
-			resource->ConditionalBeginDestroy();
+			resource->Destroy();
 		}
 	}
 }

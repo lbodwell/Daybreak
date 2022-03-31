@@ -36,7 +36,7 @@ protected:
 	void KillCharacter(float CorpsePersistenceTime);
 	void DestroyCharacter();
 
-	ADaybreakCharacter* player;
+	class ADaybreakCharacter* player;
 
 public:	
 	void Attack();
