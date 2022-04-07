@@ -15,27 +15,23 @@ public:
 	void enter(ADaybreakAIController* controller) {}
 	void run(ADaybreakAIController* controller);
 	void exit(ADaybreakAIController* controller) {}
-	static EnemyState& getInstance();
+	Idle() {}
 
 private:
-	Idle() {}
-	Idle(const Idle& other);
-	Idle& operator=(const Idle& other);
+
 };
 
 
 class DAYBREAK_API Patrol : public EnemyState
 {
 public:
-	void enter(ADaybreakAIController* controller) {}
+	void enter(ADaybreakAIController* controller);
 	void run(ADaybreakAIController* controller);
 	void exit(ADaybreakAIController* controller) {}
-	static EnemyState& getInstance();
+	Patrol() {}
 
 private:
-	Patrol() {}
-	Patrol(const Patrol& other);
-	Patrol& operator=(const Patrol& other);
+	FVector Destination;
 };
 
 
@@ -45,12 +41,10 @@ public:
 	void enter(ADaybreakAIController* controller) {}
 	void run(ADaybreakAIController* controller);
 	void exit(ADaybreakAIController* controller) {}
-	static EnemyState& getInstance();
+	ChasePlayer() {}
 
 private:
-	ChasePlayer() {}
-	ChasePlayer(const ChasePlayer& other);
-	ChasePlayer& operator=(const ChasePlayer& other);
+
 };
 
 
@@ -60,13 +54,10 @@ public:
 	void enter(ADaybreakAIController* controller) {}
 	void run(ADaybreakAIController* controller);
 	void exit(ADaybreakAIController* controller) {}
-	static EnemyState& getInstance();
+	Attack() {}
 
 private:
-	Attack() {}
 	Attack(const Attack& other);
 	Attack& operator=(const Attack& other);
 };
 
-//helper function
-float playerDistanceCheck(ADaybreakAIController* controller);
