@@ -59,7 +59,7 @@ FVector ADaybreakAIController::GetRandomNearbyLocation() {
 	CheckPawns();
 	pawn = Cast<ADaybreakEnemyCharacter>(GetPawn());
 	
-	return pawn->GetActorLocation() + FVector(FMath::RandRange(-500, 500), FMath::RandRange(-500, 500), 0);
+	return pawn->GetActorLocation() + FVector(FMath::RandRange(-2000, 2000), FMath::RandRange(-2000, 2000), 0);
 }
 
 void ADaybreakAIController::CheckPawns() {

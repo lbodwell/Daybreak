@@ -47,7 +47,7 @@ void Patrol::run(ADaybreakAIController* controller)
 
 	//otherwise move to random location, then idle
 	else {		
-		if (controller->MoveToLocation(Destination, 1.0f, true, true, true, true, NULL, true) == EPathFollowingRequestResult::AlreadyAtGoal) {
+		if (controller->MoveToLocation(Destination, 1.0f, true, true, true, true, NULL, true) == EPathFollowingRequestResult::AlreadyAtGoal || EPathFollowingRequestResult::Failed) {
 			controller->SetState(new Idle);
 		}
 		
