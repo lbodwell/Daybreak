@@ -25,9 +25,6 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	TArray<AActor*> SpawnFields;
 
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
-	ADayNightCycle* DayNightCycle;
-
 	FTimerHandle TimerHandle;
 
 	ACharacter* Player;

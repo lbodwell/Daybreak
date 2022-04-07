@@ -45,10 +45,8 @@ void AEnemySpawnController::SpawnActor()
 	}
 	
 
-
 	GetWorld()->SpawnActor<APawn>(EnemyToSpawn, Location, Rotation);
 	enemyCount++;
-	DayNightCycle->AdvanceTime(15);
 }
 
 AEnemySpawnField* AEnemySpawnController::GetRandomSpawnField()

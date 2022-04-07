@@ -31,6 +31,10 @@ protected:
 	
 	void SeekFromDegrees(float degrees);
 	
+	void RefreshMediaPlayer();
+	
+	int dayLengthSeconds;
+	
 	void UpdateDayNightIndicator();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Variables)
@@ -46,10 +50,4 @@ protected:
 	ADaybreakSword* sword;
 	
 	bool mediaPlayerReady;
-	
-	float lastRotation;
-	float lastRotationTime;
-	float rateOfRotation;
-	
-	void TrackRateOfRotation();
 };
