@@ -46,10 +46,4 @@ protected:
 	ADaybreakSword* sword;
 	
 	bool mediaPlayerReady;
-	
-	float lastRotation;
-	float lastRotationTime;
-	float rateOfRotation;
-	
-	void TrackRateOfRotation();
 };

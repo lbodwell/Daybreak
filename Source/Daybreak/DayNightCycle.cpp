@@ -44,3 +44,10 @@ void ADayNightCycle::SetRotation(float newRotation) {
 		CurrentRotation = newRotation;
 	}
 }
+
+float ADayNightCycle::GetDayLengthSecondsRemaining() {
+	float dayEnd = CurrentRotation <= 180 ? 180 : 360;
+	float remainingRotation = dayEnd - CurrentRotation;
+	
+	return remainingRotation / (tickRotation * (1 / tickRate));
+}

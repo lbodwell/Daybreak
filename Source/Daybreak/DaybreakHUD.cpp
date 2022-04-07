@@ -15,10 +15,6 @@ bool UDaybreakHUD::Initialize() {
 	
 	mediaPlayerReady = false;
 	
-	lastRotation = -1;
-	lastRotationTime = -1;
-	rateOfRotation = 0;
-	
 	return true;
 }
 
@@ -34,11 +30,7 @@ void UDaybreakHUD::NativeConstruct() {
 	
 	player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	
-	// track rate of rotation every 0.05 seconds
-	FTimerHandle timerHandle;
-	GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &UDaybreakHUD::TrackRateOfRotation, 0.05, true);
-	
-	// update day/night indicator every second
+	// update day/night indicator once a second
 	FTimerHandle timerHandle2;
 	GetWorld()->GetTimerManager().SetTimer(timerHandle2, this, &UDaybreakHUD::UpdateDayNightIndicator, 1, true);
 }
@@ -58,37 +50,17 @@ void UDaybreakHUD::SeekFromDegrees(float degrees) {
 	MediaPlayer ->Seek(FTimespan(0, 0, 0, seconds, milliseconds));
 }
 
-// track rate of rotation of DayNightController to update day/night rotator
-void UDaybreakHUD::TrackRateOfRotation() {
-	const float currentRotation = DayNightController->CurrentRotation;
-	
-	if (lastRotation != currentRotation) {
-		SeekFromDegrees(currentRotation);
-		const float currentTime = UGameplayStatics::GetRealTimeSeconds(GetWorld());
-		
-		// compute rate of rotation based on lastRotation and lastRotationTime
-		if (lastRotation > -1 && currentTime > 1) {
-			rateOfRotation = (currentRotation - lastRotation) / (currentTime - lastRotationTime);
-		}
-		
-		lastRotation = currentRotation;
-		lastRotationTime = UGameplayStatics::GetRealTimeSeconds(GetWorld());
-	}
-}
-
 // update day/night rotator text
-void UDaybreakHUD::UpdateDayNightIndicator() {
-	const float currentRotation = DayNightController->CurrentRotation;
-	const float currentTime = UGameplayStatics::GetRealTimeSeconds(GetWorld());
+void UDaybreakHUD::UpdateDayNightIndicator() { 
+	SeekFromDegrees(DayNightController->CurrentRotation);
 	
-	// estimated daylight remaining
-	if (currentRotation >= 180 && rateOfRotation > 0) {
-		const float timeEstimate = ((360 - lastRotation) / rateOfRotation) - (currentTime - lastRotationTime);
-		const int minutes = floor(timeEstimate / 60);
-		const int seconds = floor(timeEstimate - (minutes * 60));
+	// display minutes:seconds of daylight remaining
+	if (DayNightController->CurrentRotation >= 180) {
+		float seconds = DayNightController->GetDayLengthSecondsRemaining();
+		float minutes = seconds / 60;
 		DayNightText = FString::FromInt(minutes) + (seconds < 10 ? ":0" : ":") + FString::FromInt(seconds);
 	}
-	// enemy count remaining for nighttime
+	// display enemy count remaining for nighttime
 	else {
 		DayNightText = FString(TEXT("0"));
 	}
