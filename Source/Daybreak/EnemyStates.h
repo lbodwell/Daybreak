@@ -12,9 +12,9 @@
 class DAYBREAK_API Idle : public EnemyState
 {
 public:
-	void enter(DaybreakAIController* controller) {}
-	void transition(DaybreakAIController* controller);
-	void exit(DaybreakAIController* controller) {}
+	void enter(ADaybreakAIController* controller) {}
+	void run(ADaybreakAIController* controller);
+	void exit(ADaybreakAIController* controller) {}
 	static EnemyState& getInstance();
 
 private:
@@ -27,9 +27,9 @@ private:
 class DAYBREAK_API Patrol : public EnemyState
 {
 public:
-	void enter(DaybreakAIController* controller) {}
-	void transition(DaybreakAIController* controller);
-	void exit(DaybreakAIController* controller) {}
+	void enter(ADaybreakAIController* controller) {}
+	void run(ADaybreakAIController* controller);
+	void exit(ADaybreakAIController* controller) {}
 	static EnemyState& getInstance();
 
 private:
@@ -42,9 +42,9 @@ private:
 class DAYBREAK_API ChasePlayer : public EnemyState
 {
 public:
-	void enter(DaybreakAIController* controller) {}
-	void transition(DaybreakAIController* controller);
-	void exit(DaybreakAIController* controller) {}
+	void enter(ADaybreakAIController* controller) {}
+	void run(ADaybreakAIController* controller);
+	void exit(ADaybreakAIController* controller) {}
 	static EnemyState& getInstance();
 
 private:
@@ -57,9 +57,9 @@ private:
 class DAYBREAK_API Attack : public EnemyState
 {
 public:
-	void enter(DaybreakAIController* controller) {}
-	void transition(DaybreakAIController* controller);
-	void exit(DaybreakAIController* controller) {}
+	void enter(ADaybreakAIController* controller) {}
+	void run(ADaybreakAIController* controller);
+	void exit(ADaybreakAIController* controller) {}
 	static EnemyState& getInstance();
 
 private:

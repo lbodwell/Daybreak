@@ -2,6 +2,7 @@
 
 
 #include "DaybreakAIController.h"
+#include "EnemyStates.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 
@@ -10,6 +11,8 @@ ADaybreakAIController:: ADaybreakAIController() {
 
 void ADaybreakAIController::BeginPlay() {
 	Super::BeginPlay();
+
+	CurrentState = &Idle::getInstance();
 	
 	pawn = Cast<ADaybreakEnemyCharacter>(GetPawn());
 	
@@ -17,7 +20,17 @@ void ADaybreakAIController::BeginPlay() {
 	playerActor = Cast<AActor>(player);
 	
 	FTimerHandle timerHandle;
-	GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &ADaybreakAIController::ChasePlayer, 0.1, true);
+	GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &ADaybreakAIController::RunState, 0.1, true);
+}
+
+void ADaybreakAIController::SetState(EnemyState& newState) {
+	CurrentState->exit(this);
+	CurrentState = &newState;
+	CurrentState->enter(this);
+}
+
+void ADaybreakAIController::RunState() {
+	CurrentState->run(this);
 }
 
 void ADaybreakAIController::ChasePlayer() {

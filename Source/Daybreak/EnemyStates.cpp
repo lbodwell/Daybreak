@@ -9,7 +9,7 @@ EnemyState& Idle::getInstance()
 	return singleton;
 }
 
-void Idle::transition(DaybreakAIController* controller)
+void Idle::run(ADaybreakAIController* controller)
 {
 	
 }
@@ -20,7 +20,7 @@ EnemyState& Patrol::getInstance()
 	return singleton;
 }
 
-void Patrol::transition(DaybreakAIController* controller)
+void Patrol::run(ADaybreakAIController* controller)
 {
 	
 }
@@ -31,9 +31,9 @@ EnemyState& ChasePlayer::getInstance()
 	return singleton;
 }
 
-void ChasePlayer::transition(DaybreakAIController* controller)
+void ChasePlayer::run(ADaybreakAIController* controller)
 {
-	// TODO: insert return statement here
+	
 }
 
 EnemyState& Attack::getInstance()
@@ -42,7 +42,7 @@ EnemyState& Attack::getInstance()
 	return singleton;
 }
 
-void Attack::transition(DaybreakAIController* controller)
+void Attack::run(ADaybreakAIController* controller)
 {
-	// TODO: insert return statement here
+	
 }

@@ -22,10 +22,16 @@ class DAYBREAK_API ADaybreakAIController : public AAIController {
 		ADaybreakAIController();
 		
 		virtual void BeginPlay() override;
+
+		inline EnemyState* getCurrentState() const { return CurrentState; }
+		void SetState(EnemyState& newState);
 		
 	protected:
 		ADaybreakEnemyCharacter* pawn;
 		AActor* playerActor;
+
+		EnemyState* CurrentState;
 		
 		void ChasePlayer();
+		void RunState();
 };
