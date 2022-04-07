@@ -45,7 +45,6 @@ void AEnemySpawnController::SpawnActor()
 	}
 	
 
-
 	GetWorld()->SpawnActor<APawn>(EnemyToSpawn, Location, Rotation);
 	enemyCount++;
 }

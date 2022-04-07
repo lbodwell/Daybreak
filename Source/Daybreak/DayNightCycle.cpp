@@ -3,6 +3,7 @@
 
 #include "DayNightCycle.h"
 #include "Components/SkyLightComponent.h"
+#include <cmath>
 
 // Sets default values
 ADayNightCycle::ADayNightCycle() {
@@ -38,9 +39,17 @@ void ADayNightCycle::UpdateRotation() {
 
 void ADayNightCycle::SetRotation(float newRotation) {
 	if (Sun != nullptr && Moon != nullptr && SkyLight != nullptr && newRotation >= 0 && newRotation <=360) {
-		Sun->AddActorLocalRotation(FRotator(newRotation - CurrentRotation, 0, 0));
-		Moon->AddActorLocalRotation(FRotator(newRotation - CurrentRotation, 0, 0));
+		float rotation = newRotation - CurrentRotation;
+		
+		// change in rotation must be at least 0.1 to turn from turn over from -90 to 90
+		if (std::abs(rotation) < 0.1 && Sun->GetActorRotation().Pitch == -90) {
+			rotation = 0.1;
+		}
+		
+		Sun->AddActorLocalRotation(FRotator(rotation, 0, 0));
+		Moon->AddActorLocalRotation(FRotator(rotation, 0, 0));
 		SkyLight->GetLightComponent()->RecaptureSky();
+		
 		CurrentRotation = newRotation;
 	}
 }

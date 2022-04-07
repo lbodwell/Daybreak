@@ -38,7 +38,9 @@ void UDaybreakHUD::NativeConstruct() {
 void UDaybreakHUD::OnMediaPlayerOpen(FString url) {
 	mediaPlayerReady = true;
 	MediaPlayer->Pause();
-	SeekFromDegrees(DayNightController->CurrentRotation);
+	if (DayNightController) {
+		SeekFromDegrees(DayNightController->CurrentRotation);
+	}
 }
 
 // seek day/night rotator media to correct timestamp based on degree rotation (0 - 180 = night, 180 - 360 = night)
@@ -52,17 +54,19 @@ void UDaybreakHUD::SeekFromDegrees(float degrees) {
 
 // update day/night rotator text
 void UDaybreakHUD::UpdateDayNightIndicator() { 
-	SeekFromDegrees(DayNightController->CurrentRotation);
-	
-	// display minutes:seconds of daylight remaining
-	if (DayNightController->CurrentRotation >= 180) {
-		float seconds = DayNightController->GetDayLengthSecondsRemaining();
-		float minutes = seconds / 60;
-		DayNightText = FString::FromInt(minutes) + (seconds < 10 ? ":0" : ":") + FString::FromInt(seconds);
-	}
-	// display enemy count remaining for nighttime
-	else {
-		DayNightText = FString(TEXT("0"));
+	if (DayNightController) {
+		SeekFromDegrees(DayNightController->CurrentRotation);
+		
+		// display minutes:seconds of daylight remaining
+		if (DayNightController->CurrentRotation >= 180) {
+			float seconds = DayNightController->GetDayLengthSecondsRemaining();
+			float minutes = seconds / 60;
+			DayNightText = FString::FromInt(minutes) + (seconds < 10 ? ":0" : ":") + FString::FromInt(seconds);
+		}
+		// display enemy count remaining for nighttime
+		else {
+			DayNightText = FString(TEXT("0"));
+		}
 	}
 }
 
