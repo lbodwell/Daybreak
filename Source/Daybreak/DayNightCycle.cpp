@@ -60,3 +60,7 @@ float ADayNightCycle::GetDayLengthSecondsRemaining() {
 	
 	return remainingRotation / (tickRotation * (1 / tickRate));
 }
+
+int ADayNightCycle::GetDayLengthSeconds() {
+	return DayLengthSeconds;
+}

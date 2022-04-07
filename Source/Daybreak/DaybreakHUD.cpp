@@ -36,31 +36,42 @@ void UDaybreakHUD::NativeConstruct() {
 }
 
 void UDaybreakHUD::OnMediaPlayerOpen(FString url) {
+	MediaPlayer->SetLooping(true);
 	mediaPlayerReady = true;
-	MediaPlayer->Pause();
-	if (DayNightController) {
+	RefreshMediaPlayer();
+}
+
+// updates media player to be at the right rotation with the right play rate
+void UDaybreakHUD::RefreshMediaPlayer() {
+	if (mediaPlayerReady && DayNightController) {
 		SeekFromDegrees(DayNightController->CurrentRotation);
+		dayLengthSeconds = DayNightController->GetDayLengthSeconds();
+		MediaPlayer->SetRate(15 / (float)dayLengthSeconds); // video spans 30 seconds (15 second day/night)
 	}
 }
 
 // seek day/night rotator media to correct timestamp based on degree rotation (0 - 180 = night, 180 - 360 = night)
 void UDaybreakHUD::SeekFromDegrees(float degrees) {
 	if (!mediaPlayerReady) return;
-	const float frames = degrees / 360 * 1800;
+	const float frames = degrees / 360 * 1800; // video contains 1800 frames (30 seconds @ 60fps)
 	const int seconds = floor(frames / 60);
 	const int milliseconds = floor((frames - (seconds * 60)) * 16.667);
-	MediaPlayer ->Seek(FTimespan(0, 0, 0, seconds, milliseconds));
+	MediaPlayer->Seek(FTimespan(0, 0, 0, seconds, milliseconds));
 }
 
 // update day/night rotator text
 void UDaybreakHUD::UpdateDayNightIndicator() { 
 	if (DayNightController) {
-		SeekFromDegrees(DayNightController->CurrentRotation);
+		// check if day length changes
+		if (dayLengthSeconds != DayNightController->GetDayLengthSeconds()) {
+			RefreshMediaPlayer();
+		}
 		
 		// display minutes:seconds of daylight remaining
 		if (DayNightController->CurrentRotation >= 180) {
-			float seconds = DayNightController->GetDayLengthSecondsRemaining();
-			float minutes = seconds / 60;
+			int totalSeconds = DayNightController->GetDayLengthSecondsRemaining();
+			int minutes = floor((float)totalSeconds / 60);
+			int seconds = totalSeconds - minutes * 60;
 			DayNightText = FString::FromInt(minutes) + (seconds < 10 ? ":0" : ":") + FString::FromInt(seconds);
 		}
 		// display enemy count remaining for nighttime

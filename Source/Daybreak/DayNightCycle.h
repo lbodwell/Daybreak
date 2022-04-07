@@ -42,6 +42,8 @@ public:
 	
 	// get seconds remaining in day or night (whichever the current state of the sky is)
 	float GetDayLengthSecondsRemaining();
+	
+	int GetDayLengthSeconds();
 
 private:
 	/**
