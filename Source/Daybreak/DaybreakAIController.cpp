@@ -49,3 +49,13 @@ void ADaybreakAIController::ChasePlayer() {
 		playerActor = Cast<AActor>(player);
 	}
 }
+
+
+//Helper Functions
+float ADaybreakAIController::GetDistanceToPlayer() const {
+	return (pawn->GetActorLocation() - playerActor->GetActorLocation()).Size();
+}
+
+FVector ADaybreakAIController::GetRandomNearbyLocation() const {
+	return pawn->GetActorLocation() + FVector(FMath::RandRange(-500, 500), FMath::RandRange(-500, 500), FMath::RandRange(-500, 500));
+}

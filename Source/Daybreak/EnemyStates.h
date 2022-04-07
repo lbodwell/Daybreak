@@ -67,3 +67,6 @@ private:
 	Attack(const Attack& other);
 	Attack& operator=(const Attack& other);
 };
+
+//helper function
+float playerDistanceCheck(ADaybreakAIController* controller);

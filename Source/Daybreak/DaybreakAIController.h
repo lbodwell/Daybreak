@@ -24,6 +24,8 @@ class DAYBREAK_API ADaybreakAIController : public AAIController {
 		virtual void BeginPlay() override;
 
 		inline EnemyState* getCurrentState() const { return CurrentState; }
+		float GetDistanceToPlayer() const;
+		FVector GetRandomNearbyLocation() const;
 		void SetState(EnemyState& newState);
 		
 	protected:
