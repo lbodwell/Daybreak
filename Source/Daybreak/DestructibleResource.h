@@ -17,10 +17,6 @@ public:
 	// Sets default values for this actor's properties
 	ADestructibleResource();
 
-	/*UFUNCTION()
-		void Damage(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-	
-	void Destroy(float Damage, FVector HitLocation, FVector ImpulseDir, float Impulse);*/
 	void Damage(float damage);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Destructible)

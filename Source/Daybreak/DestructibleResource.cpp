@@ -30,8 +30,6 @@ ADestructibleResource::ADestructibleResource() {
 void ADestructibleResource::BeginPlay() {
 	Super::BeginPlay();
 
-	//DestructibleComponent->OnComponentHit.AddDynamic(this, &ADestructibleResource::Damage);
-
 	CurrentHealth = MaxHealth;
 }
 
@@ -41,44 +39,7 @@ void ADestructibleResource::Tick(float DeltaTime) {
 
 }
 
-/*
-// Called whenever damage is dealt to the Destructible Resource
-void ADestructibleResource::Damage(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange, __FUNCTION__);
-
-	if (!IsDestroyed) {
-		CurrentHealth -= 1.f;
-
-		if (Cast<ADaybreakCharacter>(OtherActor)) {
-			OtherActorRef = OtherActor;
-		}
-
-		if (CurrentHealth <= 0.f) {
-			Destroy(DefaultDamage, Hit.Location, NormalImpulse, DefaultImpulse);
-		}
-	}
-}
-
-// Called whenever the destructible resource is completely destroyed
-void ADestructibleResource::Destroy(float Damage, FVector HitLocation, FVector ImpulseDir, float Impulse) {
-	 GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, __FUNCTION__);
-
-	if (!IsDestroyed) {
-		IsDestroyed = true;
-
-		if (!GotResources) {
-			ADaybreakCharacter* CharacterRef = Cast<ADaybreakCharacter>(OtherActorRef);
-
-			if (CharacterRef) {
-				CharacterRef->DarkStone += 100;
-				GotResources = true;
-			}
-		}
-
-		DestructibleComponent->ApplyDamage(Damage, HitLocation, ImpulseDir, Impulse);
-	}
-}*/
-
+// Called when resources are damaged by sword swings
 void ADestructibleResource::Damage(float damage) {
 	CurrentHealth -= damage;
 
