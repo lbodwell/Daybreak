@@ -41,9 +41,9 @@ void ADestructibleResource::Tick(float DeltaTime) {
 
 }
 
+/*
 // Called whenever damage is dealt to the Destructible Resource
 void ADestructibleResource::Damage(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
-	/*
 	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange, __FUNCTION__);
 
 	if (!IsDestroyed) {
@@ -57,12 +57,10 @@ void ADestructibleResource::Damage(UPrimitiveComponent* HitComponent, AActor* Ot
 			Destroy(DefaultDamage, Hit.Location, NormalImpulse, DefaultImpulse);
 		}
 	}
-	*/
 }
 
 // Called whenever the destructible resource is completely destroyed
 void ADestructibleResource::Destroy(float Damage, FVector HitLocation, FVector ImpulseDir, float Impulse) {
-	/*
 	 GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, __FUNCTION__);
 
 	if (!IsDestroyed) {
@@ -79,11 +77,13 @@ void ADestructibleResource::Destroy(float Damage, FVector HitLocation, FVector I
 
 		DestructibleComponent->ApplyDamage(Damage, HitLocation, ImpulseDir, Impulse);
 	}
-	*/
-}
+}*/
 
-void ADestructibleResource::Destroy() {
-	if (!IsDestroyed) {
+void ADestructibleResource::Damage(float damage) {
+	CurrentHealth -= damage;
+
+
+	if (CurrentHealth <= 0 && !IsDestroyed) {
 		IsDestroyed = true;
 
 		ADaybreakCharacter* player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));

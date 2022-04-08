@@ -53,7 +53,7 @@ void ADaybreakSword::Attack(class AActor* overlappedActor, class AActor* otherAc
 
 		// if sword hits a resource
 		if (resource != nullptr && Hitting) {
-			resource->Destroy();
+			resource->Damage(2 + CurrentLevel.Damage * 10);
 		}
 	}
 }
