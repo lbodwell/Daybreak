@@ -40,7 +40,7 @@ void AEnemySpawnController::OnDayStart(int dayLengthSeconds) {
 	float enemiesToSpawn = 100;
 	spawnFactor = enemiesToSpawn / (float)pow(DayLengthSeconds, spawnExponential);
 	
-	GetWorldTimerManager().SetTimer(spawnTimerHandle, this, &AEnemySpawnController::SpawnTick, 1, true);
+	GetWorldTimerManager().SetTimer(spawnTimerHandle, this, &AEnemySpawnController::SpawnTick, 0.25, true);
 }
 
 void AEnemySpawnController::SpawnTick() {
@@ -50,10 +50,11 @@ void AEnemySpawnController::SpawnTick() {
 		while (expectedEnemyCount - (float)enemyCount >= 1) {
 			SpawnActor();
 			UE_LOG(LogActor, Warning, TEXT("Enemy Count: %d"), enemyCount);
-			
-			if (enemyCount >= expectedEnemyCount) {
-				GetWorldTimerManager().ClearTimer(spawnTimerHandle);
-			}
+		}
+		
+		if (enemyCount >= expectedEnemyCount) {
+			GetWorldTimerManager().ClearTimer(spawnTimerHandle);
+			enemyCount = 0;
 		}
 	}
 }
