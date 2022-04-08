@@ -42,7 +42,7 @@ protected:
     // The current rotation of the sun in degrees (0-180 for night, 180-360 for day).
     float CurrentRotation;
 
-    // get seconds remaining in day or night (whichever the current state of the sky is)
+    // get seconds remaining in day (0 at night)
     float GetDayLengthSecondsRemaining();
 
     int GetDayLengthSeconds();

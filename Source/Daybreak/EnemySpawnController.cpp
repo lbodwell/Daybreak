@@ -14,6 +14,7 @@ AEnemySpawnController::AEnemySpawnController() {
 	enemyCount = 0;
 	Player = nullptr;
 	PlayerCamera = nullptr;
+	spawnExponential = 2;
 }
 
 // Called when the game starts or when spawned
@@ -34,8 +35,25 @@ void AEnemySpawnController::BeginPlay() {
 	}
 }
 
-void AEnemySpawnController::OnDayStart(int DayLengthSeconds) {
-	UE_LOG(LogActor, Warning, TEXT("Day started bind!"));
+void AEnemySpawnController::OnDayStart(int dayLengthSeconds) {
+	DayLengthSeconds = dayLengthSeconds;
+	float enemiesToSpawn = 100;
+	spawnFactor = enemiesToSpawn / (float)pow(DayLengthSeconds, spawnExponential);
+	
+	GetWorldTimerManager().SetTimer(spawnTimerHandle, this, &AEnemySpawnController::SpawnTick, 0.2, true);
+}
+
+void AEnemySpawnController::SpawnTick() {
+	float expectedEnemyCount = spawnFactor * pow(DayLengthSeconds - DayNightController->GetDayLengthSecondsRemaining(), spawnExponential);
+	
+	while (expectedEnemyCount - (float)enemyCount >= 1) {
+		SpawnActor();
+		UE_LOG(LogActor, Warning, TEXT("Enemy Count: %d"), enemyCount);
+		
+		if (enemyCount >= expectedEnemyCount) {
+			GetWorldTimerManager().ClearTimer(spawnTimerHandle);
+		}
+	}
 }
 
 void AEnemySpawnController::SpawnActor() {
@@ -80,7 +98,7 @@ AEnemySpawnField* AEnemySpawnController::GetRandomSpawnField() {
 		}
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("%d Fields in View"), FieldsInView);
+	//UE_LOG(LogTemp, Warning, TEXT("%d Fields in View"), FieldsInView);
 
 	if (SpawnFieldsOutOfView.Num() > 0) {
 

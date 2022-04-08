@@ -30,6 +30,14 @@ private:
 	
 	UFUNCTION()
 	void OnDayStart(int DayLengthSeconds);
+	
+	float spawnExponential;
+	float spawnFactor;
+	float DayLengthSeconds;
+	
+	FTimerHandle spawnTimerHandle;
+	
+	void SpawnTick();
 
 	ACharacter* Player;
 	UCameraComponent* PlayerCamera;
