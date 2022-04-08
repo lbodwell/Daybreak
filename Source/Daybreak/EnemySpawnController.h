@@ -24,8 +24,20 @@ private:
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	TArray<AActor*> SpawnFields;
-
-	FTimerHandle TimerHandle;
+	
+	UPROPERTY(EditAnywhere)
+    TSoftObjectPtr<ADayNightCycle> DayNightController;
+	
+	UFUNCTION()
+	void OnDayStart(int DayLengthSeconds);
+	
+	float spawnExponential;
+	float spawnFactor;
+	float DayLengthSeconds;
+	
+	FTimerHandle spawnTimerHandle;
+	
+	void SpawnTick();
 
 	ACharacter* Player;
 	UCameraComponent* PlayerCamera;
