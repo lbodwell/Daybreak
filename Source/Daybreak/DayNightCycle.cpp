@@ -18,7 +18,7 @@ ADayNightCycle::ADayNightCycle() {
 void ADayNightCycle::BeginPlay() {
 	Super::BeginPlay();
 
-	SetRotation(180); // begin the game at sunrise
+	SetRotation(170); // begin the game at sunrise
 	
 	tickRotation = 180 / (DayLengthSeconds * (1 / tickRate)); // calculate sky rotation per tick
 	
@@ -31,6 +31,8 @@ void ADayNightCycle::UpdateRotation() {
 		float newRotation = CurrentRotation + tickRotation;
 		if (newRotation >= 360) {
 			newRotation -= 360;
+		} else if (CurrentRotation < 180 && newRotation >= 180) {
+			OnDayStart.Broadcast(DayLengthSeconds);
 		}
 		
 		SetRotation(newRotation);

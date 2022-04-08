@@ -14,36 +14,41 @@
 
 UCLASS()
 class DAYBREAK_API ADayNightCycle : public AActor {
-	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	ADayNightCycle();
+    GENERATED_BODY()
+
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDayStart, int, DayLengthSeconds);
+
+public:
+    // Sets default values for this actor's properties
+    ADayNightCycle();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-	
-	UPROPERTY(EditAnywhere, Category=Sky)
-	int DayLengthSeconds;
+    // Called when the game starts or when spawned
+    virtual void BeginPlay() override;
 
-public:	
-	UPROPERTY(EditAnywhere, Category=Sky)
-	ADirectionalLight* Sun;
+    UPROPERTY(EditAnywhere, Category=Sky)
+    int DayLengthSeconds;
 
-	UPROPERTY(EditAnywhere, Category=Sky)
-	ADirectionalLight* Moon;
+    public:
+    UPROPERTY(EditAnywhere, Category=Sky)
+    ADirectionalLight* Sun;
+
+    UPROPERTY(EditAnywhere, Category=Sky)
+    ADirectionalLight* Moon;
 
     UPROPERTY(EditAnywhere, Category=Sky)
     ASkyLight* SkyLight;
-	
-	// The current rotation of the sun in degrees (0-180 for night, 180-360 for day).
-	float CurrentRotation;
-	
-	// get seconds remaining in day or night (whichever the current state of the sky is)
-	float GetDayLengthSecondsRemaining();
-	
-	int GetDayLengthSeconds();
+
+    // The current rotation of the sun in degrees (0-180 for night, 180-360 for day).
+    float CurrentRotation;
+
+    // get seconds remaining in day or night (whichever the current state of the sky is)
+    float GetDayLengthSecondsRemaining();
+
+    int GetDayLengthSeconds();
+
+    UPROPERTY(BlueprintAssignable)
+    FDayStart OnDayStart;
 
 private:
 	/**
@@ -52,13 +57,13 @@ private:
 	* @return  true if successful, otherwise false.
 	*/
 	void SetRotation(float angle);
-	
+
 	// tick event for updating sky position over specified day length
 	void UpdateRotation();
-	
+
 	// rate at which UpdateRotation is called
 	float tickRate;
-	
+
 	// amount of sky rotation per tick
 	float tickRotation;
 };
