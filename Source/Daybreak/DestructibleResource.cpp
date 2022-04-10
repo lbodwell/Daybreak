@@ -19,11 +19,6 @@ ADestructibleResource::ADestructibleResource() {
 
 	IsDestroyed = false;
 	GotResources = false;
-
-	MaxHealth = 10.f;
-
-	DefaultDamage = 1.f;
-	DefaultImpulse = 1.f;
 }
 
 // Called when the game starts or when spawned
@@ -31,6 +26,8 @@ void ADestructibleResource::BeginPlay() {
 	Super::BeginPlay();
 
 	CurrentHealth = MaxHealth;
+
+	UE_LOG(LogTemp, Warning, TEXT("Resources Level From DR.cpp: %d"), Level);
 }
 
 // Called every frame
@@ -51,7 +48,7 @@ void ADestructibleResource::Damage(float damage) {
 
 		// add DarkStone
 		if (player != nullptr) {
-			player->DarkStone += 100;
+			player->DarkStone += DarkStoneFound;
 		}
 
 		Explode();
@@ -59,4 +56,4 @@ void ADestructibleResource::Damage(float damage) {
 }
 
  void ADestructibleResource::Explode_Implementation() {
- } 
+ }

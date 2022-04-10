@@ -32,17 +32,19 @@ public:
 		AActor* OtherActorRef;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Destructible)
+		float CurrentHealth;
+	
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Destructible)
 		float MaxHealth;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Destructible)
-		float CurrentHealth;
+		float DarkStoneFound;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Destructible)
-		float DefaultDamage;
+		int Level;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Destructible)
-		float DefaultImpulse;
-		
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 		void Explode();
 
@@ -53,5 +55,4 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
 };
