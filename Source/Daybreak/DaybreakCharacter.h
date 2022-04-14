@@ -7,6 +7,8 @@
 #include "DaybreakSword.h"
 #include "DaybreakCharacter.generated.h"
 
+class ADaybreakSword;
+
 UCLASS()
 class ADaybreakCharacter : public ACharacter {
     GENERATED_BODY()
