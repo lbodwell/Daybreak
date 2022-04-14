@@ -45,9 +45,10 @@ void ADaybreakSword::Attack(class AActor* overlappedActor, class AActor* otherAc
 	if (otherActor != nullptr && otherActor != this) {
 		ADaybreakEnemyCharacter* enemy = Cast<ADaybreakEnemyCharacter>(otherActor);
 		ADestructibleResource* resource = Cast<ADestructibleResource>(otherActor);
-		
+
 		// if sword hits an enemy
 		if (enemy != nullptr && Hitting) {
+			
 			enemy->ReceiveDamage(10 + CurrentLevel.Damage * 10);
 		}
 

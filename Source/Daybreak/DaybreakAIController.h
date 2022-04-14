@@ -5,7 +5,11 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "DaybreakEnemyCharacter.h"
+#include "EnemyState.h"
 #include "DaybreakAIController.generated.h"
+
+//forward declaration to resolve circular dependency
+class EnemyState;
 
 /**
  * 
@@ -18,10 +22,21 @@ class DAYBREAK_API ADaybreakAIController : public AAIController {
 		ADaybreakAIController();
 		
 		virtual void BeginPlay() override;
+
+		inline EnemyState* getCurrentState() const { return CurrentState; }
+		float GetDistanceToPlayer();
+		FVector GetRandomNearbyLocation();
+		void SetState(EnemyState* newState);
+
+		void ChasePlayer();
+		void Attack();
 		
 	protected:
 		ADaybreakEnemyCharacter* pawn;
 		AActor* playerActor;
+
+		EnemyState* CurrentState;
 		
-		void ChasePlayer();
+		void RunState();
+		void CheckPawns();
 };

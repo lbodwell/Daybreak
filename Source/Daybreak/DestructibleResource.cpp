@@ -3,6 +3,7 @@
 #include "DestructibleResource.h"
 #include "Components/BoxComponent.h"
 #include "Components/SceneComponent.h"
+#include "DaybreakSword.h"
 #include "Engine.h"
 #include "DaybreakCharacter.h"
 

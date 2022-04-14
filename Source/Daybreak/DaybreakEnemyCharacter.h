@@ -7,6 +7,7 @@
 #include "DaybreakCharacter.h"
 #include "DaybreakEnemyCharacter.generated.h"
 
+class ADaybreakCharacter;
 
 UCLASS()
 class DAYBREAK_API ADaybreakEnemyCharacter : public ACharacter {

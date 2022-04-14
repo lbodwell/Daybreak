@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "DestructibleComponent.h"
-#include "DaybreakSword.h"
 #include "DestructibleResource.generated.h"
 
 UCLASS()
