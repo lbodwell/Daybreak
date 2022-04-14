@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "DaybreakEnemyCharacter.h"
+#include "DestructibleResource.h"
 #include <vector>
 #include "DaybreakSword.generated.h"
 

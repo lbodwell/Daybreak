@@ -2,6 +2,9 @@
 
 
 #include "DaybreakSword.h"
+#include "DaybreakEnemyCharacter.h"
+#include "DaybreakCharacter.h"
+#include <Engine.h>
 
 // Sets default values
 ADaybreakSword::ADaybreakSword() {
@@ -41,8 +44,17 @@ void ADaybreakSword::Upgrade() {
 void ADaybreakSword::Attack(class AActor* overlappedActor, class AActor* otherActor) {
 	if (otherActor != nullptr && otherActor != this) {
 		ADaybreakEnemyCharacter* enemy = Cast<ADaybreakEnemyCharacter>(otherActor);
+		ADestructibleResource* resource = Cast<ADestructibleResource>(otherActor);
+
+		// if sword hits an enemy
 		if (enemy != nullptr && Hitting) {
+			
 			enemy->ReceiveDamage(10 + CurrentLevel.Damage * 10);
+		}
+
+		// if sword hits a resource
+		if (resource != nullptr && Hitting) {
+			resource->Destroy();
 		}
 	}
 }

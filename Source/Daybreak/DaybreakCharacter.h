@@ -7,7 +7,9 @@
 #include "DaybreakSword.h"
 #include "DaybreakCharacter.generated.h"
 
-UCLASS(config=Game)
+class ADaybreakSword;
+
+UCLASS()
 class ADaybreakCharacter : public ACharacter {
     GENERATED_BODY()
 
@@ -61,10 +63,13 @@ public:
 	
 	/** Player sword object for blueprints. */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=Weapons)
-    ADaybreakSword* Sword;
+    class ADaybreakSword* Sword;
+
+	UFUNCTION(BlueprintCallable)
+	void ReceiveDamage(int amount);
 	
 	/** Player sword object for C++. */
-	ADaybreakSword* GetSword();
+	class ADaybreakSword* GetSword();
 	
 	UInputComponent* GetPlayerInputComponent();
 
@@ -129,7 +134,16 @@ protected:
 	UPrimitiveComponent* interactableOutline;
 	void SphereTraceForInteractables();
 
+	/** Removes the controller and ragdolls the player */
+	void KillPlayer(float CorpsePersistenceTime);
+
+	/** Destroys character and exits the game */
+	void Destroy();
+
     virtual void SetupPlayerInputComponent(class UInputComponent* playerInputComponent) override;
+
+	FTimerHandle InteractableSphereTraceTimerHandle;
 	
 	UInputComponent* PlayerInputComponent;
+
 };
