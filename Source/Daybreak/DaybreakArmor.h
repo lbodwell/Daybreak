@@ -7,10 +7,10 @@
 #include "DaybreakEnemyCharacter.h"
 #include "DestructibleResource.h"
 #include <vector>
-#include "DaybreakSword.generated.h"
+#include "DaybreakArmor.generated.h"
 
 USTRUCT(BlueprintType)
-struct FSwordLevel {
+struct FArmorLevel {
     GENERATED_BODY()
 
     UPROPERTY(BlueprintReadOnly)
@@ -23,59 +23,55 @@ struct FSwordLevel {
 	FLinearColor Color;
 
     UPROPERTY(BlueprintReadOnly)
-    float Damage;
-
-    UPROPERTY(BlueprintReadOnly)
-    float EffectDamage;
+    float Protection;
 	
 	UPROPERTY(BlueprintReadOnly)
-    FString Effect;
+    float KnockbackResistance;
+	
+	UPROPERTY(BlueprintReadOnly)
+    float MovementSpeed;
+	
+	UPROPERTY(BlueprintReadOnly)
+    float AttackSpeed;
 	
 	UPROPERTY(BlueprintReadOnly)
     int Cost;
 
-    FSwordLevel() {
+    FArmorLevel() {
         Index = 0;
-        Name = "Steel Sword";
+        Name = "Steel Armor";
 		Color = FLinearColor(0.25, 0.25, 0.25, 1);
-        Damage = 0;
-        EffectDamage = 0;
-        Effect = "Fire";
+        Protection = 0;
+        KnockbackResistance = 0;
+		MovementSpeed = 0;
+		AttackSpeed = 0;
 		Cost = 0;
     }
 	
-	FSwordLevel(int index, FString name, FLinearColor color, float damage, float effectDamage, FString effect, int cost) {
+	FArmorLevel(int index, FString name, FLinearColor color, float protection, float knockbackResistance, float movementSpeed, float attackSpeed, int cost) {
         Index = index;
         Name = name;
 		Color = color;
-        Damage = damage;
-        EffectDamage = effectDamage;
-        Effect = effect;
+        Protection = protection;
+        KnockbackResistance = knockbackResistance;
+		MovementSpeed = movementSpeed;
+		AttackSpeed = attackSpeed;
 		Cost = cost;
     }
 };
 
 UCLASS()
-class DAYBREAK_API ADaybreakSword : public AActor {
+class DAYBREAK_API ADaybreakArmor : public AActor {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ADaybreakSword();
+	ADaybreakArmor();
 	
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	FSwordLevel CurrentLevel;
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	bool Hitting;
-	
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void UpdateEffect();
-
-	UFUNCTION()
-	void Attack(class AActor* overlappedActor, class AActor* otherActor);
+	FArmorLevel CurrentLevel;
 		
-	TArray<struct FSwordLevel> Levels;
+	TArray<struct FArmorLevel> Levels;
 	
 	void Upgrade();
 

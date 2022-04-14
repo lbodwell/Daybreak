@@ -9,7 +9,7 @@
 // Sets default values
 ADaybreakSword::ADaybreakSword() {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	
 	Levels.Emplace(); // default
 	Levels.Emplace(1, "Darkened Steel Sword", FLinearColor(0, 0.5, 0.1, 1), 0.1, 0.1, "Fire", 400);
@@ -27,11 +27,6 @@ ADaybreakSword::ADaybreakSword() {
 // Called when the game starts or when spawned
 void ADaybreakSword::BeginPlay() {
 	Super::BeginPlay();
-}
-
-// Called every frame
-void ADaybreakSword::Tick(float DeltaTime) {
-	Super::Tick(DeltaTime);
 }
 
 void ADaybreakSword::Upgrade() {
