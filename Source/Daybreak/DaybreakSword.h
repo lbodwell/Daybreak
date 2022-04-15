@@ -76,11 +76,11 @@ public:
 	void Attack(class AActor* overlappedActor, class AActor* otherActor);
 		
 	TArray<struct FSwordLevel> Levels;
-	
-	void Upgrade();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+	void Upgrade();
 
 };

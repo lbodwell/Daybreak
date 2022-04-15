@@ -13,11 +13,16 @@ class IDaybreakEquipment {
 private:
 	bool IsUpgrading;
 	float UpgradeProgress;
+	
+protected:
+	virtual void Upgrade() = 0;
 
 public:
 	IDaybreakEquipment();
 
 	float GetUpgradeProgress();
+	
+	void ResetUpgradeProgress();
 	
 	bool GetIsUpgrading();
 	
@@ -34,6 +39,4 @@ public:
 	Returns true if sword progress reaches 0.
 	*/
 	bool DecreaseUpgradeProgress(float decrease);
-	
-	virtual void Upgrade() = 0;
 };

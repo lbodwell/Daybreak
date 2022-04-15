@@ -27,8 +27,7 @@ void UDaybreakUpgradeMenu::NativeConstruct() {
 	player->GetPlayerInputComponent()->BindAction<FOnUpgrade>("Interact2", IE_Pressed, this, &UDaybreakUpgradeMenu::StartUpgrading, Cast<IDaybreakEquipment>(armor));
     player->GetPlayerInputComponent()->BindAction<FOnUpgrade>("Interact2", IE_Released, this, &UDaybreakUpgradeMenu::StopUpgrading, Cast<IDaybreakEquipment>(armor));
 	
-	UpdateUI();
-	
+	// create timer to upgrade equipment
 	GetWorld()->GetTimerManager().SetTimer(upgradeTimerHandle, [&]() {
 		for (int i = 0; i < equipmentBeingUpgraded.Num(); i++) {
 			IDaybreakEquipment* equipment = equipmentBeingUpgraded[i];
@@ -43,6 +42,8 @@ void UDaybreakUpgradeMenu::NativeConstruct() {
 			UpdateUI();
 		}
 	}, 0.01, true);
+	
+	UpdateUI();
 }
 
 void UDaybreakUpgradeMenu::NativeDestruct() {
@@ -55,6 +56,11 @@ void UDaybreakUpgradeMenu::NativeDestruct() {
 	}
 	
 	GetWorld()->GetTimerManager().ClearTimer(upgradeTimerHandle);
+	
+	// if there was equipment being upgraded when the menu is closed, reset their upgrade progress
+	for (int i = 0; i < equipmentBeingUpgraded.Num(); i++) {
+		equipmentBeingUpgraded[i]->ResetUpgradeProgress();
+	}
 }
 
 void UDaybreakUpgradeMenu::StartUpgrading(IDaybreakEquipment* equipment) {

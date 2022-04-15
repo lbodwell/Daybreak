@@ -4,11 +4,14 @@
 IDaybreakEquipment::IDaybreakEquipment() {
 	IsUpgrading = false;
 	UpgradeProgress = 0;
-	UE_LOG(LogActor, Warning, TEXT("INITIALIZED!"));
 }
 
 float IDaybreakEquipment::GetUpgradeProgress() {
     return UpgradeProgress;
+}
+
+void IDaybreakEquipment::ResetUpgradeProgress() {
+	UpgradeProgress = 0;
 }
 
 bool IDaybreakEquipment::GetIsUpgrading() {

@@ -73,11 +73,11 @@ public:
 	FArmorLevel CurrentLevel;
 		
 	TArray<struct FArmorLevel> Levels;
-	
-	void Upgrade();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+	void Upgrade();
 
 };
