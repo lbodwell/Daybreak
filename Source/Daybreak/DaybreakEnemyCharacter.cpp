@@ -81,7 +81,7 @@ void ADaybreakEnemyCharacter::KillCharacter(float CorpsePersistenceTime) {
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ADaybreakEnemyCharacter::DestroyCharacter, 0.1, false, CorpsePersistenceTime);
 
-	GetController()->UnPossess();
+	GetController()->Destroy();
 	GetMesh()->SetSimulatePhysics(true);
 
 	((UPrimitiveComponent*)GetRootComponent())->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);

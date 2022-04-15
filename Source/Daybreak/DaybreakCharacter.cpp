@@ -107,6 +107,7 @@ void ADaybreakCharacter::SetupPlayerInputComponent(class UInputComponent* player
 
 void ADaybreakCharacter::StartJumping() {
 	if (InputEnabled()) {
+		GetCharacterMovement()->JumpZVelocity = 600 + (150 * Armor->CurrentLevel.MovementSpeed);
 		Jump();
 	}
 }
@@ -168,7 +169,10 @@ void ADaybreakCharacter::CalculateMoveSpeed() {
     if (moveForwardValue != 0 && moveRightValue != 0) {
         speed *= 0.75; // 3/4 diagonal speed
     }
-    GetCharacterMovement()->MaxWalkSpeed = moveForwardValue < 0.0f ? 225 : speed; // backward speed = 225
+	speed = moveForwardValue < 0.0f ? 225 : speed; // backward speed = 225
+	speed = speed + (speed / 4 * Armor->CurrentLevel.MovementSpeed); // add Armor MovementSpeed modifier;
+	
+    GetCharacterMovement()->MaxWalkSpeed = speed; // set MaxWalkSpeed
 }
 
 void ADaybreakCharacter::StartSprinting() {
