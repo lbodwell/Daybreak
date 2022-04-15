@@ -18,6 +18,8 @@ void ADaybreakAIController::BeginPlay() {
 	
 	ACharacter* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	playerActor = Cast<AActor>(player);
+
+	PortalLocation = GetComponentsByTag(UStaticMeshComponent::StaticClass(), FName("Portal")).Pop()->GetOwner()->GetActorLocation();
 	
 	FTimerHandle timerHandle;
 	GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &ADaybreakAIController::RunState, 0.1, true);
@@ -75,4 +77,8 @@ void ADaybreakAIController::CheckPawns() {
 		ACharacter* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 		playerActor = Cast<AActor>(player);
 	}
+}
+
+FVector ADaybreakAIController::GetPortalLocation() {
+	return PortalLocation;
 }
