@@ -99,7 +99,7 @@ private:
 
 class DAYBREAK_API SwarmPortal : public EnemyState {
 public:
-	void enter(ADaybreakAIController* controller);
+	void enter(ADaybreakAIController* controller) {}
 	void run(ADaybreakAIController* controller);
 	void exit(ADaybreakAIController* controller) {}
 	SwarmPortal() {}

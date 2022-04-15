@@ -60,7 +60,7 @@ float ADaybreakAIController::GetDistanceToPlayer() {
 float ADaybreakAIController::GetDistanceToPortal() {
 	CheckPawns();
 
-	return -1.f;
+	return (pawn->GetActorLocation() - PortalLocation).Size() - 70;
 }
 
 FVector ADaybreakAIController::GetRandomNearbyLocation() {

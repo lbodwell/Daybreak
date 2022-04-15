@@ -113,10 +113,6 @@ void Nighttime::run(ADaybreakAIController* controller) {
 *	SWARM PORTAL
 */
 
-void SwarmPortal::enter(ADaybreakAIController* controller) {
-	PortalLocation = controller->GetComponentsByTag(UStaticMeshComponent::StaticClass(), FName("Portal")).Pop()->GetOwner()->GetActorLocation();
-}
-
 void SwarmPortal::run(ADaybreakAIController* controller) {
 	
 
