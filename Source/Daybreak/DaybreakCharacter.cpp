@@ -57,10 +57,13 @@ ADaybreakCharacter::ADaybreakCharacter() {
 void ADaybreakCharacter::BeginPlay() {
     Super::BeginPlay();
 	
-	// attach sword to WeaponSocket
+	// create sword and attach to WeaponSocket
 	FVector socketLocation = GetMesh()->GetSocketLocation(FName(TEXT("WeaponSocket")));
 	Sword = GetWorld()->SpawnActor<ADaybreakSword>(SwordActor, socketLocation, socketLocation.Rotation());
 	Sword->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName(TEXT("WeaponSocket")));
+	
+	// create armor
+	Armor = GetWorld()->SpawnActor<ADaybreakArmor>(ArmorActor, FVector(0, 0, 0), FRotator(0, 0, 0));
 	
 	// start sphere tracing for interactables
 	GetWorld()->GetTimerManager().SetTimer(InteractableSphereTraceTimerHandle, this, &ADaybreakCharacter::SphereTraceForInteractables, 0.25, true);
@@ -290,6 +293,10 @@ void ADaybreakCharacter::SphereTraceForInteractables() {
 
 ADaybreakSword* ADaybreakCharacter::GetSword() {
 	return Sword;
+}
+
+ADaybreakArmor* ADaybreakCharacter::GetArmor() {
+	return Armor;
 }
 
 bool ADaybreakCharacter::InputEnabled() {

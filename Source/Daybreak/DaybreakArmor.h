@@ -7,6 +7,7 @@
 #include "DaybreakEnemyCharacter.h"
 #include "DestructibleResource.h"
 #include <vector>
+#include "DaybreakEquipment.h"
 #include "DaybreakArmor.generated.h"
 
 USTRUCT(BlueprintType)
@@ -61,7 +62,7 @@ struct FArmorLevel {
 };
 
 UCLASS()
-class DAYBREAK_API ADaybreakArmor : public AActor {
+class DAYBREAK_API ADaybreakArmor : public AActor, public IDaybreakEquipment {
 	GENERATED_BODY()
 	
 public:	

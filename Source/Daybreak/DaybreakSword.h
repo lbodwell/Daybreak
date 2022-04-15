@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "DestructibleResource.h"
 #include <vector>
+#include "DaybreakEquipment.h"
 #include "DaybreakSword.generated.h"
 
 USTRUCT(BlueprintType)
@@ -55,7 +56,7 @@ struct FSwordLevel {
 };
 
 UCLASS()
-class DAYBREAK_API ADaybreakSword : public AActor {
+class DAYBREAK_API ADaybreakSword : public AActor, public IDaybreakEquipment {
 	GENERATED_BODY()
 	
 public:	
