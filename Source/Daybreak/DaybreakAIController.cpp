@@ -19,7 +19,7 @@ void ADaybreakAIController::BeginPlay() {
 	ACharacter* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	playerActor = Cast<AActor>(player);
 
-	PortalLocation = GetComponentsByTag(UStaticMeshComponent::StaticClass(), FName("Portal")).Pop()->GetOwner()->GetActorLocation();
+	PortalLocation = GetComponentsByTag(UStaticMeshComponent::StaticClass(), FName("Portal"))[0]->GetOwner()->GetActorLocation();
 	
 	FTimerHandle timerHandle;
 	GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &ADaybreakAIController::RunState, 0.1, true);

@@ -3,7 +3,7 @@
 
 #include "EnemyStates.h"
 
-//might want to make player distance check hierarchical
+//might want to make player distance check helper function
 
 /**
 *	DAYTIME
@@ -115,7 +115,30 @@ void Nighttime::run(ADaybreakAIController* controller) {
 
 void SwarmPortal::run(ADaybreakAIController* controller) {
 	
+	if (controller->GetDistanceToPortal() < 10) {
+		controller->SetState(new AttackPortal);
+	}
+	else if () {
+		
+	}
 
+}
+
+/**
+*	Attack Portal
+*/
+
+void AttackPortal::run(ADaybreakAIController* controller) {
+
+	if (controller->GetDistanceToPortal() > 10) {
+		controller->SetState(new SwarmPortal);
+	}
+	else if (controller->GetDistanceToPlayer() < 100) {
+		controller->SetState(new ChasePlayer);
+	}
+	else {
+		controller->Attack();
+	}
 }
 
 

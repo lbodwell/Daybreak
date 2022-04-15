@@ -86,6 +86,10 @@ private:
 *	NIGHTTIME STATES
 */
 
+/**
+*	NIGHTTIME
+*/
+
 class DAYBREAK_API Nighttime : public EnemyState {
 public:
 	void enter(ADaybreakAIController* controller) {}
@@ -97,6 +101,11 @@ private:
 
 };
 
+
+/**
+*	SWARM PORTAL
+*/
+
 class DAYBREAK_API SwarmPortal : public EnemyState {
 public:
 	void enter(ADaybreakAIController* controller) {}
@@ -106,6 +115,23 @@ public:
 
 private:
 	FVector PortalLocation;
+};
+
+
+/**
+*	ATTACK PORTAL
+*/
+
+class DAYBREAK_API AttackPortal : public EnemyState
+{
+public:
+	void enter(ADaybreakAIController* controller) {}
+	void run(ADaybreakAIController* controller);
+	void exit(ADaybreakAIController* controller) {}
+	AttackPortal() {}
+
+private:
+
 };
 
 
