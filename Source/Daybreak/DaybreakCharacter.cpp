@@ -191,6 +191,10 @@ void ADaybreakCharacter::Attack() {
         if (duration > 0.f) {
             Attacking = true; // will be unset by AnimNotify::AttackHitEnd in AnimBP
             lastAttack = lastAttack == 0 ? 1 : 0; // alternate between left and right attacks
+			
+			float attackDelay = 0.6 - (Armor->CurrentLevel.AttackSpeed * 0.25); // set attack delay based on Armor AttackSpeed modifier
+			FTimerHandle timerHandle;
+			GetWorld()->GetTimerManager().SetTimer(timerHandle, [&]() { Attacking = false; }, 1, false, attackDelay);
         }
 	}
 }
