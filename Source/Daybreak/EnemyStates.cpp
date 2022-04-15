@@ -5,6 +5,14 @@
 
 //might want to make player distance check hierarchical
 
+/**
+*	DAYTIME
+*/
+
+void Daytime::run(ADaybreakAIController* controller) {
+	controller->SetState(new Idle);
+}
+
 
 /**
 *	IDLE
@@ -68,7 +76,7 @@ void ChasePlayer::run(ADaybreakAIController* controller)
 
 	if (playerDist > 1000) { controller->SetState(new Patrol); return; }
 
-	else if (playerDist <= 40) { controller->SetState(new Attack); return; }
+	else if (playerDist <= 40) { controller->SetState(new AttackPlayer); return; }
 
 	else { controller->ChasePlayer(); }
 	
@@ -77,13 +85,13 @@ void ChasePlayer::run(ADaybreakAIController* controller)
 
 
 /**
-*	ATTACK
+*	ATTACK PLAYER
 */
 
 
-void Attack::run(ADaybreakAIController* controller)
+void AttackPlayer::run(ADaybreakAIController* controller)
 {
-	UE_LOG(LogTemp, Warning, TEXT("In Attack"));
+	UE_LOG(LogTemp, Warning, TEXT("In Attack Player"));
 	//if out of range transition to chase player
 	if (controller->GetDistanceToPlayer() > 40) { controller->SetState(new ChasePlayer); return; }
 
@@ -91,4 +99,27 @@ void Attack::run(ADaybreakAIController* controller)
 	controller->Attack();
 
 }
+
+/**
+*	NIGHTIME
+*/
+
+void Nighttime::run(ADaybreakAIController* controller) {
+	controller->SetState(new SwarmPortal);
+}
+
+
+/**
+*	SWARM PORTAL
+*/
+
+void SwarmPortal::enter(ADaybreakAIController* controller) {
+	PortalLocation = controller->GetComponentsByTag(UStaticMeshComponent::StaticClass(), FName("Portal")).Pop()->GetOwner()->GetActorLocation();
+}
+
+void SwarmPortal::run(ADaybreakAIController* controller) {
+	
+
+}
+
 

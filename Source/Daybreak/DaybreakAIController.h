@@ -25,6 +25,8 @@ class DAYBREAK_API ADaybreakAIController : public AAIController {
 
 		inline EnemyState* getCurrentState() const { return CurrentState; }
 		float GetDistanceToPlayer();
+		float GetDistanceToPortal();
+		FVector GetPortalLocation();
 		FVector GetRandomNearbyLocation();
 		void SetState(EnemyState* newState);
 
@@ -34,6 +36,7 @@ class DAYBREAK_API ADaybreakAIController : public AAIController {
 	protected:
 		ADaybreakEnemyCharacter* pawn;
 		AActor* playerActor;
+		FVector PortalLocation;
 
 		EnemyState* CurrentState;
 		

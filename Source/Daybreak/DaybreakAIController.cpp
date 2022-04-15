@@ -55,6 +55,12 @@ float ADaybreakAIController::GetDistanceToPlayer() {
 	return (pawn->GetActorLocation() - playerActor->GetActorLocation()).Size() - 70;
 }
 
+float ADaybreakAIController::GetDistanceToPortal() {
+	CheckPawns();
+
+	return -1.f;
+}
+
 FVector ADaybreakAIController::GetRandomNearbyLocation() {
 	CheckPawns();
 	pawn = Cast<ADaybreakEnemyCharacter>(GetPawn());

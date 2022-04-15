@@ -7,8 +7,26 @@
 #include "DaybreakAIController.h"
 
 /**
- * Add all states in here. They will be singletons
+ * Add all states in here. 
  */
+
+/**
+*	DAYTIME STATES
+*/
+
+class DAYBREAK_API Daytime : public EnemyState {
+public:
+	void enter(ADaybreakAIController* controller) {}
+	void run(ADaybreakAIController* controller);
+	void exit(ADaybreakAIController* controller) {}
+	Daytime() {}
+
+private:
+
+};
+
+
+
 class DAYBREAK_API Idle : public EnemyState
 {
 public:
@@ -35,6 +53,9 @@ private:
 };
 
 
+/**
+*	NEUTRAL STATES
+*/
 class DAYBREAK_API ChasePlayer : public EnemyState
 {
 public:
@@ -48,16 +69,43 @@ private:
 };
 
 
-class DAYBREAK_API Attack : public EnemyState
+class DAYBREAK_API AttackPlayer : public EnemyState
 {
 public:
 	void enter(ADaybreakAIController* controller) {}
 	void run(ADaybreakAIController* controller);
 	void exit(ADaybreakAIController* controller) {}
-	Attack() {}
+	AttackPlayer() {}
 
 private:
-	Attack(const Attack& other);
-	Attack& operator=(const Attack& other);
+	
 };
+
+
+/**
+*	NIGHTTIME STATES
+*/
+
+class DAYBREAK_API Nighttime : public EnemyState {
+public:
+	void enter(ADaybreakAIController* controller) {}
+	void run(ADaybreakAIController* controller);
+	void exit(ADaybreakAIController* controller) {}
+	Nighttime() {}
+
+private:
+
+};
+
+class DAYBREAK_API SwarmPortal : public EnemyState {
+public:
+	void enter(ADaybreakAIController* controller);
+	void run(ADaybreakAIController* controller);
+	void exit(ADaybreakAIController* controller) {}
+	SwarmPortal() {}
+
+private:
+	FVector PortalLocation;
+};
+
 
