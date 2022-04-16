@@ -19,9 +19,9 @@ void ADaybreakAIController::BeginPlay() {
 	ACharacter* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	playerActor = Cast<AActor>(player);
 
-	TArray<AActor*> StaticMeshes;
-	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), UStaticMesh::StaticClass(), FName("Portal"), StaticMeshes);
-	PortalLocation = StaticMeshes[0]->GetActorLocation();
+	TArray<AActor*> PortalMeshes;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Portal"), PortalMeshes);
+	PortalLocation = PortalMeshes[0]->GetActorLocation();
 
 	TArray<AActor*> DayNightCycles;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADayNightCycle::StaticClass(), DayNightCycles);
