@@ -80,6 +80,9 @@ public:
 	class ADaybreakArmor* GetArmor();
 	
 	UInputComponent* GetPlayerInputComponent();
+	
+	/** Updates BaseHealth based on Armor Protection modifier. */
+	void UpdateHealth();
 
 protected:
 

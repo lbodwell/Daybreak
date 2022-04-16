@@ -314,3 +314,9 @@ bool ADaybreakCharacter::InputEnabled() {
 UInputComponent* ADaybreakCharacter::GetPlayerInputComponent() {
 	return PlayerInputComponent;
 }
+
+void ADaybreakCharacter::UpdateHealth() {
+	float percentage = Health / BaseHealth;
+	BaseHealth = 100 + 100 * Armor->CurrentLevel.Protection;
+	Health = BaseHealth * percentage;
+}

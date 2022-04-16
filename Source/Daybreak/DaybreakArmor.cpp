@@ -29,5 +29,8 @@ void ADaybreakArmor::BeginPlay() {
 void ADaybreakArmor::Upgrade() {
 	if (CurrentLevel.Index < 5) {
 		CurrentLevel = Levels[CurrentLevel.Index + 1];
+		
+		ADaybreakCharacter* player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+		player->UpdateHealth();
 	}
 }
