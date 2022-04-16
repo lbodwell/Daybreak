@@ -18,6 +18,20 @@ void ADaybreakAIController::BeginPlay() {
 	
 	ACharacter* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	playerActor = Cast<AActor>(player);
+
+	TArray<AActor*> PortalMeshes;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Portal"), PortalMeshes);
+	PortalLocation = PortalMeshes[0]->GetActorLocation();
+
+	TArray<AActor*> DayNightCycles;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADayNightCycle::StaticClass(), DayNightCycles);
+	DayNightCycle = dynamic_cast<ADayNightCycle*>(DayNightCycles[0]);
+
+	if (DayNightCycle) {
+		// listen to DayNightController for when day/night starts
+		DayNightCycle->OnDayStart.AddDynamic(this, &ADaybreakAIController::OnDayStart);
+		DayNightCycle->OnNightStart.AddDynamic(this, &ADaybreakAIController::OnNightStart);
+	}
 	
 	FTimerHandle timerHandle;
 	GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &ADaybreakAIController::RunState, 0.1, true);
@@ -48,11 +62,29 @@ void ADaybreakAIController::Attack() {
 }
 
 
+//Listener Functions
+void ADaybreakAIController::OnDayStart(int DayLengthSeconds) {
+	UE_LOG(LogTemp, Warning, TEXT("OnDayStart"));
+	SetState(new Daytime);
+}
+
+void ADaybreakAIController::OnNightStart() {
+	UE_LOG(LogTemp, Warning, TEXT("OnNightStart"));
+	SetState(new Nighttime);
+}
+
+
 //Helper Functions
 float ADaybreakAIController::GetDistanceToPlayer() {
 	CheckPawns();
 
 	return (pawn->GetActorLocation() - playerActor->GetActorLocation()).Size() - 70;
+}
+
+float ADaybreakAIController::GetDistanceToPortal() {
+	CheckPawns();
+
+	return (pawn->GetActorLocation() - PortalLocation).Size() - 70;
 }
 
 FVector ADaybreakAIController::GetRandomNearbyLocation() {
@@ -69,4 +101,12 @@ void ADaybreakAIController::CheckPawns() {
 		ACharacter* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 		playerActor = Cast<AActor>(player);
 	}
+}
+
+FVector ADaybreakAIController::GetPortalLocation() {
+	return PortalLocation;
+}
+
+bool ADaybreakAIController::GetIsDay() {
+	return DayNightCycle->GetIsDay();
 }

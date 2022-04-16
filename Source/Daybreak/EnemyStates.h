@@ -7,8 +7,26 @@
 #include "DaybreakAIController.h"
 
 /**
- * Add all states in here. They will be singletons
+ * Add all states in here. 
  */
+
+/**
+*	DAYTIME STATES
+*/
+
+class DAYBREAK_API Daytime : public EnemyState {
+public:
+	void enter(ADaybreakAIController* controller) {}
+	void run(ADaybreakAIController* controller);
+	void exit(ADaybreakAIController* controller) {}
+	Daytime() {}
+
+private:
+
+};
+
+
+
 class DAYBREAK_API Idle : public EnemyState
 {
 public:
@@ -35,29 +53,107 @@ private:
 };
 
 
-class DAYBREAK_API ChasePlayer : public EnemyState
+class DAYBREAK_API ChasePlayerDay : public EnemyState
 {
 public:
 	void enter(ADaybreakAIController* controller) {}
 	void run(ADaybreakAIController* controller);
 	void exit(ADaybreakAIController* controller) {}
-	ChasePlayer() {}
+	ChasePlayerDay() {}
 
 private:
 
 };
 
 
-class DAYBREAK_API Attack : public EnemyState
+/**
+*	NEUTRAL STATES
+*/
+
+class DAYBREAK_API AttackPlayer : public EnemyState
+{
+public:
+	void enter(ADaybreakAIController* controller);
+	void run(ADaybreakAIController* controller);
+	void exit(ADaybreakAIController* controller) {}
+	AttackPlayer() {}
+
+private:
+	bool IsDay = true;
+};
+
+
+/**
+*	NIGHTTIME STATES
+*/
+
+/**
+*	NIGHTTIME
+*/
+
+class DAYBREAK_API Nighttime : public EnemyState {
+public:
+	void enter(ADaybreakAIController* controller) {}
+	void run(ADaybreakAIController* controller);
+	void exit(ADaybreakAIController* controller) {}
+	Nighttime() {}
+
+private:
+
+};
+
+
+/**
+*	SWARM PORTAL
+*/
+
+class DAYBREAK_API SwarmPortal : public EnemyState {
+public:
+	void enter(ADaybreakAIController* controller) {}
+	void run(ADaybreakAIController* controller);
+	void exit(ADaybreakAIController* controller) {}
+	SwarmPortal() {}
+
+private:
+	FVector PortalLocation;
+};
+
+
+/**
+*	ATTACK PORTAL
+*/
+
+class DAYBREAK_API AttackPortal : public EnemyState
 {
 public:
 	void enter(ADaybreakAIController* controller) {}
 	void run(ADaybreakAIController* controller);
 	void exit(ADaybreakAIController* controller) {}
-	Attack() {}
+	AttackPortal() {}
 
 private:
-	Attack(const Attack& other);
-	Attack& operator=(const Attack& other);
+
 };
+
+
+/**
+*	Chase Player Night
+*/
+
+class DAYBREAK_API ChasePlayerNight : public EnemyState
+{
+public:
+	void enter(ADaybreakAIController* controller) {}
+	void run(ADaybreakAIController* controller);
+	void exit(ADaybreakAIController* controller) {}
+	ChasePlayerNight() {}
+
+private:
+
+};
+
+
+//Helper Function
+bool PlayerDistanceCheck(ADaybreakAIController* controller, float acceptableDistance, EnemyState* newState);
+
 
