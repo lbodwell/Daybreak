@@ -67,3 +67,7 @@ float ADayNightCycle::GetDayLengthSecondsRemaining() {
 int ADayNightCycle::GetDayLengthSeconds() {
 	return DayLengthSeconds;
 }
+
+bool ADayNightCycle::GetIsDay() {
+	return (GetDayLengthSecondsRemaining() > 0);
+}

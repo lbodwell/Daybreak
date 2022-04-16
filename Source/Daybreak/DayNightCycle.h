@@ -22,6 +22,8 @@ public:
     // Sets default values for this actor's properties
     ADayNightCycle();
 
+    bool GetIsDay();
+
 protected:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;

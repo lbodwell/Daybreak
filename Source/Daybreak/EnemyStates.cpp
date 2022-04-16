@@ -22,7 +22,7 @@ void Idle::run(ADaybreakAIController* controller)
 {
 	//check if player is nearby
 	//if so, transition to chasePlayer
-	if (controller->GetDistanceToPlayer() < 500) { controller->SetState(new ChasePlayer); return; }
+	if (PlayerDistanceCheck(controller, 500, new ChasePlayerDay)) { return; }
 
 	//otherwise
 	//do nothing for an amount of time then transition to Patrol
@@ -51,7 +51,7 @@ void Patrol::run(ADaybreakAIController* controller)
 {
 	//check if player is nearby
 	//if so, transition to chasePlayer
-	if (controller->GetDistanceToPlayer() < 500) { controller->SetState(new ChasePlayer); return; }
+	if (PlayerDistanceCheck(controller, 500, new ChasePlayerDay)) { return; }
 
 	//otherwise move to random location, then idle
 	else {		
@@ -69,14 +69,14 @@ void Patrol::run(ADaybreakAIController* controller)
 */
 
 
-void ChasePlayer::run(ADaybreakAIController* controller)
+void ChasePlayerDay::run(ADaybreakAIController* controller)
 {
 	//get player location
 	float playerDist = controller->GetDistanceToPlayer();
 
 	if (playerDist > 1000) { controller->SetState(new Patrol); return; }
 
-	else if (playerDist <= 40) { controller->SetState(new AttackPlayer); return; }
+	else if (PlayerDistanceCheck(controller, 40, new AttackPlayer)) { return; }
 
 	else { controller->ChasePlayer(); }
 	
@@ -87,13 +87,19 @@ void ChasePlayer::run(ADaybreakAIController* controller)
 /**
 *	ATTACK PLAYER
 */
-
+void AttackPlayer::enter(ADaybreakAIController* controller) {
+	IsDay = controller->GetIsDay();
+}
 
 void AttackPlayer::run(ADaybreakAIController* controller)
 {
 	UE_LOG(LogTemp, Warning, TEXT("In Attack Player"));
+
 	//if out of range transition to chase player
-	if (controller->GetDistanceToPlayer() > 40) { controller->SetState(new ChasePlayer); return; }
+	if (controller->GetDistanceToPlayer() > 40) {
+		if (IsDay) { controller->SetState(new ChasePlayerDay); return; }
+		else { controller->SetState(new ChasePlayerNight); return; }
+	}
 
 	//otherwise attack player
 	controller->Attack();
@@ -117,13 +123,15 @@ void SwarmPortal::run(ADaybreakAIController* controller) {
 	
 	if (controller->GetDistanceToPortal() < 10) {
 		controller->SetState(new AttackPortal);
+		return;
 	}
-	else if (controller->GetDistanceToPlayer() < 100) {
-		controller->SetState(new ChasePlayer);
-	}
+	else if (PlayerDistanceCheck(controller, 250, new ChasePlayerNight)) { return; }
+
 	else {
 		//run to portal
-		return;
+		if (controller->MoveToLocation(controller->GetPortalLocation(), 1.0f, true, true, true, true, NULL, true) == EPathFollowingRequestResult::AlreadyAtGoal) {
+			controller->SetState(new AttackPortal);
+		}
 	}
 
 }
@@ -136,13 +144,39 @@ void AttackPortal::run(ADaybreakAIController* controller) {
 
 	if (controller->GetDistanceToPortal() > 10) {
 		controller->SetState(new SwarmPortal);
+		return;
 	}
-	else if (controller->GetDistanceToPlayer() < 100) {
-		controller->SetState(new ChasePlayer);
+	else if (PlayerDistanceCheck(controller, 100, new ChasePlayerNight)) { return; }
+	else { controller->Attack(); }
+}
+
+
+/**
+*	Chase Player Night
+*/
+
+void ChasePlayerNight::run(ADaybreakAIController* controller)
+{
+	//get player location
+	float playerDist = controller->GetDistanceToPlayer();
+
+	if (playerDist > 700) { controller->SetState(new SwarmPortal); return; }
+
+	else if (PlayerDistanceCheck(controller, 40, new AttackPlayer)) { return; }
+
+	else { controller->ChasePlayer(); }
+
+}
+
+bool PlayerDistanceCheck(ADaybreakAIController* controller, float acceptableDistance, EnemyState* newState) {
+
+	float playerDist = controller->GetDistanceToPlayer();
+	if (playerDist < acceptableDistance) {
+		controller->SetState(newState);
+		return true;
 	}
-	else {
-		controller->Attack();
-	}
+
+	return false;
 }
 
 

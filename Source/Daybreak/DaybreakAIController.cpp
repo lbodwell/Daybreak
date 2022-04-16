@@ -19,7 +19,13 @@ void ADaybreakAIController::BeginPlay() {
 	ACharacter* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	playerActor = Cast<AActor>(player);
 
-	PortalLocation = GetComponentsByTag(UStaticMeshComponent::StaticClass(), FName("Portal"))[0]->GetOwner()->GetActorLocation();
+	TArray<AActor*> StaticMeshes;
+	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), UStaticMesh::StaticClass(), FName("Portal"), StaticMeshes);
+	PortalLocation = StaticMeshes[0]->GetActorLocation();
+
+	TArray<AActor*> DayNightCycles;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADayNightCycle::StaticClass(), DayNightCycles);
+	DayNightCycle = dynamic_cast<ADayNightCycle*>(DayNightCycles[0]);
 	
 	FTimerHandle timerHandle;
 	GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &ADaybreakAIController::RunState, 0.1, true);
@@ -81,4 +87,8 @@ void ADaybreakAIController::CheckPawns() {
 
 FVector ADaybreakAIController::GetPortalLocation() {
 	return PortalLocation;
+}
+
+bool ADaybreakAIController::GetIsDay() {
+	return DayNightCycle->GetIsDay();
 }
