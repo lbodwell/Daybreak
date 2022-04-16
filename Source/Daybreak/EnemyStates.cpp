@@ -93,8 +93,6 @@ void AttackPlayer::enter(ADaybreakAIController* controller) {
 
 void AttackPlayer::run(ADaybreakAIController* controller)
 {
-	UE_LOG(LogTemp, Warning, TEXT("In Attack Player"));
-
 	//if out of range transition to chase player
 	if (controller->GetDistanceToPlayer() > 40) {
 		if (IsDay) { controller->SetState(new ChasePlayerDay); return; }
@@ -121,7 +119,7 @@ void Nighttime::run(ADaybreakAIController* controller) {
 
 void SwarmPortal::run(ADaybreakAIController* controller) {
 	
-	if (controller->GetDistanceToPortal() < 10) {
+	if (controller->GetDistanceToPortal() < 200) {
 		controller->SetState(new AttackPortal);
 		return;
 	}
@@ -142,7 +140,9 @@ void SwarmPortal::run(ADaybreakAIController* controller) {
 
 void AttackPortal::run(ADaybreakAIController* controller) {
 
-	if (controller->GetDistanceToPortal() > 10) {
+	UE_LOG(LogTemp, Warning, TEXT("In Attack Portal"));
+
+	if (controller->GetDistanceToPortal() > 200) {
 		controller->SetState(new SwarmPortal);
 		return;
 	}
@@ -168,6 +168,8 @@ void ChasePlayerNight::run(ADaybreakAIController* controller)
 
 }
 
+
+//Helper Functions
 bool PlayerDistanceCheck(ADaybreakAIController* controller, float acceptableDistance, EnemyState* newState) {
 
 	float playerDist = controller->GetDistanceToPlayer();
