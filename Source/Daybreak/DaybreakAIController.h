@@ -46,4 +46,12 @@ class DAYBREAK_API ADaybreakAIController : public AAIController {
 		
 		void RunState();
 		void CheckPawns();
+
+		//Listeners
+		UFUNCTION()
+		void OnDayStart(int DayLengthSeconds);
+
+		UFUNCTION()
+		void OnNightStart();
+
 };

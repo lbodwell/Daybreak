@@ -31,6 +31,7 @@ void ADayNightCycle::UpdateRotation() {
 		float newRotation = CurrentRotation + tickRotation;
 		if (newRotation >= 360) {
 			newRotation -= 360;
+			OnNightStart.Broadcast();
 		} else if (CurrentRotation < 180 && newRotation >= 180) {
 			OnDayStart.Broadcast(DayLengthSeconds);
 		}

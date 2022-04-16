@@ -26,6 +26,12 @@ void ADaybreakAIController::BeginPlay() {
 	TArray<AActor*> DayNightCycles;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADayNightCycle::StaticClass(), DayNightCycles);
 	DayNightCycle = dynamic_cast<ADayNightCycle*>(DayNightCycles[0]);
+
+	if (DayNightCycle) {
+		// listen to DayNightController for when day/night starts
+		DayNightCycle->OnDayStart.AddDynamic(this, &ADaybreakAIController::OnDayStart);
+		DayNightCycle->OnNightStart.AddDynamic(this, &ADaybreakAIController::OnNightStart);
+	}
 	
 	FTimerHandle timerHandle;
 	GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &ADaybreakAIController::RunState, 0.1, true);
@@ -53,6 +59,18 @@ void ADaybreakAIController::ChasePlayer() {
 
 void ADaybreakAIController::Attack() {
 	pawn->Attack();
+}
+
+
+//Listener Functions
+void ADaybreakAIController::OnDayStart(int DayLengthSeconds) {
+	UE_LOG(LogTemp, Warning, TEXT("OnDayStart"));
+	SetState(new Daytime);
+}
+
+void ADaybreakAIController::OnNightStart() {
+	UE_LOG(LogTemp, Warning, TEXT("OnNightStart"));
+	SetState(new Nighttime);
 }
 
 
