@@ -4,6 +4,7 @@
 #include "DaybreakCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Blueprint/UserWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 ADaybreakGameMode::ADaybreakGameMode() {
 	// set default pawn class to our Blueprinted character
@@ -23,4 +24,14 @@ void ADaybreakGameMode::BeginPlay() {
 			HUD->AddToViewport();
 		}
 	}
+	
+	APlayerController* playerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	
+	// disable mouse
+	playerController->bShowMouseCursor = false;
+	playerController->bEnableClickEvents = false;
+	playerController->bEnableMouseOverEvents = false;
+	
+	FInputModeGameOnly inputMode;
+	playerController->SetInputMode(inputMode);
 }
