@@ -343,7 +343,7 @@ void ADaybreakCharacter::SetMouseCursor(bool enabled) {
 	playerController->bEnableMouseOverEvents = enabled;
 	
 	if (enabled) {
-		FInputModeGameAndUI inputMode;
+		FInputModeUIOnly inputMode;
 		playerController->SetInputMode(inputMode);
 	} else {
 		FInputModeGameOnly inputMode;
