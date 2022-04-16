@@ -8,6 +8,7 @@
 #include <string>
 #include "DaybreakCharacter.h"
 #include "DaybreakSword.h"
+#include "DaybreakArmor.h"
 
 bool UDaybreakHUD::Initialize() {
 	const bool success = Super::Initialize();
@@ -90,4 +91,15 @@ FSwordLevel UDaybreakHUD::GetCurrentSwordLevel() {
 		return sword->CurrentLevel;
 	}
 	return FSwordLevel();
+}
+
+FArmorLevel UDaybreakHUD::GetCurrentArmorLevel() {
+	if (armor == nullptr) {
+		armor = player->GetArmor();
+	}
+	
+	if (armor != nullptr) {
+		return armor->CurrentLevel;
+	}
+	return FArmorLevel();
 }

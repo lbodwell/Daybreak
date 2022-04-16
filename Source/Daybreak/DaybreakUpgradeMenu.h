@@ -5,22 +5,37 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "DaybreakSword.h"
+#include "DaybreakArmor.h"
 #include "DaybreakCharacter.h"
 #include "DaybreakUpgradeMenu.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class DAYBREAK_API UDaybreakUpgradeMenu : public UUserWidget {
 	GENERATED_BODY()
 	
+	DECLARE_DELEGATE_OneParam(FOnUpgrade, IDaybreakEquipment*);
+	
 	public:
+		// sword getters for UI
 		UFUNCTION(BlueprintCallable)
 		FSwordLevel GetCurrentSwordLevel();
 		
 		UFUNCTION(BlueprintCallable)
 		FSwordLevel GetNextSwordLevel();
+		
+		UFUNCTION(BlueprintCallable)
+		float GetSwordUpgradeProgress();
+		
+		// armor getters for UI
+		UFUNCTION(BlueprintCallable)
+		FArmorLevel GetCurrentArmorLevel();
+		
+		UFUNCTION(BlueprintCallable)
+		FArmorLevel GetNextArmorLevel();
+		
+		
+		UFUNCTION(BlueprintCallable)
+		float GetArmorUpgradeProgress();
 		
 		UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 		void UpdateUI();
@@ -32,13 +47,12 @@ class DAYBREAK_API UDaybreakUpgradeMenu : public UUserWidget {
 		
 		ADaybreakCharacter* player;
 		ADaybreakSword* sword;
+		ADaybreakArmor* armor;
 		
-		bool isUpgrading;
+		TArray<IDaybreakEquipment*> equipmentBeingUpgraded;
+		
 		FTimerHandle upgradeTimerHandle;
-		
-		UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		float UpgradeProgress;
-		
-		void StartUpgrading();
-		void StopUpgrading();
+				
+		void StartUpgrading(IDaybreakEquipment* equipment);
+		void StopUpgrading(IDaybreakEquipment* equipment);
 };

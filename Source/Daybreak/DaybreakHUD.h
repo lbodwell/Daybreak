@@ -7,6 +7,7 @@
 #include "DayNightCycle.h"
 #include "DaybreakCharacter.h"
 #include "DaybreakSword.h"
+#include "DaybreakArmor.h"
 #include "DaybreakHUD.generated.h"
 
 /**
@@ -21,6 +22,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	FSwordLevel GetCurrentSwordLevel();
+	
+	UFUNCTION(BlueprintCallable)
+	FArmorLevel GetCurrentArmorLevel();
 
 protected:
 	virtual bool Initialize() override;
@@ -48,6 +52,7 @@ protected:
 	
 	ADaybreakCharacter* player;
 	ADaybreakSword* sword;
+	ADaybreakArmor* armor;
 	
 	bool mediaPlayerReady;
 };
