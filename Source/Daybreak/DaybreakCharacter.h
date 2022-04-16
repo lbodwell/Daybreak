@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "DaybreakSword.h"
+#include "DaybreakArmor.h"
 #include "DaybreakCharacter.generated.h"
 
 class ADaybreakSword;
@@ -62,8 +63,12 @@ public:
     float DarkStone;
 	
 	/** Player sword object for blueprints. */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=Weapons)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=Equipment)
     class ADaybreakSword* Sword;
+	
+	/** Player armor object for blueprints. */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=Equipment)
+    class ADaybreakArmor* Armor;
 
 	UFUNCTION(BlueprintCallable)
 	void ReceiveDamage(int amount);
@@ -71,7 +76,13 @@ public:
 	/** Player sword object for C++. */
 	class ADaybreakSword* GetSword();
 	
+	/** Player armor object for C++. */
+	class ADaybreakArmor* GetArmor();
+	
 	UInputComponent* GetPlayerInputComponent();
+	
+	/** Updates BaseHealth based on Armor Protection modifier. */
+	void UpdateHealth();
 
 protected:
 
@@ -90,8 +101,12 @@ protected:
     UAnimMontage* AttackRightMontage;
 	
 	/** Sword actor class. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapons)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Equipment)
 	TSubclassOf<class AActor> SwordActor;
+	
+	/** Sword actor class. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Equipment)
+	TSubclassOf<class AActor> ArmorActor;
 	
 	/** Called to start and stop sprinting */
     bool sprinting;

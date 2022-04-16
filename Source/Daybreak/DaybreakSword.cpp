@@ -7,16 +7,16 @@
 #include <Engine.h>
 
 // Sets default values
-ADaybreakSword::ADaybreakSword() {
+ADaybreakSword::ADaybreakSword() : IDaybreakEquipment() {	
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	
 	Levels.Emplace(); // default
-	Levels.Emplace(1, "Darkened Steel Sword", FLinearColor(0.05, 0.1, 1, 1), 0.1, 0.1, 0.1, 400);
-	Levels.Emplace(2, "Draconic Steel Sword", FLinearColor(0, 0.6, 0.15, 1), 0.3, 0.2, 0.2, 800);
-	Levels.Emplace(3, "Darkonium Sword", FLinearColor(0.25, 0.03, 1, 1), 0.6, 0.4, 0.5, 1400);
-	Levels.Emplace(4, "Emblazened Darkonium Sword", FLinearColor(1, 0.2, 0.1, 1), 0.75, 0.8, 0.75, 2000);
-	Levels.Emplace(5, "The Sword of Darkosius", FLinearColor(1, 1, 1, 1), 1, 1, 1, 2400);
+	Levels.Emplace(1, "Darkened Steel Sword", FLinearColor(0, 0.5, 0.1, 1), 0.1, 0.1, "Fire", 400);
+	Levels.Emplace(2, "Draconic Steel Sword", FLinearColor(0, 0.05, 0.75, 1), 0.3, 0.2, "Fire", 800);
+	Levels.Emplace(3, "Darkonium Sword", FLinearColor(0.25, 0.05, 1, 1), 0.6, 0.4, "Fire", 1400);
+	Levels.Emplace(4, "Emblazened Darkonium Sword", FLinearColor(1, 0.25, 0.05, 1), 0.75, 0.8, "Fire", 2000);
+	Levels.Emplace(5, "The Sword of Darkosius", FLinearColor(0.55, 0.55, 0, 1), 1, 1, "Fire", 2400);
 	
 	CurrentLevel = Levels[0];
 
@@ -27,11 +27,6 @@ ADaybreakSword::ADaybreakSword() {
 // Called when the game starts or when spawned
 void ADaybreakSword::BeginPlay() {
 	Super::BeginPlay();
-}
-
-// Called every frame
-void ADaybreakSword::Tick(float DeltaTime) {
-	Super::Tick(DeltaTime);
 }
 
 void ADaybreakSword::Upgrade() {
@@ -48,7 +43,6 @@ void ADaybreakSword::Attack(class AActor* overlappedActor, class AActor* otherAc
 
 		// if sword hits an enemy
 		if (enemy != nullptr && Hitting) {
-			
 			enemy->ReceiveDamage(10 + CurrentLevel.Damage * 10);
 		}
 
