@@ -87,6 +87,9 @@ public:
 	
 	/** Updates BaseHealth based on Armor Protection modifier. */
 	void UpdateHealth();
+	
+	/** Escape button handler */
+	void Exit();
 
 protected:
 
@@ -130,7 +133,6 @@ protected:
 	
 	/** Called for interacting with objects and exiting menus. */
 	void Interact();
-	void Exit();
 	
 	/** Called for jumping. */
 	void StartJumping();

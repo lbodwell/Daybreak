@@ -2,6 +2,9 @@
 
 
 #include "DaybreakPauseMenu.h"
+#include "DaybreakCharacter.h"
+#include "Kismet/GameplayStatics.h"
+
 
 bool UDaybreakPauseMenu::Initialize() {
 	const bool success = Super::Initialize();
@@ -16,4 +19,11 @@ void UDaybreakPauseMenu::NativeConstruct() {
 
 void UDaybreakPauseMenu::NativeDestruct() {
 	Super::NativeDestruct();
+}
+
+void UDaybreakPauseMenu::ExitMenu() {
+	ADaybreakCharacter* player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (player) {
+		player->Exit();
+	}
 }

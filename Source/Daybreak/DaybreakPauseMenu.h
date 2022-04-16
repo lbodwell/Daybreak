@@ -17,4 +17,7 @@ class DAYBREAK_API UDaybreakPauseMenu : public UUserWidget {
 		virtual bool Initialize() override;
 		virtual void NativeConstruct() override;
 		virtual void NativeDestruct() override;
+		
+		UFUNCTION(BlueprintCallable)
+		void ExitMenu();
 };
