@@ -93,6 +93,13 @@ protected:
 	/**  Upgrade menu widget object reference. */
 	UUserWidget* UpgradeMenu;
 	
+	/**  Pause menu widget class. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Widgets)
+    TSubclassOf<class UUserWidget> PauseMenuWidget;
+	
+	/**  Upgrade menu widget object reference. */
+	UUserWidget* PauseMenu;
+	
 	/** Montages to play for attacking. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
     UAnimMontage* AttackLeftMontage;

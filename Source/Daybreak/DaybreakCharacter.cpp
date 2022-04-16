@@ -201,7 +201,7 @@ void ADaybreakCharacter::Attack() {
 
 void ADaybreakCharacter::Interact() {
 	if (InputEnabled() && interactable) {
-		UE_LOG(LogActor, Warning, TEXT("Interactable: %s"), *(interactable->GetName()));
+		//UE_LOG(LogActor, Warning, TEXT("Interactable: %s"), *(interactable->GetName()));
 		if (interactable->GetName().StartsWith("_Anvil")) {
 			// add upgrade menu widget to viewport
 			if (UpgradeMenuWidget != nullptr) {
@@ -215,9 +215,19 @@ void ADaybreakCharacter::Interact() {
 }
 
 void ADaybreakCharacter::Exit() {
-	if (UpgradeMenu != nullptr) {
+	if (UpgradeMenu) {
 		UpgradeMenu->RemoveFromViewport();
 		UpgradeMenu = nullptr;
+	} else if (PauseMenu) {
+		PauseMenu->RemoveFromViewport();
+		PauseMenu = nullptr;
+	} else {
+		if (PauseMenuWidget != nullptr) {
+			PauseMenu = CreateWidget<UUserWidget>(GetWorld(), PauseMenuWidget);
+			if (PauseMenu) {
+				PauseMenu->AddToViewport();
+			}
+		}
 	}
 }
 
@@ -308,7 +318,7 @@ ADaybreakArmor* ADaybreakCharacter::GetArmor() {
 }
 
 bool ADaybreakCharacter::InputEnabled() {
-	return UpgradeMenu == nullptr;
+	return UpgradeMenu == nullptr && PauseMenu == nullptr;
 }
 
 UInputComponent* ADaybreakCharacter::GetPlayerInputComponent() {
