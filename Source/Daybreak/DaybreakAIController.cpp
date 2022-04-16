@@ -5,8 +5,11 @@
 #include "EnemyStates.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
+#include "Navigation/CrowdFollowingComponent.h"
 
-ADaybreakAIController:: ADaybreakAIController() {
+ADaybreakAIController:: ADaybreakAIController(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent"))) {
+
 }
 
 void ADaybreakAIController::BeginPlay() {

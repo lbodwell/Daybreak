@@ -20,7 +20,7 @@ class DAYBREAK_API ADaybreakAIController : public AAIController {
 	GENERATED_BODY()
 	
 	public:
-		ADaybreakAIController();
+		ADaybreakAIController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 		
 		virtual void BeginPlay() override;
 
