@@ -13,6 +13,8 @@
 #include "Blueprint/UserWidget.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
 
 
 ADaybreakCharacter::ADaybreakCharacter() {
@@ -56,6 +58,9 @@ ADaybreakCharacter::ADaybreakCharacter() {
 
 void ADaybreakCharacter::BeginPlay() {
     Super::BeginPlay();
+	
+	// get player controller
+	playerController = Cast<APlayerController>(GetController());
 	
 	// create sword and attach to WeaponSocket
 	FVector socketLocation = GetMesh()->GetSocketLocation(FName(TEXT("WeaponSocket")));
@@ -221,11 +226,13 @@ void ADaybreakCharacter::Exit() {
 	} else if (PauseMenu) {
 		PauseMenu->RemoveFromViewport();
 		PauseMenu = nullptr;
+		SetMouseCursor(false);
 	} else {
 		if (PauseMenuWidget != nullptr) {
 			PauseMenu = CreateWidget<UUserWidget>(GetWorld(), PauseMenuWidget);
 			if (PauseMenu) {
 				PauseMenu->AddToViewport();
+				SetMouseCursor(true);
 			}
 		}
 	}
@@ -329,4 +336,18 @@ void ADaybreakCharacter::UpdateHealth() {
 	float percentage = Health / BaseHealth;
 	BaseHealth = 100 + 100 * Armor->CurrentLevel.Protection;
 	Health = BaseHealth * percentage;
+}
+
+void ADaybreakCharacter::SetMouseCursor(bool enabled) {
+	playerController->bShowMouseCursor = enabled;
+	playerController->bEnableClickEvents = enabled;
+	playerController->bEnableMouseOverEvents = enabled;
+	
+	if (enabled) {
+		FInputModeGameAndUI inputMode;
+		playerController->SetInputMode(inputMode);
+	} else {
+		FInputModeGameOnly inputMode;
+		playerController->SetInputMode(inputMode);
+	}
 }

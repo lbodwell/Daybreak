@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "DaybreakSword.h"
 #include "DaybreakArmor.h"
+#include "GameFramework/PlayerController.h"
 #include "DaybreakCharacter.generated.h"
 
 class ADaybreakSword;
@@ -29,6 +30,9 @@ class ADaybreakCharacter : public ACharacter {
 	
     /** Returns FollowCamera subobject **/
     FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	
+private:
+	APlayerController* playerController;
 
 public:
     ADaybreakCharacter();
@@ -167,5 +171,7 @@ protected:
 	FTimerHandle InteractableSphereTraceTimerHandle;
 	
 	UInputComponent* PlayerInputComponent;
+	
+	void SetMouseCursor(bool enabled);
 
 };
