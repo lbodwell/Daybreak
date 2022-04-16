@@ -13,6 +13,7 @@
 #include "Blueprint/UserWidget.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "GameFramework/PlayerController.h"
 
 
 ADaybreakCharacter::ADaybreakCharacter() {
@@ -56,6 +57,9 @@ ADaybreakCharacter::ADaybreakCharacter() {
 
 void ADaybreakCharacter::BeginPlay() {
     Super::BeginPlay();
+	
+	// get player controller
+	playerController = Cast<APlayerController>(GetController());
 	
 	// create sword and attach to WeaponSocket
 	FVector socketLocation = GetMesh()->GetSocketLocation(FName(TEXT("WeaponSocket")));
@@ -201,7 +205,7 @@ void ADaybreakCharacter::Attack() {
 
 void ADaybreakCharacter::Interact() {
 	if (InputEnabled() && interactable) {
-		UE_LOG(LogActor, Warning, TEXT("Interactable: %s"), *(interactable->GetName()));
+		//UE_LOG(LogActor, Warning, TEXT("Interactable: %s"), *(interactable->GetName()));
 		if (interactable->GetName().StartsWith("_Anvil")) {
 			// add upgrade menu widget to viewport
 			if (UpgradeMenuWidget != nullptr) {
@@ -215,9 +219,21 @@ void ADaybreakCharacter::Interact() {
 }
 
 void ADaybreakCharacter::Exit() {
-	if (UpgradeMenu != nullptr) {
+	if (UpgradeMenu) {
 		UpgradeMenu->RemoveFromViewport();
 		UpgradeMenu = nullptr;
+	} else if (PauseMenu) {
+		PauseMenu->RemoveFromViewport();
+		PauseMenu = nullptr;
+		SetMouseCursor(false);
+	} else {
+		if (PauseMenuWidget != nullptr) {
+			PauseMenu = CreateWidget<UUserWidget>(GetWorld(), PauseMenuWidget);
+			if (PauseMenu) {
+				PauseMenu->AddToViewport();
+				SetMouseCursor(true);
+			}
+		}
 	}
 }
 
@@ -308,7 +324,7 @@ ADaybreakArmor* ADaybreakCharacter::GetArmor() {
 }
 
 bool ADaybreakCharacter::InputEnabled() {
-	return UpgradeMenu == nullptr;
+	return UpgradeMenu == nullptr && PauseMenu == nullptr;
 }
 
 UInputComponent* ADaybreakCharacter::GetPlayerInputComponent() {
@@ -319,4 +335,18 @@ void ADaybreakCharacter::UpdateHealth() {
 	float percentage = Health / BaseHealth;
 	BaseHealth = 100 + 100 * Armor->CurrentLevel.Protection;
 	Health = BaseHealth * percentage;
+}
+
+void ADaybreakCharacter::SetMouseCursor(bool enabled) {
+	playerController->bShowMouseCursor = enabled;
+	playerController->bEnableClickEvents = enabled;
+	playerController->bEnableMouseOverEvents = enabled;
+	
+	if (enabled) {
+		FInputModeGameAndUI inputMode;
+		playerController->SetInputMode(inputMode);
+	} else {
+		FInputModeGameOnly inputMode;
+		playerController->SetInputMode(inputMode);
+	}
 }
