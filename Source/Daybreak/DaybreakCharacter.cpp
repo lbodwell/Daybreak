@@ -13,6 +13,7 @@
 #include "Blueprint/UserWidget.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "GameFramework/PlayerController.h"
 
 
 ADaybreakCharacter::ADaybreakCharacter() {
@@ -57,10 +58,16 @@ ADaybreakCharacter::ADaybreakCharacter() {
 void ADaybreakCharacter::BeginPlay() {
     Super::BeginPlay();
 	
-	// attach sword to WeaponSocket
+	// get player controller
+	playerController = Cast<APlayerController>(GetController());
+	
+	// create sword and attach to WeaponSocket
 	FVector socketLocation = GetMesh()->GetSocketLocation(FName(TEXT("WeaponSocket")));
 	Sword = GetWorld()->SpawnActor<ADaybreakSword>(SwordActor, socketLocation, socketLocation.Rotation());
 	Sword->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName(TEXT("WeaponSocket")));
+	
+	// create armor
+	Armor = GetWorld()->SpawnActor<ADaybreakArmor>(ArmorActor, FVector(0, 0, 0), FRotator(0, 0, 0));
 	
 	// start sphere tracing for interactables
 	GetWorld()->GetTimerManager().SetTimer(InteractableSphereTraceTimerHandle, this, &ADaybreakCharacter::SphereTraceForInteractables, 0.25, true);
@@ -104,6 +111,7 @@ void ADaybreakCharacter::SetupPlayerInputComponent(class UInputComponent* player
 
 void ADaybreakCharacter::StartJumping() {
 	if (InputEnabled()) {
+		GetCharacterMovement()->JumpZVelocity = 600 + (150 * Armor->CurrentLevel.MovementSpeed);
 		Jump();
 	}
 }
@@ -165,7 +173,10 @@ void ADaybreakCharacter::CalculateMoveSpeed() {
     if (moveForwardValue != 0 && moveRightValue != 0) {
         speed *= 0.75; // 3/4 diagonal speed
     }
-    GetCharacterMovement()->MaxWalkSpeed = moveForwardValue < 0.0f ? 225 : speed; // backward speed = 225
+	speed = moveForwardValue < 0.0f ? 225 : speed; // backward speed = 225
+	speed = speed + (speed / 4 * Armor->CurrentLevel.MovementSpeed); // add Armor MovementSpeed modifier;
+	
+    GetCharacterMovement()->MaxWalkSpeed = speed; // set MaxWalkSpeed
 }
 
 void ADaybreakCharacter::StartSprinting() {
@@ -184,13 +195,17 @@ void ADaybreakCharacter::Attack() {
         if (duration > 0.f) {
             Attacking = true; // will be unset by AnimNotify::AttackHitEnd in AnimBP
             lastAttack = lastAttack == 0 ? 1 : 0; // alternate between left and right attacks
+			
+			float attackDelay = 0.6 - (Armor->CurrentLevel.AttackSpeed * 0.25); // set attack delay based on Armor AttackSpeed modifier
+			FTimerHandle timerHandle;
+			GetWorld()->GetTimerManager().SetTimer(timerHandle, [&]() { Attacking = false; }, 1, false, attackDelay);
         }
 	}
 }
 
 void ADaybreakCharacter::Interact() {
 	if (InputEnabled() && interactable) {
-		UE_LOG(LogActor, Warning, TEXT("Interactable: %s"), *(interactable->GetName()));
+		//UE_LOG(LogActor, Warning, TEXT("Interactable: %s"), *(interactable->GetName()));
 		if (interactable->GetName().StartsWith("_Anvil")) {
 			// add upgrade menu widget to viewport
 			if (UpgradeMenuWidget != nullptr) {
@@ -204,9 +219,21 @@ void ADaybreakCharacter::Interact() {
 }
 
 void ADaybreakCharacter::Exit() {
-	if (UpgradeMenu != nullptr) {
+	if (UpgradeMenu) {
 		UpgradeMenu->RemoveFromViewport();
 		UpgradeMenu = nullptr;
+	} else if (PauseMenu) {
+		PauseMenu->RemoveFromViewport();
+		PauseMenu = nullptr;
+		SetMouseCursor(false);
+	} else {
+		if (PauseMenuWidget != nullptr) {
+			PauseMenu = CreateWidget<UUserWidget>(GetWorld(), PauseMenuWidget);
+			if (PauseMenu) {
+				PauseMenu->AddToViewport();
+				SetMouseCursor(true);
+			}
+		}
 	}
 }
 
@@ -292,10 +319,34 @@ ADaybreakSword* ADaybreakCharacter::GetSword() {
 	return Sword;
 }
 
+ADaybreakArmor* ADaybreakCharacter::GetArmor() {
+	return Armor;
+}
+
 bool ADaybreakCharacter::InputEnabled() {
-	return UpgradeMenu == nullptr;
+	return UpgradeMenu == nullptr && PauseMenu == nullptr;
 }
 
 UInputComponent* ADaybreakCharacter::GetPlayerInputComponent() {
 	return PlayerInputComponent;
+}
+
+void ADaybreakCharacter::UpdateHealth() {
+	float percentage = Health / BaseHealth;
+	BaseHealth = 100 + 100 * Armor->CurrentLevel.Protection;
+	Health = BaseHealth * percentage;
+}
+
+void ADaybreakCharacter::SetMouseCursor(bool enabled) {
+	playerController->bShowMouseCursor = enabled;
+	playerController->bEnableClickEvents = enabled;
+	playerController->bEnableMouseOverEvents = enabled;
+	
+	if (enabled) {
+		FInputModeGameAndUI inputMode;
+		playerController->SetInputMode(inputMode);
+	} else {
+		FInputModeGameOnly inputMode;
+		playerController->SetInputMode(inputMode);
+	}
 }

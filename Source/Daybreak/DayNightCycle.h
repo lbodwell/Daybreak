@@ -18,9 +18,13 @@ class DAYBREAK_API ADayNightCycle : public AActor {
 
     DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDayStart, int, DayLengthSeconds);
 
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE(FNightStart);
+
 public:
     // Sets default values for this actor's properties
     ADayNightCycle();
+
+    bool GetIsDay();
 
 protected:
     // Called when the game starts or when spawned
@@ -49,6 +53,9 @@ protected:
 
     UPROPERTY(BlueprintAssignable)
     FDayStart OnDayStart;
+
+    UPROPERTY(BlueprintAssignable)
+    FNightStart OnNightStart;
 
 private:
 	/**

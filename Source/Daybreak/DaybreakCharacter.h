@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "DaybreakSword.h"
+#include "DaybreakArmor.h"
+#include "GameFramework/PlayerController.h"
 #include "DaybreakCharacter.generated.h"
 
 class ADaybreakSword;
@@ -28,6 +30,9 @@ class ADaybreakCharacter : public ACharacter {
 	
     /** Returns FollowCamera subobject **/
     FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	
+private:
+	APlayerController* playerController;
 
 public:
     ADaybreakCharacter();
@@ -62,8 +67,12 @@ public:
     float DarkStone;
 	
 	/** Player sword object for blueprints. */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=Weapons)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=Equipment)
     class ADaybreakSword* Sword;
+	
+	/** Player armor object for blueprints. */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=Equipment)
+    class ADaybreakArmor* Armor;
 
 	UFUNCTION(BlueprintCallable)
 	void ReceiveDamage(int amount);
@@ -71,7 +80,16 @@ public:
 	/** Player sword object for C++. */
 	class ADaybreakSword* GetSword();
 	
+	/** Player armor object for C++. */
+	class ADaybreakArmor* GetArmor();
+	
 	UInputComponent* GetPlayerInputComponent();
+	
+	/** Updates BaseHealth based on Armor Protection modifier. */
+	void UpdateHealth();
+	
+	/** Escape button handler */
+	void Exit();
 
 protected:
 
@@ -82,6 +100,13 @@ protected:
 	/**  Upgrade menu widget object reference. */
 	UUserWidget* UpgradeMenu;
 	
+	/**  Pause menu widget class. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Widgets)
+    TSubclassOf<class UUserWidget> PauseMenuWidget;
+	
+	/**  Upgrade menu widget object reference. */
+	UUserWidget* PauseMenu;
+	
 	/** Montages to play for attacking. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
     UAnimMontage* AttackLeftMontage;
@@ -90,8 +115,12 @@ protected:
     UAnimMontage* AttackRightMontage;
 	
 	/** Sword actor class. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapons)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Equipment)
 	TSubclassOf<class AActor> SwordActor;
+	
+	/** Sword actor class. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Equipment)
+	TSubclassOf<class AActor> ArmorActor;
 	
 	/** Called to start and stop sprinting */
     bool sprinting;
@@ -104,7 +133,6 @@ protected:
 	
 	/** Called for interacting with objects and exiting menus. */
 	void Interact();
-	void Exit();
 	
 	/** Called for jumping. */
 	void StartJumping();
@@ -145,5 +173,7 @@ protected:
 	FTimerHandle InteractableSphereTraceTimerHandle;
 	
 	UInputComponent* PlayerInputComponent;
+	
+	void SetMouseCursor(bool enabled);
 
 };
