@@ -118,8 +118,12 @@ void SwarmPortal::run(ADaybreakAIController* controller) {
 	if (controller->GetDistanceToPortal() < 10) {
 		controller->SetState(new AttackPortal);
 	}
-	else if () {
-		
+	else if (controller->GetDistanceToPlayer() < 100) {
+		controller->SetState(new ChasePlayer);
+	}
+	else {
+		//run to portal
+		return;
 	}
 
 }
