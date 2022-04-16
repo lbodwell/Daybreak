@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "DaybreakEnemyCharacter.h"
 #include "EnemyState.h"
+#include "DayNightCycle.h"
 #include "DaybreakAIController.generated.h"
 
 //forward declaration to resolve circular dependency
@@ -25,7 +26,11 @@ class DAYBREAK_API ADaybreakAIController : public AAIController {
 
 		inline EnemyState* getCurrentState() const { return CurrentState; }
 		float GetDistanceToPlayer();
+		float GetDistanceToPortal();
+		FVector GetPortalLocation();
 		FVector GetRandomNearbyLocation();
+		bool GetIsDay();
+
 		void SetState(EnemyState* newState);
 
 		void ChasePlayer();
@@ -34,9 +39,19 @@ class DAYBREAK_API ADaybreakAIController : public AAIController {
 	protected:
 		ADaybreakEnemyCharacter* pawn;
 		AActor* playerActor;
+		FVector PortalLocation;
 
 		EnemyState* CurrentState;
+		ADayNightCycle* DayNightCycle;
 		
 		void RunState();
 		void CheckPawns();
+
+		//Listeners
+		UFUNCTION()
+		void OnDayStart(int DayLengthSeconds);
+
+		UFUNCTION()
+		void OnNightStart();
+
 };
