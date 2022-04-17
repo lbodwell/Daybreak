@@ -4,6 +4,8 @@
 #include "DayNightCycle.h"
 #include "Components/SkyLightComponent.h"
 #include <cmath>
+#include "Engine.h"
+#include "DaybreakCharacter.h"
 
 // Sets default values
 ADayNightCycle::ADayNightCycle() {
@@ -34,6 +36,9 @@ void ADayNightCycle::UpdateRotation() {
 			OnNightStart.Broadcast();
 		} else if (CurrentRotation < 180 && newRotation >= 180) {
 			OnDayStart.Broadcast(DayLengthSeconds);
+
+			ADaybreakCharacter* player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+			player->DayCount += 1;
 		}
 		
 		SetRotation(newRotation);

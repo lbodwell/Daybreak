@@ -65,6 +65,10 @@ public:
 	/** Player Dark Stone storage. */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category=State)
     float DarkStone;
+
+	/** Player Day Progress storage. */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category=State)
+	int DayCount;
 	
 	/** Player sword object for blueprints. */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=Equipment)
