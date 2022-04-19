@@ -7,7 +7,6 @@
 #include "CoreMinimal.h"
 #include "Engine/DirectionalLight.h"
 #include "Engine/SkyLight.h"
-#include "Misc/OutputDeviceNull.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/Actor.h"
 #include "DayNightCycle.generated.h"
@@ -23,6 +22,8 @@ class DAYBREAK_API ADayNightCycle : public AActor {
 public:
     // Sets default values for this actor's properties
     ADayNightCycle();
+
+	void AddRotation(float Angle);
 
     bool GetIsDay();
 
@@ -73,4 +74,6 @@ private:
 
 	// amount of sky rotation per tick
 	float tickRotation;
+
+	FTimerHandle timerHandle;
 };

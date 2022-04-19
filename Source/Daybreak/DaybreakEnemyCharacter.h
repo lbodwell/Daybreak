@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "DaybreakCharacter.h"
+#include "DayNightCycle.h"
 #include "DaybreakEnemyCharacter.generated.h"
 
 class ADaybreakCharacter;
@@ -39,7 +40,10 @@ protected:
 
 	class ADaybreakCharacter* player;
 
-public:	
+public:
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<ADayNightCycle> DayNightController;
+
 	void Attack();
 
 	UFUNCTION(BlueprintCallable, Category=Attack)

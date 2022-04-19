@@ -30,6 +30,8 @@ private:
 	
 	UFUNCTION()
 	void OnDayStart(int DayLengthSeconds);
+
+	int enemiesSpawned;
 	
 	float spawnExponential;
 	float spawnFactor;
@@ -54,7 +56,6 @@ public:
 	AEnemySpawnController();
 
 	void SpawnActor();
-	int enemyCount;
-
-
+	static int EnemyCount;
+	static float EnemyValue;
 };
