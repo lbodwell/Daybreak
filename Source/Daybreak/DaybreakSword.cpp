@@ -4,6 +4,7 @@
 #include "DaybreakSword.h"
 #include "DaybreakEnemyCharacter.h"
 #include "DaybreakCharacter.h"
+#include "UObject/ConstructorHelpers.h"
 #include <Engine.h>
 
 // Sets default values
@@ -22,17 +23,41 @@ ADaybreakSword::ADaybreakSword() : IDaybreakEquipment() {
 
 	OnActorBeginOverlap.AddDynamic(this, &ADaybreakSword::Attack);
 	Hitting = false;
+
+	// Initialize audio components
+	static ConstructorHelpers::FObjectFinder<USoundCue> attackImpactCueObj(TEXT("SoundCue'/Game/Audio/Player/Attack/Player_Attack_Impact_Cue.Player_Attack_Impact_Cue'"));
+	if (attackImpactCueObj.Succeeded()) {
+		AttackImpactCue = attackImpactCueObj.Object;
+		attackImpactSound = CreateDefaultSubobject<UAudioComponent>(TEXT("AttackImpactSound"));
+		attackImpactSound->SetupAttachment(RootComponent);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> darkstoneCollectCueObj(TEXT("SoundCue'/Game/Audio/Player/Materials/Player_Darkstone_Collect_Cue.Player_Darkstone_Collect_Cue'"));
+	if (darkstoneCollectCueObj.Succeeded()) {
+		DarkstoneCollectCue = darkstoneCollectCueObj.Object;
+		darkstoneCollectSound = CreateDefaultSubobject<UAudioComponent>(TEXT("DarkstoneCollectSound"));
+		darkstoneCollectSound->SetupAttachment(RootComponent);
+	}
 }
 
 // Called when the game starts or when spawned
 void ADaybreakSword::BeginPlay() {
 	Super::BeginPlay();
+
+	// Set audio component sound cues
+	if (attackImpactSound && AttackImpactCue) {
+		attackImpactSound->SetSound(AttackImpactCue);
+	}
+	if (darkstoneCollectSound && DarkstoneCollectCue) {
+		darkstoneCollectSound->SetSound(DarkstoneCollectCue);
+	}
 }
 
 void ADaybreakSword::Upgrade() {
 	if (CurrentLevel.Index < 5) {
 		CurrentLevel = Levels[CurrentLevel.Index + 1];
 		UpdateEffect();
+		// Upgrade sound effect here
 	}
 }
 
@@ -44,11 +69,20 @@ void ADaybreakSword::Attack(class AActor* overlappedActor, class AActor* otherAc
 		// if sword hits an enemy
 		if (enemy != nullptr && Hitting) {
 			enemy->ReceiveDamage(10 + CurrentLevel.Damage * 10);
+
+			if (attackImpactSound) {
+				attackImpactSound->Play(0);
+			}
 		}
+
 
 		// if sword hits a resource
 		if (resource != nullptr && Hitting) {
 			resource->Destroy();
+
+			if (darkstoneCollectSound) {
+				darkstoneCollectSound->Play(0);
+			}
 		}
 	}
 }
