@@ -8,30 +8,59 @@
 #include "DaybreakCharacter.h"
 
 
-// Sets default values
-AEnemySpawnController::AEnemySpawnController()
-{
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+AEnemySpawnController::AEnemySpawnController() {
+	PrimaryActorTick.bCanEverTick = false;
+	
 	enemyCount = 0;
 	Player = nullptr;
 	PlayerCamera = nullptr;
-
+	spawnExponential = 2;
 }
 
 // Called when the game starts or when spawned
-void AEnemySpawnController::BeginPlay()
-{
+void AEnemySpawnController::BeginPlay() {
 	Super::BeginPlay();
+	
 	Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	PlayerCamera = Player->FindComponentByClass<UCameraComponent>();
+	
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemySpawnField::StaticClass(), SpawnFields);
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AEnemySpawnController::SpawnActor, 2.0f, true, 0.5f);
+	
+	//FTimerHandle TimerHandle;
+	//GetWorldTimerManager().SetTimer(TimerHandle, this, &AEnemySpawnController::SpawnActor, 2.0f, true, 0.5f);
+	
+	if (DayNightController) {
+		// listen to DayNightController for when day starts
+		DayNightController->OnDayStart.AddDynamic(this, &AEnemySpawnController::OnDayStart);
+	}
 }
 
-void AEnemySpawnController::SpawnActor()
-{
+void AEnemySpawnController::OnDayStart(int dayLengthSeconds) {
+	UE_LOG(LogTemp, Warning, TEXT("OnDayStart in Spawn Controller"));
+	DayLengthSeconds = dayLengthSeconds;
+	float enemiesToSpawn = 100;
+	spawnFactor = enemiesToSpawn / (float)pow(DayLengthSeconds, spawnExponential);
+	
+	GetWorldTimerManager().SetTimer(spawnTimerHandle, this, &AEnemySpawnController::SpawnTick, 0.25, true);
+}
 
+void AEnemySpawnController::SpawnTick() {
+	if (DayNightController->GetDayLengthSecondsRemaining() / DayLengthSeconds < 0.5) {
+		float expectedEnemyCount = spawnFactor * pow((DayLengthSeconds / 2 - DayNightController->GetDayLengthSecondsRemaining()) * 2, spawnExponential);
+	
+		while (expectedEnemyCount - (float)enemyCount >= 1) {
+			SpawnActor();
+			UE_LOG(LogActor, Warning, TEXT("Enemy Count: %d"), enemyCount);
+		}
+		
+		if (enemyCount >= expectedEnemyCount) {
+			GetWorldTimerManager().ClearTimer(spawnTimerHandle);
+			enemyCount = 0;
+		}
+	}
+}
+
+void AEnemySpawnController::SpawnActor() {
 	AEnemySpawnField* SpawnField = GetRandomSpawnField();
 	FVector Location;
 	FRotator Rotation = FRotator(0, 0, 0);
@@ -45,15 +74,11 @@ void AEnemySpawnController::SpawnActor()
 	}
 	
 
-
 	GetWorld()->SpawnActor<APawn>(EnemyToSpawn, Location, Rotation);
 	enemyCount++;
-	DayNightCycle->AdvanceTime(15);
 }
 
-AEnemySpawnField* AEnemySpawnController::GetRandomSpawnField()
-{
-
+AEnemySpawnField* AEnemySpawnController::GetRandomSpawnField() {
 	//For Debugging
 	int FieldsInView = SpawnFields.Num();
 
@@ -77,7 +102,7 @@ AEnemySpawnField* AEnemySpawnController::GetRandomSpawnField()
 		}
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("%d Fields in View"), FieldsInView);
+	//UE_LOG(LogTemp, Warning, TEXT("%d Fields in View"), FieldsInView);
 
 	if (SpawnFieldsOutOfView.Num() > 0) {
 
@@ -95,5 +120,3 @@ AEnemySpawnField* AEnemySpawnController::GetRandomSpawnField()
 	}
 
 }
-
-

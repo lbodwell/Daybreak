@@ -6,6 +6,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DirectionalLight.h"
+#include "Engine/SkyLight.h"
 #include "Misc/OutputDeviceNull.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/Actor.h"
@@ -13,66 +14,63 @@
 
 UCLASS()
 class DAYBREAK_API ADayNightCycle : public AActor {
-	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	ADayNightCycle();
+    GENERATED_BODY()
+
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDayStart, int, DayLengthSeconds);
+
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE(FNightStart);
+
+public:
+    // Sets default values for this actor's properties
+    ADayNightCycle();
+
+    bool GetIsDay();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+    // Called when the game starts or when spawned
+    virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+    UPROPERTY(EditAnywhere, Category=Sky)
+    int DayLengthSeconds;
 
-	/**
-	* Updates the interal current rotation based on the sun's rotation
-	*/
-	void UpdateRotation();
+    public:
+    UPROPERTY(EditAnywhere, Category=Sky)
+    ADirectionalLight* Sun;
 
-	UPROPERTY(EditAnywhere, Category = Sky)
-	ADirectionalLight* Sun;
+    UPROPERTY(EditAnywhere, Category=Sky)
+    ADirectionalLight* Moon;
 
-	UPROPERTY(EditAnywhere, Category = Sky)
-	ADirectionalLight* Moon;
-	
-	// The current rotation of the sun in degrees (0-180 for night, 180-360 for day).
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sky)
-	float CurrentRotation;
+    UPROPERTY(EditAnywhere, Category=Sky)
+    ASkyLight* SkyLight;
 
-	// Ttrue if it the sun's current rotation indicates that it is daytime and false if it is night-time.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Sky)
-	bool IsDayTime;
+    // The current rotation of the sun in degrees (0-180 for night, 180-360 for day).
+    float CurrentRotation;
 
-	/**
-	* Advances time by the specified angle relative to the position of the sun.
-	* @param Angle  The magnitude of the angle in degrees (0-360) to advance the sun's position by.
-	* @return  true if successful, otherwise false.
-	*/
-	bool AdvanceTime(float Angle);
+    // get seconds remaining in day (0 at night)
+    float GetDayLengthSecondsRemaining();
 
-	/**
-	* Extends the current day by rewinding time by the specified angle relative to the position of the sun.
-	* @param Angle  The magnitude of the angle in degrees (0-360) to rewind the sun's position by.
-	* @return  true if successful, otherwise false.
-	*/
-	bool RewindTime(float Angle);
+    int GetDayLengthSeconds();
 
+    UPROPERTY(BlueprintAssignable)
+    FDayStart OnDayStart;
+
+    UPROPERTY(BlueprintAssignable)
+    FNightStart OnNightStart;
+
+private:
 	/**
 	* Sets the time to the specified angle relative to the position of the sun.
 	* @param Angle  The angle in degrees to set the sun's position to (0-180 for night, 180-360 for day.)
 	* @return  true if successful, otherwise false.
 	*/
-	bool SetTime(float Angle);
+	void SetRotation(float angle);
 
-	/**
-	* Gets the current time in hours based on the rotation of the sun (15 degrees = 1 hour.)
-	*/
-	float GetTimeInHours();
+	// tick event for updating sky position over specified day length
+	void UpdateRotation();
 
-private:
-	// Temporary variable that needs to be in the global scope for timeout-based testing.
-	int TestAlternator;
+	// rate at which UpdateRotation is called
+	float tickRate;
+
+	// amount of sky rotation per tick
+	float tickRotation;
 };

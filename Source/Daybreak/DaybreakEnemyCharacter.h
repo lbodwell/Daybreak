@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "DaybreakCharacter.h"
 #include "DaybreakEnemyCharacter.generated.h"
+
+class ADaybreakCharacter;
 
 UCLASS()
 class DAYBREAK_API ADaybreakEnemyCharacter : public ACharacter {
@@ -14,8 +17,6 @@ public:
 	// Sets default values for this character's properties
 	ADaybreakEnemyCharacter();
 	
-	bool IsAlive;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -29,14 +30,20 @@ protected:
 	/** Whether enemy is currently attacking and should not be able to attack again yet. */
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category=State)
 	bool Attacking;
-
+	
 	bool canReceiveDamage;
+	bool canGiveDamage;
 
-	void KillCharacter(float CorpsePersistanceTime);
+	void KillCharacter(float CorpsePersistenceTime);
 	void DestroyCharacter();
+
+	class ADaybreakCharacter* player;
 
 public:	
 	void Attack();
+
+	UFUNCTION(BlueprintCallable, Category=Attack)
+	void GiveDamage();
 	
 	bool GetAttacking();
 
@@ -50,5 +57,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State)
 	int Health;
+	int AttackDamage;
+
+	bool IsAlive;
 
 };

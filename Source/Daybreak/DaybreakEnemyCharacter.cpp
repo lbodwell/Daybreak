@@ -1,16 +1,21 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "DaybreakEnemyCharacter.h"
+#include "Engine.h"
 
 // Sets default values
 ADaybreakEnemyCharacter::ADaybreakEnemyCharacter() {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	Health = 20;
+	AttackDamage = 10;
 	canReceiveDamage = true;
+	canGiveDamage = true;
 	Attacking = false;
 	IsAlive = true;
+
+	player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
 }
 
 // Called when the game starts or when spawned
@@ -37,6 +42,18 @@ void ADaybreakEnemyCharacter::Attack() {
 	}
 }
 
+// Called by AnimNotify::AttackFarthestReach in AnimBP
+void ADaybreakEnemyCharacter::GiveDamage() {
+	float capsuleRadius = 35;
+	float distance = (GetActorLocation() - player->GetActorLocation()).Size() - capsuleRadius * 2;
+	
+	if (Attacking && canGiveDamage && distance < 40) {
+		if (player != nullptr) {
+			player->ReceiveDamage(AttackDamage);
+		}
+	}
+}
+
 void ADaybreakEnemyCharacter::ReceiveDamage(int DamageAmount) {
 	if (!canReceiveDamage) return;
 
@@ -59,12 +76,12 @@ bool ADaybreakEnemyCharacter::GetAttacking() {
 	return Attacking;
 }
 
-void ADaybreakEnemyCharacter::KillCharacter(float CorpsePersistanceTime) {
+void ADaybreakEnemyCharacter::KillCharacter(float CorpsePersistenceTime) {
 	IsAlive = false;
 	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ADaybreakEnemyCharacter::DestroyCharacter, 0.1, false, CorpsePersistanceTime);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ADaybreakEnemyCharacter::DestroyCharacter, 0.1, false, CorpsePersistenceTime);
 
-	GetController()->UnPossess();
+	GetController()->Destroy();
 	GetMesh()->SetSimulatePhysics(true);
 
 	((UPrimitiveComponent*)GetRootComponent())->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
