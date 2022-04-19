@@ -19,6 +19,9 @@ protected:
 
 public:
 	IDaybreakEquipment();
+	
+	float Cost;
+	float LastCost;
 
 	float GetUpgradeProgress();
 	

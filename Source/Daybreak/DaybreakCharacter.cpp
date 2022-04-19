@@ -107,6 +107,9 @@ void ADaybreakCharacter::SetupPlayerInputComponent(class UInputComponent* player
 
     // combat
     PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ADaybreakCharacter::Attack);
+	
+	// debug
+	PlayerInputComponent->BindAction("Debug1", IE_Pressed, this, &ADaybreakCharacter::DebugOne);
 }
 
 void ADaybreakCharacter::StartJumping() {
@@ -349,4 +352,9 @@ void ADaybreakCharacter::SetMouseCursor(bool enabled) {
 		FInputModeGameOnly inputMode;
 		playerController->SetInputMode(inputMode);
 	}
+}
+
+
+void ADaybreakCharacter::DebugOne() {
+	DarkStone += 100;
 }

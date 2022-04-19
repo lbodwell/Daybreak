@@ -32,8 +32,11 @@ void UDaybreakUpgradeMenu::NativeConstruct() {
 		for (int i = 0; i < equipmentBeingUpgraded.Num(); i++) {
 			IDaybreakEquipment* equipment = equipmentBeingUpgraded[i];
 			
-			if (equipment->GetIsUpgrading()) {
-				equipment->IncreaseUpgradeProgress(0.01);
+			if (equipment->GetIsUpgrading() && GetDarkStoneAvailable() >= equipment->Cost) {
+				if (equipment->IncreaseUpgradeProgress(0.01)) {
+					player->DarkStone -= equipment->LastCost;
+					UpdateUI();
+				}
 			} else {
 				if (equipment->DecreaseUpgradeProgress(0.01)) {
 					equipmentBeingUpgraded.Remove(equipment);
@@ -64,7 +67,7 @@ void UDaybreakUpgradeMenu::NativeDestruct() {
 }
 
 void UDaybreakUpgradeMenu::StartUpgrading(IDaybreakEquipment* equipment) {
-	if (equipment) {
+	if (equipment && GetDarkStoneAvailable() >= equipment->Cost) {
 		equipment->SetIsUpgrading(true);
 		if (!equipmentBeingUpgraded.Contains(equipment)) {
 			equipmentBeingUpgraded.Add(equipment);
@@ -112,6 +115,10 @@ float UDaybreakUpgradeMenu::GetSwordUpgradeProgress() {
 
 float UDaybreakUpgradeMenu::GetArmorUpgradeProgress() {
 	return armor ? armor->GetUpgradeProgress() : 0;
+}
+
+float UDaybreakUpgradeMenu::GetDarkStoneAvailable() {
+	return player->DarkStone;
 }
 
  void UDaybreakUpgradeMenu::UpdateUI_Implementation() {

@@ -19,6 +19,8 @@ ADaybreakSword::ADaybreakSword() : IDaybreakEquipment() {
 	Levels.Emplace(5, "The Sword of Darkosius", FLinearColor(0.55, 0.55, 0, 1), 1, 1, "Fire", 2400);
 	
 	CurrentLevel = Levels[0];
+	LastCost = CurrentLevel.Cost;
+	Cost = Levels[1].Cost;
 
 	OnActorBeginOverlap.AddDynamic(this, &ADaybreakSword::Attack);
 	Hitting = false;
@@ -30,8 +32,14 @@ void ADaybreakSword::BeginPlay() {
 }
 
 void ADaybreakSword::Upgrade() {
-	if (CurrentLevel.Index < 5) {
+	if (CurrentLevel.Index < 5) {		
 		CurrentLevel = Levels[CurrentLevel.Index + 1];
+		LastCost = CurrentLevel.Cost;
+		
+		if (CurrentLevel.Index < 5) {
+			Cost = Levels[CurrentLevel.Index + 1].Cost;
+		}
+		
 		UpdateEffect();
 	}
 }

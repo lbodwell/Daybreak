@@ -19,6 +19,8 @@ ADaybreakArmor::ADaybreakArmor() : IDaybreakEquipment() {
 	Levels.Emplace(5, "The Armor of Darkosius", FLinearColor(0.55, 0.55, 0, 1), 1, 1, 1, 1, 2800);
 	
 	CurrentLevel = Levels[0];
+	LastCost = CurrentLevel.Cost;
+	Cost = Levels[1].Cost;
 }
 
 // Called when the game starts or when spawned
@@ -29,6 +31,11 @@ void ADaybreakArmor::BeginPlay() {
 void ADaybreakArmor::Upgrade() {
 	if (CurrentLevel.Index < 5) {
 		CurrentLevel = Levels[CurrentLevel.Index + 1];
+		LastCost = CurrentLevel.Cost;
+		
+		if (CurrentLevel.Index < 5) {
+			Cost = Levels[CurrentLevel.Index + 1].Cost;
+		}
 		
 		ADaybreakCharacter* player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 		player->UpdateHealth();
