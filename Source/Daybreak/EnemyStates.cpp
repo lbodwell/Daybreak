@@ -123,6 +123,7 @@ void SwarmPortal::run(ADaybreakAIController* controller) {
 		controller->SetState(new AttackPortal);
 		return;
 	}
+
 	//else if (PlayerDistanceCheck(controller, 250, new ChasePlayerNight)) { return; }
 
 	else {

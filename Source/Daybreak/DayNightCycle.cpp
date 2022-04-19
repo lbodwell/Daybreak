@@ -32,7 +32,11 @@ void ADayNightCycle::UpdateRotation() {
 			newRotation -= 360;
 			GetWorld()->GetTimerManager().ClearTimer(timerHandle);
 			UE_LOG(LogActor, Warning, TEXT("It should be night now"));
-			OnNightStart.Broadcast();
+			FTimerHandle TimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&]()
+				{
+					OnNightStart.Broadcast();
+				}, 1, false);
 		} else if (CurrentRotation < 180 && newRotation >= 180) {
 			OnDayStart.Broadcast(DayLengthSeconds);
 			UE_LOG(LogActor, Warning, TEXT("It should be day now"));
@@ -50,7 +54,11 @@ void ADayNightCycle::AddRotation(float Angle) {
 			newRotation -= 360;
 			GetWorld()->GetTimerManager().ClearTimer(timerHandle);
 			UE_LOG(LogActor, Warning, TEXT("It should be night now"));
-			OnNightStart.Broadcast();
+			FTimerHandle TimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&]()
+				{
+					OnNightStart.Broadcast();
+				}, 1, false);
 		} else if (CurrentRotation < 180 && newRotation >= 180) {
 			OnDayStart.Broadcast(DayLengthSeconds);
 			UE_LOG(LogActor, Warning, TEXT("It should be day now"));

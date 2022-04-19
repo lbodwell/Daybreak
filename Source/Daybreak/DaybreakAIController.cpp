@@ -34,7 +34,6 @@ void ADaybreakAIController::BeginPlay() {
 
 	//attach listeners
 	if (DayNightCycle) {
-		// listen to DayNightController for when day/night starts
 		DayNightCycle->OnDayStart.AddDynamic(this, &ADaybreakAIController::OnDayStart);
 		DayNightCycle->OnNightStart.AddDynamic(this, &ADaybreakAIController::OnNightStart);
 	}
