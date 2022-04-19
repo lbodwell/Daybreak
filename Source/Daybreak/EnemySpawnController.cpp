@@ -35,6 +35,9 @@ void AEnemySpawnController::BeginPlay() {
 		// listen to DayNightController for when day starts
 		DayNightController->OnDayStart.AddDynamic(this, &AEnemySpawnController::OnDayStart);
 	}
+
+	EnemyCount = 0;
+	EnemyValue = 0;
 }
 
 void AEnemySpawnController::OnDayStart(int dayLengthSeconds) {
