@@ -55,7 +55,6 @@ void AEnemySpawnController::SpawnTick() {
 	
 		while (expectedEnemyCount - (float) enemiesSpawned >= 1) {
 			SpawnActor();
-			UE_LOG(LogActor, Warning, TEXT("Enemies spawned: %d"), enemiesSpawned);
 			UE_LOG(LogActor, Warning, TEXT("Enemy count: %d"), EnemyCount);
 		}
 		

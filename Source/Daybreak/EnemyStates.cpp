@@ -93,7 +93,7 @@ void AttackPlayer::enter(ADaybreakAIController* controller) {
 
 void AttackPlayer::run(ADaybreakAIController* controller)
 {
-	UE_LOG(LogTemp, Warning, TEXT("In Attack Player"));
+	//UE_LOG(LogTemp, Warning, TEXT("In Attack Player"));
 
 	//if out of range transition to chase player
 	if (controller->GetDistanceToPlayer() > 40) {
