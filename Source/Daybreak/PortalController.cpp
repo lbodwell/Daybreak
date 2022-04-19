@@ -29,6 +29,7 @@ void UPortalController::PortalTick() {
 				if (timeActiveSeconds >= ActivationDurationSeconds) {
 					UE_LOG(LogTemp, Warning, TEXT("Portal inactive"));
 					// Broadcast portal deactivated here
+					OnPortalDeactivate.Broadcast();
 					IsActive = false;
 					timeActiveSeconds = 0;
 				} else {
@@ -63,6 +64,7 @@ void UPortalController::PortalTick() {
 				if (rand <= activationProbability) {
 					UE_LOG(LogTemp, Warning, TEXT("Portal active"));
 					// Broadcast portal activated here
+					OnPortalActivate.Broadcast();
 					IsActive = true;
 					timeInactiveSeconds = 0;
 					numActivationsThisNight++;

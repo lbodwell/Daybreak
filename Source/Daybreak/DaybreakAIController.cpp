@@ -5,8 +5,11 @@
 #include "EnemyStates.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
+#include "Navigation/CrowdFollowingComponent.h"
 
-ADaybreakAIController:: ADaybreakAIController() {
+ADaybreakAIController:: ADaybreakAIController(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent"))) {
+
 }
 
 void ADaybreakAIController::BeginPlay() {
@@ -23,14 +26,21 @@ void ADaybreakAIController::BeginPlay() {
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Portal"), PortalMeshes);
 	PortalLocation = PortalMeshes[0]->GetActorLocation();
 
+	PortalController = PortalMeshes[0]->FindComponentByClass<UPortalController>();
+
 	TArray<AActor*> DayNightCycles;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADayNightCycle::StaticClass(), DayNightCycles);
 	DayNightCycle = dynamic_cast<ADayNightCycle*>(DayNightCycles[0]);
 
+	//attach listeners
 	if (DayNightCycle) {
 		// listen to DayNightController for when day/night starts
 		DayNightCycle->OnDayStart.AddDynamic(this, &ADaybreakAIController::OnDayStart);
 		DayNightCycle->OnNightStart.AddDynamic(this, &ADaybreakAIController::OnNightStart);
+	}
+	if (PortalController) {
+		PortalController->OnPortalActivate.AddDynamic(this, &ADaybreakAIController::OnPortalActivate);
+		PortalController->OnPortalDeactivate.AddDynamic(this, &ADaybreakAIController::OnPortalDeactivate);
 	}
 	
 	FTimerHandle timerHandle;
@@ -72,6 +82,17 @@ void ADaybreakAIController::OnNightStart() {
 	UE_LOG(LogTemp, Warning, TEXT("OnNightStart"));
 	SetState(new Nighttime);
 }
+
+void ADaybreakAIController::OnPortalActivate() {
+	UE_LOG(LogTemp, Warning, TEXT("OnPortalActivate"));
+	SetState(new SwarmPortal);
+}
+
+void ADaybreakAIController::OnPortalDeactivate() {
+	UE_LOG(LogTemp, Warning, TEXT("OnPortalDeactivate"));
+	SetState(new ChasePlayerNight);
+}
+
 
 
 //Helper Functions
