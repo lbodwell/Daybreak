@@ -109,7 +109,7 @@ void AttackPlayer::run(ADaybreakAIController* controller)
 */
 
 void Nighttime::run(ADaybreakAIController* controller) {
-	controller->SetState(new SwarmPortal);
+	controller->SetState(new ChasePlayerNight);
 }
 
 
@@ -123,7 +123,7 @@ void SwarmPortal::run(ADaybreakAIController* controller) {
 		controller->SetState(new AttackPortal);
 		return;
 	}
-	else if (PlayerDistanceCheck(controller, 250, new ChasePlayerNight)) { return; }
+	//else if (PlayerDistanceCheck(controller, 250, new ChasePlayerNight)) { return; }
 
 	else {
 		//run to portal
@@ -158,11 +158,11 @@ void AttackPortal::run(ADaybreakAIController* controller) {
 void ChasePlayerNight::run(ADaybreakAIController* controller)
 {
 	//get player location
-	float playerDist = controller->GetDistanceToPlayer();
+	//float playerDist = controller->GetDistanceToPlayer();
 
-	if (playerDist > 700) { controller->SetState(new SwarmPortal); return; }
+	//if (playerDist > 700) { controller->SetState(new SwarmPortal); return; }
 
-	else if (PlayerDistanceCheck(controller, 40, new AttackPlayer)) { return; }
+	if (PlayerDistanceCheck(controller, 40, new AttackPlayer)) { return; }
 
 	else { controller->ChasePlayer(); }
 
