@@ -100,11 +100,10 @@ void ADaybreakSword::Attack(class AActor* overlappedActor, class AActor* otherAc
 
 		// if sword hits a resource
 		if (resource != nullptr && Hitting) {
-			resource->Damage(2 + CurrentLevel.Damage * 10);
-
 			if (darkstoneCollectSound) {
 				darkstoneCollectSound->Play(0);
 			}
+			resource->Damage(2 + CurrentLevel.Damage * 10);
 		}
 	}
 }
