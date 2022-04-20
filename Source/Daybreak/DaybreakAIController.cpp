@@ -25,7 +25,7 @@ void ADaybreakAIController::BeginPlay() {
 	TArray<AActor*> PortalMeshes;
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Portal"), PortalMeshes);
 	PortalLocation = PortalMeshes[0]->GetActorLocation();
-
+	
 	PortalController = PortalMeshes[0]->FindComponentByClass<UPortalController>();
 
 	TArray<AActor*> DayNightCycles;
