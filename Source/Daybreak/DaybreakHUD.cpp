@@ -9,6 +9,7 @@
 #include "DaybreakCharacter.h"
 #include "DaybreakSword.h"
 #include "DaybreakArmor.h"
+#include "EnemySpawnController.h"
 
 bool UDaybreakHUD::Initialize() {
 	const bool success = Super::Initialize();
@@ -77,7 +78,7 @@ void UDaybreakHUD::UpdateDayNightIndicator() {
 		}
 		// display enemy count remaining for nighttime
 		else {
-			DayNightText = FString(TEXT("0"));
+			DayNightText = FString::FromInt(AEnemySpawnController::EnemyCount);
 		}
 	}
 }
