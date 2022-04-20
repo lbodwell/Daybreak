@@ -83,7 +83,7 @@ void ADaybreakEnemyCharacter::KillCharacter(float CorpsePersistenceTime) {
 
 	int enemyCount = --AEnemySpawnController::EnemyCount;
 	UE_LOG(LogActor, Warning, TEXT("Enemy Count: %d"), enemyCount);
-
+	
 	if (DayNightController && !DayNightController->GetIsDay()) {
 		float value = AEnemySpawnController::EnemyValue;
 		DayNightController->AddRotation(value);
