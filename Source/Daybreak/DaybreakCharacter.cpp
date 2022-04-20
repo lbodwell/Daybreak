@@ -206,7 +206,8 @@ void ADaybreakCharacter::Attack() {
 void ADaybreakCharacter::Interact() {
 	if (InputEnabled() && interactable) {
 		//UE_LOG(LogActor, Warning, TEXT("Interactable: %s"), *(interactable->GetName()));
-		if (interactable->GetName().StartsWith("_Anvil")) {
+		
+		if (interactable->ActorHasTag("Anvil")) {
 			// add upgrade menu widget to viewport
 			if (UpgradeMenuWidget != nullptr) {
 				UpgradeMenu = CreateWidget<UUserWidget>(GetWorld(), UpgradeMenuWidget);
