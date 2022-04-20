@@ -225,11 +225,18 @@ void ADaybreakCharacter::Exit() {
 	if (UpgradeMenu) {
 		UpgradeMenu->RemoveFromViewport();
 		UpgradeMenu = nullptr;
-	} else if (PauseMenu) {
+	}
+	else if (PauseMenu) {
 		PauseMenu->RemoveFromViewport();
 		PauseMenu = nullptr;
 		SetMouseCursor(false);
-	} else {
+	} 
+	else if (DeathScreen) {
+		DeathScreen->RemoveFromViewport();
+		DeathScreen = nullptr;
+		SetMouseCursor(false);
+	} 
+	else {
 		if (PauseMenuWidget != nullptr) {
 			PauseMenu = CreateWidget<UUserWidget>(GetWorld(), PauseMenuWidget);
 			if (PauseMenu) {
@@ -244,6 +251,7 @@ void ADaybreakCharacter::ReceiveDamage(int amount) {
 	Health -= amount;
 	
 	if (Health <= 0) {
+		Health = 0;
 		KillPlayer(0.2);
 	}
 }
@@ -260,12 +268,18 @@ void ADaybreakCharacter::KillPlayer(float CorpsePersistenceTime) {
 	*/
 
 	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ADaybreakCharacter::Destroy, 0.1, false, CorpsePersistenceTime);
-	
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ADaybreakCharacter::Destroy, 0.1, false, CorpsePersistenceTime);	
 }
 
 void ADaybreakCharacter::Destroy() {
-	UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Type::Quit, false);
+//	UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Type::Quit, false);
+	if (DeathScreenWidget != nullptr) {
+		DeathScreen = CreateWidget<UUserWidget>(GetWorld(), DeathScreenWidget);
+		if (DeathScreen) {
+			DeathScreen->AddToViewport();
+			SetMouseCursor(true);
+		}
+	}
 }
 
 
@@ -327,7 +341,7 @@ ADaybreakArmor* ADaybreakCharacter::GetArmor() {
 }
 
 bool ADaybreakCharacter::InputEnabled() {
-	return UpgradeMenu == nullptr && PauseMenu == nullptr;
+	return UpgradeMenu == nullptr && PauseMenu == nullptr && DeathScreen == nullptr;
 }
 
 UInputComponent* ADaybreakCharacter::GetPlayerInputComponent() {

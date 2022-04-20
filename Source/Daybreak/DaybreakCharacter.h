@@ -65,6 +65,10 @@ public:
 	/** Player Dark Stone storage. */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category=State)
     float DarkStone;
+
+	/** Player Day Progress storage. */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category=State)
+	int DayCount = 1;
 	
 	/** Player sword object for blueprints. */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=Equipment)
@@ -104,9 +108,18 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Widgets)
     TSubclassOf<class UUserWidget> PauseMenuWidget;
 	
-	/**  Upgrade menu widget object reference. */
+	/**  Pause menu widget object reference. */
 	UUserWidget* PauseMenu;
 	
+
+	/**  Death screen widget class. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Widgets)
+	TSubclassOf<class UUserWidget> DeathScreenWidget;
+
+	/**  Death screen widget object reference. */
+	UUserWidget* DeathScreen;
+
+
 	/** Montages to play for attacking. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
     UAnimMontage* AttackLeftMontage;
