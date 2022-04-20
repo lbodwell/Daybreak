@@ -47,11 +47,10 @@ void ADaybreakEnemyCharacter::Attack() {
 
 // Called by AnimNotify::AttackFarthestReach in AnimBP
 void ADaybreakEnemyCharacter::GiveDamage() {
-
 	float capsuleRadius = 35;
 	float distanceToPlayer = (GetActorLocation() - player->GetActorLocation()).Size() - capsuleRadius * 2;
 	float distanceToPortal = dynamic_cast<ADaybreakAIController*>(GetController())->GetDistanceToPortal();
-	
+
 	if (Attacking && canGiveDamage) {
 		if (distanceToPlayer < 40) {
 			if (player != nullptr) {
@@ -61,7 +60,7 @@ void ADaybreakEnemyCharacter::GiveDamage() {
 		if (distanceToPortal < 200) {
 			dynamic_cast<ADaybreakGameMode*>(UGameplayStatics::GetGameMode(GetWorld()))->DamagePortal(AttackDamage);
 		}
-		
+
 	}
 }
 

@@ -92,6 +92,6 @@ void ADaybreakGameMode::DamagePortal(int DamageAmount) {
 
 	if (PortalHealth <= 0) {
 		//kill player
-		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->Destroy();
+		dynamic_cast<ADaybreakCharacter*>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))->Destroy();
 	}
 }
