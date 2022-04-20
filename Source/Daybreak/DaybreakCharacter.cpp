@@ -54,12 +54,19 @@ ADaybreakCharacter::ADaybreakCharacter() {
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
     FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Initialize sounds
+	// Initialize audio components
 	static ConstructorHelpers::FObjectFinder<USoundCue> attackSwingCueObj(TEXT("SoundCue'/Game/Audio/Player/Attack/Player_Attack_Swing_Cue.Player_Attack_Swing_Cue'"));
 	if (attackSwingCueObj.Succeeded()) {
 		AttackSwingCue = attackSwingCueObj.Object;
 		attackSwingSound = CreateDefaultSubobject<UAudioComponent>(TEXT("AttackSwingSound"));
 		attackSwingSound->SetupAttachment(RootComponent);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> anvilInteractSoundObj(TEXT("SoundCue'/Game/Audio/Player/UI/Anvil/UI_Anvil_Interact_Cue.UI_Anvil_Interact_Cue'"));
+	if (anvilInteractSoundObj.Succeeded()) {
+		AnvilInteractCue = anvilInteractSoundObj.Object;
+		anvilInteractSound = CreateDefaultSubobject<UAudioComponent>(TEXT("AnvilInteractSound"));
+		anvilInteractSound->SetupAttachment(RootComponent);
 	}
 }
 
@@ -80,9 +87,12 @@ void ADaybreakCharacter::BeginPlay() {
 	// start sphere tracing for interactables
 	GetWorld()->GetTimerManager().SetTimer(InteractableSphereTraceTimerHandle, this, &ADaybreakCharacter::SphereTraceForInteractables, 0.25, true);
 
-	// Set audio component sound
+	// Set audio component sound cues
 	if (attackSwingSound && AttackSwingCue) {
 		attackSwingSound->SetSound(AttackSwingCue);
+	}
+	if (anvilInteractSound && AnvilInteractCue) {
+		anvilInteractSound->SetSound(AnvilInteractCue);
 	}
 }
 
@@ -228,6 +238,9 @@ void ADaybreakCharacter::Interact() {
 				UpgradeMenu = CreateWidget<UUserWidget>(GetWorld(), UpgradeMenuWidget);
 				if (UpgradeMenu) {
 					UpgradeMenu->AddToViewport();
+					if (anvilInteractSound && !anvilInteractSound->IsPlaying()) {
+						anvilInteractSound->Play(0);
+					}
 				}
 			}
 		}

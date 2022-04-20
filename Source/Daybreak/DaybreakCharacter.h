@@ -36,6 +36,7 @@ class ADaybreakCharacter : public ACharacter {
 private:
 	APlayerController* playerController;
 	UAudioComponent* attackSwingSound;
+	UAudioComponent* anvilInteractSound;
 
 public:
     ADaybreakCharacter();
@@ -119,6 +120,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 	USoundCue* AttackSwingCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	USoundCue* AnvilInteractCue;
 	
 	/** Sword actor class. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Equipment)

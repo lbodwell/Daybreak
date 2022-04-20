@@ -45,10 +45,10 @@ void ADaybreakSword::BeginPlay() {
 	Super::BeginPlay();
 
 	// Set audio component sound cues
-	if (attackImpactSound && AttackImpactCue) {
+	if (attackImpactSound && AttackImpactCue && !attackImpactSound->IsPlaying()) {
 		attackImpactSound->SetSound(AttackImpactCue);
 	}
-	if (darkstoneCollectSound && DarkstoneCollectCue) {
+	if (darkstoneCollectSound && DarkstoneCollectCue && !darkstoneCollectSound->IsPlaying()) {
 		darkstoneCollectSound->SetSound(DarkstoneCollectCue);
 	}
 }
