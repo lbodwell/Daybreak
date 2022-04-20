@@ -2,7 +2,9 @@
 
 #include "DaybreakEnemyCharacter.h"
 #include "EnemySpawnController.h"
+#include "DaybreakAIController.h"
 #include "Engine.h"
+#include "DaybreakGameMode.h"
 
 // Sets default values
 ADaybreakEnemyCharacter::ADaybreakEnemyCharacter() {
@@ -19,7 +21,7 @@ ADaybreakEnemyCharacter::ADaybreakEnemyCharacter() {
 // Called when the game starts or when spawned
 void ADaybreakEnemyCharacter::BeginPlay() {
 	Super::BeginPlay();
-	
+
 	player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 }
 
@@ -45,12 +47,19 @@ void ADaybreakEnemyCharacter::Attack() {
 // Called by AnimNotify::AttackFarthestReach in AnimBP
 void ADaybreakEnemyCharacter::GiveDamage() {
 	float capsuleRadius = 40;
-	float distance = (GetActorLocation() - player->GetActorLocation()).Size() - capsuleRadius * 2;
-	
-	if (Attacking && canGiveDamage && distance < 40) {
-		if (player != nullptr) {
-			player->ReceiveDamage(AttackDamage);
+	float distanceToPlayer = (GetActorLocation() - player->GetActorLocation()).Size() - capsuleRadius * 2;
+	float distanceToPortal = dynamic_cast<ADaybreakAIController*>(GetController())->GetDistanceToPortal();
+
+	if (Attacking && canGiveDamage) {
+		if (distanceToPlayer < 40) {
+			if (player != nullptr) {
+				player->ReceiveDamage(AttackDamage);
+			}
 		}
+		if (distanceToPortal < 200) {
+			dynamic_cast<ADaybreakGameMode*>(UGameplayStatics::GetGameMode(GetWorld()))->DamagePortal(AttackDamage);
+		}
+
 	}
 }
 
@@ -83,7 +92,7 @@ void ADaybreakEnemyCharacter::KillCharacter(float CorpsePersistenceTime) {
 
 	int enemyCount = --AEnemySpawnController::EnemyCount;
 	UE_LOG(LogActor, Warning, TEXT("Enemy Count: %d"), enemyCount);
-	
+
 	if (DayNightController && !DayNightController->GetIsDay()) {
 		float value = AEnemySpawnController::EnemyValue;
 		DayNightController->AddRotation(value);

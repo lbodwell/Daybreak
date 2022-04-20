@@ -68,7 +68,6 @@ void Patrol::run(ADaybreakAIController* controller)
 *	CHASE PLAYER
 */
 
-
 void ChasePlayerDay::run(ADaybreakAIController* controller)
 {
 	//get player location

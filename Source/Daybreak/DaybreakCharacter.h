@@ -7,6 +7,8 @@
 #include "DaybreakSword.h"
 #include "DaybreakArmor.h"
 #include "GameFramework/PlayerController.h"
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 #include "DaybreakCharacter.generated.h"
 
 class ADaybreakSword;
@@ -33,6 +35,8 @@ class ADaybreakCharacter : public ACharacter {
 	
 private:
 	APlayerController* playerController;
+	UAudioComponent* attackSwingSound;
+	UAudioComponent* anvilInteractSound;
 
 public:
     ADaybreakCharacter();
@@ -65,6 +69,10 @@ public:
 	/** Player Dark Stone storage. */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category=State)
     float DarkStone;
+
+	/** Player Day Progress storage. */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category=State)
+	int DayCount = 1;
 	
 	/** Player sword object for blueprints. */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=Equipment)
@@ -104,15 +112,30 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Widgets)
     TSubclassOf<class UUserWidget> PauseMenuWidget;
 	
-	/**  Upgrade menu widget object reference. */
+	/**  Pause menu widget object reference. */
 	UUserWidget* PauseMenu;
 	
+
+	/**  Death screen widget class. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Widgets)
+	TSubclassOf<class UUserWidget> DeathScreenWidget;
+
+	/**  Death screen widget object reference. */
+	UUserWidget* DeathScreen;
+
+
 	/** Montages to play for attacking. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
     UAnimMontage* AttackLeftMontage;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
     UAnimMontage* AttackRightMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	USoundCue* AttackSwingCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	USoundCue* AnvilInteractCue;
 	
 	/** Sword actor class. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Equipment)

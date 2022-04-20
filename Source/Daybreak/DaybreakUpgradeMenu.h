@@ -15,47 +15,47 @@ class DAYBREAK_API UDaybreakUpgradeMenu : public UUserWidget {
 	
 	DECLARE_DELEGATE_OneParam(FOnUpgrade, IDaybreakEquipment*);
 	
-	public:
-		// sword getters for UI
-		UFUNCTION(BlueprintCallable)
-		FSwordLevel GetCurrentSwordLevel();
+public:
+	// sword getters for UI
+	UFUNCTION(BlueprintCallable)
+	FSwordLevel GetCurrentSwordLevel();
 		
-		UFUNCTION(BlueprintCallable)
-		FSwordLevel GetNextSwordLevel();
+	UFUNCTION(BlueprintCallable)
+	FSwordLevel GetNextSwordLevel();
 		
-		UFUNCTION(BlueprintCallable)
-		float GetSwordUpgradeProgress();
+	UFUNCTION(BlueprintCallable)
+	float GetSwordUpgradeProgress();
 		
-		// armor getters for UI
-		UFUNCTION(BlueprintCallable)
-		FArmorLevel GetCurrentArmorLevel();
+	// armor getters for UI
+	UFUNCTION(BlueprintCallable)
+	FArmorLevel GetCurrentArmorLevel();
 		
-		UFUNCTION(BlueprintCallable)
-		FArmorLevel GetNextArmorLevel();
+	UFUNCTION(BlueprintCallable)
+	FArmorLevel GetNextArmorLevel();
 		
-		UFUNCTION(BlueprintCallable)
-		float GetArmorUpgradeProgress();
-		
-		UFUNCTION(BlueprintCallable)
-		float GetDarkStoneAvailable();
-		
-		UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-		void UpdateUI();
+	UFUNCTION(BlueprintCallable)
+	float GetArmorUpgradeProgress();
+	
+	UFUNCTION(BlueprintCallable)
+	float GetDarkStoneAvailable();
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void UpdateUI();
 		
 	
-	protected:
-		virtual bool Initialize() override;
-		virtual void NativeConstruct() override;
-		virtual void NativeDestruct() override;
+protected:
+	virtual bool Initialize() override;
+	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 		
-		ADaybreakCharacter* player;
-		ADaybreakSword* sword;
-		ADaybreakArmor* armor;
+	ADaybreakCharacter* player;
+	ADaybreakSword* sword;
+	ADaybreakArmor* armor;
 		
-		TArray<IDaybreakEquipment*> equipmentBeingUpgraded;
+	TArray<IDaybreakEquipment*> equipmentBeingUpgraded;
 		
-		FTimerHandle upgradeTimerHandle;
+	FTimerHandle upgradeTimerHandle;
 				
-		void StartUpgrading(IDaybreakEquipment* equipment);
-		void StopUpgrading(IDaybreakEquipment* equipment);
+	void StartUpgrading(IDaybreakEquipment* equipment);
+	void StopUpgrading(IDaybreakEquipment* equipment);
 };
