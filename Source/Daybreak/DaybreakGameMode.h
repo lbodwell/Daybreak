@@ -23,6 +23,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category=State)
     float PortalHealth;
 
+	UFUNCTION(BlueprintCallable)
+	void DamagePortal(int DamageAmount);
+
 protected:
 	/**  HUD widget. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Widgets)

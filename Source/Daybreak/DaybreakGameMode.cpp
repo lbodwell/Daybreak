@@ -86,3 +86,12 @@ void ADaybreakGameMode::BeginPlay() {
 	ShuffleAndRemove(ResourcesLevel2);
 	ShuffleAndRemove(ResourcesLevel3);
 }
+
+void ADaybreakGameMode::DamagePortal(int DamageAmount) {
+	PortalHealth -= DamageAmount;
+
+	if (PortalHealth <= 0) {
+		//kill player
+		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->Destroy();
+	}
+}
