@@ -76,6 +76,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 	USoundCue* DarkstoneCollectCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	USoundCue* WeaponUpgradeCue;
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void UpdateEffect();
@@ -88,6 +91,7 @@ public:
 private:
 	UAudioComponent* attackImpactSound;
 	UAudioComponent* darkstoneCollectSound;
+	UAudioComponent* weaponUpgradeSound;
 
 protected:
 	// Called when the game starts or when spawned

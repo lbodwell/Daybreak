@@ -4,6 +4,7 @@
 #include "DaybreakArmor.h"
 #include "DaybreakEnemyCharacter.h"
 #include "DaybreakCharacter.h"
+#include "UObject/ConstructorHelpers.h"
 #include <Engine.h>
 
 // Sets default values
@@ -19,16 +20,32 @@ ADaybreakArmor::ADaybreakArmor() : IDaybreakEquipment() {
 	Levels.Emplace(5, "The Armor of Darkosius", FLinearColor(0.55, 0.55, 0, 1), 1, 1, 1, 1, 2800);
 	
 	CurrentLevel = Levels[0];
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> armorUpgradeCueObj(TEXT("SoundCue'/Game/Audio/Player/UI/Anvil/UI_Anvil_Armor_Upgrade_Cue.UI_Anvil_Armor_Upgrade_Cue'"));
+	if (armorUpgradeCueObj.Succeeded()) {
+		ArmorUpgradeCue = armorUpgradeCueObj.Object;
+		armorUpgradeSound = CreateDefaultSubobject<UAudioComponent>(TEXT("ArmorUpgradeSound"));
+		armorUpgradeSound->SetupAttachment(RootComponent);
+	}
 }
 
 // Called when the game starts or when spawned
 void ADaybreakArmor::BeginPlay() {
 	Super::BeginPlay();
+
+	// Set audio component sound cues
+	if (armorUpgradeSound) {
+		armorUpgradeSound->SetSound(ArmorUpgradeCue);
+	}
 }
 
 void ADaybreakArmor::Upgrade() {
 	if (CurrentLevel.Index < 5) {
 		CurrentLevel = Levels[CurrentLevel.Index + 1];
+
+		if (armorUpgradeSound) {
+			armorUpgradeSound->Play(0);
+		}
 		
 		ADaybreakCharacter* player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 		player->UpdateHealth();

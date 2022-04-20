@@ -38,6 +38,13 @@ ADaybreakSword::ADaybreakSword() : IDaybreakEquipment() {
 		darkstoneCollectSound = CreateDefaultSubobject<UAudioComponent>(TEXT("DarkstoneCollectSound"));
 		darkstoneCollectSound->SetupAttachment(RootComponent);
 	}
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> weaponUpgradeCueObj(TEXT("SoundCue'/Game/Audio/Player/UI/Anvil/UI_Anvil_Weapon_Upgrade_Cue.UI_Anvil_Weapon_Upgrade_Cue'"));
+	if (weaponUpgradeCueObj.Succeeded()) {
+		WeaponUpgradeCue = weaponUpgradeCueObj.Object;
+		weaponUpgradeSound = CreateDefaultSubobject<UAudioComponent>(TEXT("WeaponUpgradeSound"));
+		weaponUpgradeSound->SetupAttachment(RootComponent);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -45,11 +52,14 @@ void ADaybreakSword::BeginPlay() {
 	Super::BeginPlay();
 
 	// Set audio component sound cues
-	if (attackImpactSound && AttackImpactCue && !attackImpactSound->IsPlaying()) {
+	if (attackImpactSound) {
 		attackImpactSound->SetSound(AttackImpactCue);
 	}
-	if (darkstoneCollectSound && DarkstoneCollectCue && !darkstoneCollectSound->IsPlaying()) {
+	if (darkstoneCollectSound) {
 		darkstoneCollectSound->SetSound(DarkstoneCollectCue);
+	}
+	if (weaponUpgradeSound) {
+		weaponUpgradeSound->SetSound(WeaponUpgradeCue);
 	}
 }
 
@@ -57,6 +67,11 @@ void ADaybreakSword::Upgrade() {
 	if (CurrentLevel.Index < 5) {
 		CurrentLevel = Levels[CurrentLevel.Index + 1];
 		UpdateEffect();
+
+		if (weaponUpgradeSound) {
+			weaponUpgradeSound->Play(0);
+		}
+
 		// Upgrade sound effect here
 	}
 }
@@ -70,11 +85,10 @@ void ADaybreakSword::Attack(class AActor* overlappedActor, class AActor* otherAc
 		if (enemy != nullptr && Hitting) {
 			enemy->ReceiveDamage(10 + CurrentLevel.Damage * 10);
 
-			if (attackImpactSound) {
+			if (attackImpactSound && !attackImpactSound->IsPlaying()) {
 				attackImpactSound->Play(0);
 			}
 		}
-
 
 		// if sword hits a resource
 		if (resource != nullptr && Hitting) {
