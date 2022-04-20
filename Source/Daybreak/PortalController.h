@@ -41,6 +41,8 @@ public:
 	int ActivationDurationSeconds;
 
 	bool IsActive;
+	
+	void UpdatePortalEffect();
 
 private:
 	void PortalTick();

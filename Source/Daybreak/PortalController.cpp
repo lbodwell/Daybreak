@@ -15,6 +15,8 @@ void UPortalController::BeginPlay() {
 	Super::BeginPlay();
 	FTimerHandle portalTickTimer;
 	GetWorld()->GetTimerManager().SetTimer(portalTickTimer, this, &UPortalController::PortalTick, 1, true);
+	UpdatePortalEffect();
+	UpdatePortalEffect();
 }
 
 void UPortalController::PortalTick() {
@@ -30,6 +32,7 @@ void UPortalController::PortalTick() {
 					UE_LOG(LogTemp, Warning, TEXT("Portal inactive"));
 					// Broadcast portal deactivated here
 					OnPortalDeactivate.Broadcast();
+					UpdatePortalEffect();
 					IsActive = false;
 					timeActiveSeconds = 0;
 				} else {
@@ -65,6 +68,7 @@ void UPortalController::PortalTick() {
 					UE_LOG(LogTemp, Warning, TEXT("Portal active"));
 					// Broadcast portal activated here
 					OnPortalActivate.Broadcast();
+					UpdatePortalEffect();
 					IsActive = true;
 					timeInactiveSeconds = 0;
 					numActivationsThisNight++;
@@ -75,3 +79,11 @@ void UPortalController::PortalTick() {
 		}
 	}
 }
+
+ void UPortalController::UpdatePortalEffect() {
+	 TArray<UActorComponent*> portalPlanes = GetOwner()->GetComponentsByTag(UActorComponent::StaticClass(), FName("PortalPlane"));
+	 if (portalPlanes[0]) {
+		UE_LOG(LogActor, Warning, TEXT("%s"), portalPlanes[0]->IsActive() ? TEXT("DEACTIVATING PORTAL") : TEXT("ACTIVATING PORTAL"));
+		portalPlanes[0]->ToggleActive();
+	 }
+ } 
