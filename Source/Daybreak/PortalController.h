@@ -13,9 +13,19 @@ class DAYBREAK_API UPortalController : public UActorComponent
 {
 	GENERATED_BODY()
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPortalActivate);
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPortalDeactivate);
+
 public:	
 	// Sets default values for this component's properties
 	UPortalController();
+
+	UPROPERTY(BlueprintAssignable)
+	FPortalActivate OnPortalActivate;
+
+	UPROPERTY(BlueprintAssignable)
+	FPortalDeactivate OnPortalDeactivate;
 
 protected:
 	// Called when the game starts

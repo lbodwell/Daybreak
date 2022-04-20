@@ -4,6 +4,8 @@
 #include "DayNightCycle.h"
 #include "Components/SkyLightComponent.h"
 #include <cmath>
+#include "Engine.h"
+#include "DaybreakCharacter.h"
 
 // Sets default values
 ADayNightCycle::ADayNightCycle() {
@@ -32,11 +34,19 @@ void ADayNightCycle::UpdateRotation() {
 			newRotation -= 360;
 			GetWorld()->GetTimerManager().ClearTimer(timerHandle);
 			UE_LOG(LogActor, Warning, TEXT("It should be night now"));
-			OnNightStart.Broadcast();
+			FTimerHandle TimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&]()
+				{
+					OnNightStart.Broadcast();
+				}, 1, false);
 		} else if (CurrentRotation < 180 && newRotation >= 180) {
 			OnDayStart.Broadcast(DayLengthSeconds);
+			
 			UE_LOG(LogActor, Warning, TEXT("It should be day now"));
 			GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &ADayNightCycle::UpdateRotation, tickRate, true);
+
+			ADaybreakCharacter* player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+			player->DayCount += 1;
 		}
 
 		SetRotation(newRotation);
@@ -50,7 +60,11 @@ void ADayNightCycle::AddRotation(float Angle) {
 			newRotation -= 360;
 			GetWorld()->GetTimerManager().ClearTimer(timerHandle);
 			UE_LOG(LogActor, Warning, TEXT("It should be night now"));
-			OnNightStart.Broadcast();
+			FTimerHandle TimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&]()
+				{
+					OnNightStart.Broadcast();
+				}, 1, false);
 		} else if (CurrentRotation < 180 && newRotation >= 180) {
 			OnDayStart.Broadcast(DayLengthSeconds);
 			UE_LOG(LogActor, Warning, TEXT("It should be day now"));
