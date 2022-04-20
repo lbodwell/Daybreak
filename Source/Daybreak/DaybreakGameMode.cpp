@@ -38,4 +38,8 @@ void ADaybreakGameMode::BeginPlay() {
 
 void ADaybreakGameMode::DamagePortal(int DamageAmount) {
 	PortalHealth -= DamageAmount;
+
+	if (PortalHealth <= 0) {
+		//kill player
+	}
 }
