@@ -7,6 +7,8 @@
 #include "DaybreakSword.h"
 #include "DaybreakArmor.h"
 #include "GameFramework/PlayerController.h"
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 #include "DaybreakCharacter.generated.h"
 
 class ADaybreakSword;
@@ -33,6 +35,8 @@ class ADaybreakCharacter : public ACharacter {
 	
 private:
 	APlayerController* playerController;
+	UAudioComponent* attackSwingSound;
+	UAudioComponent* anvilInteractSound;
 
 public:
     ADaybreakCharacter();
@@ -126,6 +130,12 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
     UAnimMontage* AttackRightMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	USoundCue* AttackSwingCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	USoundCue* AnvilInteractCue;
 	
 	/** Sword actor class. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Equipment)

@@ -7,6 +7,8 @@
 #include "DestructibleResource.h"
 #include <vector>
 #include "DaybreakEquipment.h"
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 #include "DaybreakSword.generated.h"
 
 USTRUCT(BlueprintType)
@@ -68,6 +70,15 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	bool Hitting;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	USoundCue* AttackImpactCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	USoundCue* DarkstoneCollectCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	USoundCue* WeaponUpgradeCue;
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void UpdateEffect();
@@ -76,6 +87,11 @@ public:
 	void Attack(class AActor* overlappedActor, class AActor* otherActor);
 		
 	TArray<struct FSwordLevel> Levels;
+
+private:
+	UAudioComponent* attackImpactSound;
+	UAudioComponent* darkstoneCollectSound;
+	UAudioComponent* weaponUpgradeSound;
 
 protected:
 	// Called when the game starts or when spawned
