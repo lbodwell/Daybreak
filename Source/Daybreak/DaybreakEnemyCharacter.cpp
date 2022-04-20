@@ -58,7 +58,7 @@ void ADaybreakEnemyCharacter::GiveDamage() {
 				player->ReceiveDamage(AttackDamage);
 			}
 		}
-		if (distanceToPortal < 100) {
+		if (distanceToPortal < 200) {
 			dynamic_cast<ADaybreakGameMode*>(UGameplayStatics::GetGameMode(GetWorld()))->DamagePortal(AttackDamage);
 		}
 		
