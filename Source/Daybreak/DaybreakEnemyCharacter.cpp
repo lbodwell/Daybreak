@@ -13,14 +13,13 @@ ADaybreakEnemyCharacter::ADaybreakEnemyCharacter() {
 	canGiveDamage = true;
 	Attacking = false;
 	IsAlive = true;
-
-	player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-
 }
 
 // Called when the game starts or when spawned
 void ADaybreakEnemyCharacter::BeginPlay() {
 	Super::BeginPlay();
+	
+	player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 }
 
 // Called every frame
@@ -44,7 +43,7 @@ void ADaybreakEnemyCharacter::Attack() {
 
 // Called by AnimNotify::AttackFarthestReach in AnimBP
 void ADaybreakEnemyCharacter::GiveDamage() {
-	float capsuleRadius = 35;
+	float capsuleRadius = 40;
 	float distance = (GetActorLocation() - player->GetActorLocation()).Size() - capsuleRadius * 2;
 	
 	if (Attacking && canGiveDamage && distance < 40) {
