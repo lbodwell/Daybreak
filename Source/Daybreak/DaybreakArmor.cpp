@@ -27,6 +27,8 @@ ADaybreakArmor::ADaybreakArmor() : IDaybreakEquipment() {
 		armorUpgradeSound = CreateDefaultSubobject<UAudioComponent>(TEXT("ArmorUpgradeSound"));
 		armorUpgradeSound->SetupAttachment(RootComponent);
 	}
+	LastCost = CurrentLevel.Cost;
+	Cost = Levels[1].Cost;
 }
 
 // Called when the game starts or when spawned
@@ -45,6 +47,11 @@ void ADaybreakArmor::Upgrade() {
 
 		if (armorUpgradeSound) {
 			armorUpgradeSound->Play(0);
+		}
+		LastCost = CurrentLevel.Cost;
+		
+		if (CurrentLevel.Index < 5) {
+			Cost = Levels[CurrentLevel.Index + 1].Cost;
 		}
 		
 		ADaybreakCharacter* player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));

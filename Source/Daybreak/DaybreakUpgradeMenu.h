@@ -33,12 +33,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FArmorLevel GetNextArmorLevel();
 		
-		
 	UFUNCTION(BlueprintCallable)
 	float GetArmorUpgradeProgress();
-		
+	
+	UFUNCTION(BlueprintCallable)
+	float GetDarkStoneAvailable();
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void UpdateUI();
+		
 	
 protected:
 	virtual bool Initialize() override;

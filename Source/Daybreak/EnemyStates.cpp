@@ -68,7 +68,6 @@ void Patrol::run(ADaybreakAIController* controller)
 *	CHASE PLAYER
 */
 
-
 void ChasePlayerDay::run(ADaybreakAIController* controller)
 {
 	//get player location
@@ -93,8 +92,6 @@ void AttackPlayer::enter(ADaybreakAIController* controller) {
 
 void AttackPlayer::run(ADaybreakAIController* controller)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("In Attack Player"));
-
 	//if out of range transition to chase player
 	if (controller->GetDistanceToPlayer() > 40) {
 		if (IsDay) { controller->SetState(new ChasePlayerDay); return; }
@@ -111,7 +108,7 @@ void AttackPlayer::run(ADaybreakAIController* controller)
 */
 
 void Nighttime::run(ADaybreakAIController* controller) {
-	controller->SetState(new SwarmPortal);
+	controller->SetState(new ChasePlayerNight);
 }
 
 
@@ -121,11 +118,12 @@ void Nighttime::run(ADaybreakAIController* controller) {
 
 void SwarmPortal::run(ADaybreakAIController* controller) {
 	
-	if (controller->GetDistanceToPortal() < 10) {
+	if (controller->GetDistanceToPortal() < 200) {
 		controller->SetState(new AttackPortal);
 		return;
 	}
-	else if (PlayerDistanceCheck(controller, 250, new ChasePlayerNight)) { return; }
+
+	//else if (PlayerDistanceCheck(controller, 250, new ChasePlayerNight)) { return; }
 
 	else {
 		//run to portal
@@ -142,7 +140,9 @@ void SwarmPortal::run(ADaybreakAIController* controller) {
 
 void AttackPortal::run(ADaybreakAIController* controller) {
 
-	if (controller->GetDistanceToPortal() > 10) {
+	UE_LOG(LogTemp, Warning, TEXT("In Attack Portal"));
+
+	if (controller->GetDistanceToPortal() > 200) {
 		controller->SetState(new SwarmPortal);
 		return;
 	}
@@ -158,16 +158,18 @@ void AttackPortal::run(ADaybreakAIController* controller) {
 void ChasePlayerNight::run(ADaybreakAIController* controller)
 {
 	//get player location
-	float playerDist = controller->GetDistanceToPlayer();
+	//float playerDist = controller->GetDistanceToPlayer();
 
-	if (playerDist > 700) { controller->SetState(new SwarmPortal); return; }
+	//if (playerDist > 700) { controller->SetState(new SwarmPortal); return; }
 
-	else if (PlayerDistanceCheck(controller, 40, new AttackPlayer)) { return; }
+	if (PlayerDistanceCheck(controller, 40, new AttackPlayer)) { return; }
 
 	else { controller->ChasePlayer(); }
 
 }
 
+
+//Helper Functions
 bool PlayerDistanceCheck(ADaybreakAIController* controller, float acceptableDistance, EnemyState* newState) {
 
 	float playerDist = controller->GetDistanceToPlayer();
