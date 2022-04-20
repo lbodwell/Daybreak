@@ -56,6 +56,7 @@ void ADaybreakArmor::Upgrade() {
 			Cost = Levels[CurrentLevel.Index + 1].Cost;
 		}
 		
+		ADaybreakCharacter* player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 		player->UpdateHealth();
 	}
 }
