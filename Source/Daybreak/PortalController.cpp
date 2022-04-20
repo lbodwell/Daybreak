@@ -83,7 +83,6 @@ void UPortalController::PortalTick() {
  void UPortalController::UpdatePortalEffect() {
 	 TArray<UActorComponent*> portalPlanes = GetOwner()->GetComponentsByTag(UActorComponent::StaticClass(), FName("PortalPlane"));
 	 if (portalPlanes[0]) {
-		UE_LOG(LogActor, Warning, TEXT("%s"), portalPlanes[0]->IsActive() ? TEXT("DEACTIVATING PORTAL") : TEXT("ACTIVATING PORTAL"));
 		portalPlanes[0]->ToggleActive();
 	 }
  } 

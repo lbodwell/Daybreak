@@ -1,4 +1,3 @@
-
 #include "DaybreakEquipment.h"
 
 IDaybreakEquipment::IDaybreakEquipment() {

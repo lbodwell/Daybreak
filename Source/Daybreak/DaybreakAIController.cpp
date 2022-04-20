@@ -116,7 +116,9 @@ FVector ADaybreakAIController::GetRandomNearbyLocation() {
 
 void ADaybreakAIController::CheckPawns() {
 	if (pawn == nullptr || playerActor == nullptr) {
-		pawn = Cast<ADaybreakEnemyCharacter>(GetPawn());
+		if (GetPawn()) {
+			pawn = Cast<ADaybreakEnemyCharacter>(GetPawn());
+		}
 
 		ACharacter* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 		playerActor = Cast<AActor>(player);
