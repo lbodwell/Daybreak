@@ -22,27 +22,58 @@ void ADayNightCycle::BeginPlay() {
 	
 	tickRotation = 180 / (DayLengthSeconds * (1 / tickRate)); // calculate sky rotation per tick
 	
-	FTimerHandle timerHandle;
 	GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &ADayNightCycle::UpdateRotation, tickRate, true);
 }
 
 void ADayNightCycle::UpdateRotation() {
-	if (Moon != nullptr && Sun != nullptr && SkyLight != nullptr) {
+	if (Sun != nullptr && Moon != nullptr && SkyLight != nullptr) {
 		float newRotation = CurrentRotation + tickRotation;
 		if (newRotation >= 360) {
 			newRotation -= 360;
-			OnNightStart.Broadcast();
+			GetWorld()->GetTimerManager().ClearTimer(timerHandle);
+			UE_LOG(LogActor, Warning, TEXT("It should be night now"));
+			FTimerHandle TimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&]()
+				{
+					OnNightStart.Broadcast();
+				}, 1, false);
 		} else if (CurrentRotation < 180 && newRotation >= 180) {
 			OnDayStart.Broadcast(DayLengthSeconds);
+			UE_LOG(LogActor, Warning, TEXT("It should be day now"));
+			GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &ADayNightCycle::UpdateRotation, tickRate, true);
 		}
-		
+
 		SetRotation(newRotation);
 	}
 }
 
-void ADayNightCycle::SetRotation(float newRotation) {
-	if (Sun != nullptr && Moon != nullptr && SkyLight != nullptr && newRotation >= 0 && newRotation <=360) {
-		float rotation = newRotation - CurrentRotation;
+void ADayNightCycle::AddRotation(float Angle) {
+	if (Sun != nullptr && Moon != nullptr && SkyLight != nullptr && Angle > 0 && Angle < 360) {
+		float newRotation = CurrentRotation + Angle;
+		if (newRotation >= 360) {
+			newRotation -= 360;
+			GetWorld()->GetTimerManager().ClearTimer(timerHandle);
+			UE_LOG(LogActor, Warning, TEXT("It should be night now"));
+			FTimerHandle TimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&]()
+				{
+					OnNightStart.Broadcast();
+				}, 1, false);
+		} else if (CurrentRotation < 180 && newRotation >= 180) {
+			OnDayStart.Broadcast(DayLengthSeconds);
+			UE_LOG(LogActor, Warning, TEXT("It should be day now"));
+			GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &ADayNightCycle::UpdateRotation, tickRate, true);
+		}
+
+		SetRotation(newRotation);
+
+		CurrentRotation = newRotation;
+	}
+}
+
+void ADayNightCycle::SetRotation(float Angle) {
+	if (Sun != nullptr && Moon != nullptr && SkyLight != nullptr && Angle >= 0 && Angle <=360) {
+		float rotation = Angle - CurrentRotation;
 		
 		// change in rotation must be at least 0.1 to turn from turn over from -90 to 90
 		if (std::abs(rotation) < 0.1 && Sun->GetActorRotation().Pitch == -90) {
@@ -53,7 +84,7 @@ void ADayNightCycle::SetRotation(float newRotation) {
 		Moon->AddActorLocalRotation(FRotator(rotation, 0, 0));
 		SkyLight->GetLightComponent()->RecaptureSky();
 		
-		CurrentRotation = newRotation;
+		CurrentRotation = Angle;
 	}
 }
 

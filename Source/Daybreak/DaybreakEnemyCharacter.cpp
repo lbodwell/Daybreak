@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "DaybreakEnemyCharacter.h"
+#include "EnemySpawnController.h"
 #include "Engine.h"
 
 // Sets default values
@@ -79,6 +80,16 @@ void ADaybreakEnemyCharacter::KillCharacter(float CorpsePersistenceTime) {
 	IsAlive = false;
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ADaybreakEnemyCharacter::DestroyCharacter, 0.1, false, CorpsePersistenceTime);
+
+	int enemyCount = --AEnemySpawnController::EnemyCount;
+	UE_LOG(LogActor, Warning, TEXT("Enemy Count: %d"), enemyCount);
+
+	if (DayNightController && !DayNightController->GetIsDay()) {
+		float value = AEnemySpawnController::EnemyValue;
+		DayNightController->AddRotation(value);
+		UE_LOG(LogActor, Warning, TEXT("Progressing night by: %f"), value);
+		UE_LOG(LogActor, Warning, TEXT("New rotation: %f"), DayNightController->CurrentRotation);
+	}
 
 	GetController()->Destroy();
 	GetMesh()->SetSimulatePhysics(true);

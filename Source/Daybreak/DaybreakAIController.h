@@ -7,6 +7,7 @@
 #include "DaybreakEnemyCharacter.h"
 #include "EnemyState.h"
 #include "DayNightCycle.h"
+#include "PortalController.h"
 #include "DaybreakAIController.generated.h"
 
 //forward declaration to resolve circular dependency
@@ -20,7 +21,7 @@ class DAYBREAK_API ADaybreakAIController : public AAIController {
 	GENERATED_BODY()
 	
 	public:
-		ADaybreakAIController();
+		ADaybreakAIController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 		
 		virtual void BeginPlay() override;
 
@@ -43,6 +44,7 @@ class DAYBREAK_API ADaybreakAIController : public AAIController {
 
 		EnemyState* CurrentState;
 		ADayNightCycle* DayNightCycle;
+		UPortalController* PortalController;
 		
 		void RunState();
 		void CheckPawns();
@@ -53,5 +55,11 @@ class DAYBREAK_API ADaybreakAIController : public AAIController {
 
 		UFUNCTION()
 		void OnNightStart();
+
+		UFUNCTION()
+		void OnPortalActivate();
+
+		UFUNCTION()
+		void OnPortalDeactivate();
 
 };

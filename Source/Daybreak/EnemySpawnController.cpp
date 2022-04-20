@@ -7,11 +7,13 @@
 #include "EnemySpawnField.h"
 #include "DaybreakCharacter.h"
 
+int AEnemySpawnController::EnemyCount = 0;
+float AEnemySpawnController::EnemyValue = 0;
 
 AEnemySpawnController::AEnemySpawnController() {
 	PrimaryActorTick.bCanEverTick = false;
 	
-	enemyCount = 0;
+	enemiesSpawned = 0;
 	Player = nullptr;
 	PlayerCamera = nullptr;
 	spawnExponential = 2;
@@ -33,13 +35,16 @@ void AEnemySpawnController::BeginPlay() {
 		// listen to DayNightController for when day starts
 		DayNightController->OnDayStart.AddDynamic(this, &AEnemySpawnController::OnDayStart);
 	}
+
+	EnemyCount = 0;
+	EnemyValue = 0;
 }
 
 void AEnemySpawnController::OnDayStart(int dayLengthSeconds) {
 	UE_LOG(LogTemp, Warning, TEXT("OnDayStart in Spawn Controller"));
 	DayLengthSeconds = dayLengthSeconds;
-	float enemiesToSpawn = 100;
-	spawnFactor = enemiesToSpawn / (float)pow(DayLengthSeconds, spawnExponential);
+	float enemiesToSpawn = 25;
+	spawnFactor = enemiesToSpawn / (float) pow(DayLengthSeconds, spawnExponential);
 	
 	GetWorldTimerManager().SetTimer(spawnTimerHandle, this, &AEnemySpawnController::SpawnTick, 0.25, true);
 }
@@ -48,14 +53,16 @@ void AEnemySpawnController::SpawnTick() {
 	if (DayNightController->GetDayLengthSecondsRemaining() / DayLengthSeconds < 0.5) {
 		float expectedEnemyCount = spawnFactor * pow((DayLengthSeconds / 2 - DayNightController->GetDayLengthSecondsRemaining()) * 2, spawnExponential);
 	
-		while (expectedEnemyCount - (float)enemyCount >= 1) {
+		while (expectedEnemyCount - (float) enemiesSpawned >= 1) {
 			SpawnActor();
-			UE_LOG(LogActor, Warning, TEXT("Enemy Count: %d"), enemyCount);
+			UE_LOG(LogActor, Warning, TEXT("Enemy count: %d"), EnemyCount);
 		}
 		
-		if (enemyCount >= expectedEnemyCount) {
+		if (enemiesSpawned >= expectedEnemyCount) {
 			GetWorldTimerManager().ClearTimer(spawnTimerHandle);
-			enemyCount = 0;
+			EnemyValue = 180.0f / EnemyCount;
+			UE_LOG(LogActor, Warning, TEXT("Set enemy value to %f"), EnemyValue);
+			enemiesSpawned = 0;
 		}
 	}
 }
@@ -75,7 +82,8 @@ void AEnemySpawnController::SpawnActor() {
 	
 
 	GetWorld()->SpawnActor<APawn>(EnemyToSpawn, Location, Rotation);
-	enemyCount++;
+	enemiesSpawned++;
+	EnemyCount++;
 }
 
 AEnemySpawnField* AEnemySpawnController::GetRandomSpawnField() {

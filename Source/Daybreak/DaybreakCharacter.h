@@ -176,4 +176,6 @@ protected:
 	
 	void SetMouseCursor(bool enabled);
 
+	/** Debug function */
+	void DebugOne();
 };
