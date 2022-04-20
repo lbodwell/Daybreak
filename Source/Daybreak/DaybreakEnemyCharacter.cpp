@@ -2,7 +2,9 @@
 
 #include "DaybreakEnemyCharacter.h"
 #include "EnemySpawnController.h"
+#include "DaybreakAIController.h"
 #include "Engine.h"
+#include "DaybreakGameMode.h"
 
 // Sets default values
 ADaybreakEnemyCharacter::ADaybreakEnemyCharacter() {
@@ -45,13 +47,21 @@ void ADaybreakEnemyCharacter::Attack() {
 
 // Called by AnimNotify::AttackFarthestReach in AnimBP
 void ADaybreakEnemyCharacter::GiveDamage() {
+
 	float capsuleRadius = 35;
-	float distance = (GetActorLocation() - player->GetActorLocation()).Size() - capsuleRadius * 2;
+	float distanceToPlayer = (GetActorLocation() - player->GetActorLocation()).Size() - capsuleRadius * 2;
+	float distanceToPortal = dynamic_cast<ADaybreakAIController*>(GetController())->GetDistanceToPortal();
 	
-	if (Attacking && canGiveDamage && distance < 40) {
-		if (player != nullptr) {
-			player->ReceiveDamage(AttackDamage);
+	if (Attacking && canGiveDamage) {
+		if (distanceToPlayer < 40) {
+			if (player != nullptr) {
+				player->ReceiveDamage(AttackDamage);
+			}
 		}
+		if (distanceToPortal < 100) {
+			dynamic_cast<ADaybreakGameMode*>(UGameplayStatics::GetGameMode(GetWorld()))->DamagePortal(AttackDamage);
+		}
+		
 	}
 }
 

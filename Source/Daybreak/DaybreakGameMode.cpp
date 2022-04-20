@@ -35,3 +35,7 @@ void ADaybreakGameMode::BeginPlay() {
 	FInputModeGameOnly inputMode;
 	playerController->SetInputMode(inputMode);
 }
+
+void ADaybreakGameMode::DamagePortal(int DamageAmount) {
+	PortalHealth -= DamageAmount;
+}
