@@ -2,6 +2,7 @@
 
 #include "DaybreakEnemyCharacter.h"
 #include "Engine.h"
+#include "DaybreakGameMode.h"
 
 // Sets default values
 ADaybreakEnemyCharacter::ADaybreakEnemyCharacter() {
@@ -13,14 +14,13 @@ ADaybreakEnemyCharacter::ADaybreakEnemyCharacter() {
 	canGiveDamage = true;
 	Attacking = false;
 	IsAlive = true;
-
-	player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-
 }
 
 // Called when the game starts or when spawned
 void ADaybreakEnemyCharacter::BeginPlay() {
 	Super::BeginPlay();
+
+	player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 }
 
 // Called every frame
@@ -44,13 +44,21 @@ void ADaybreakEnemyCharacter::Attack() {
 
 // Called by AnimNotify::AttackFarthestReach in AnimBP
 void ADaybreakEnemyCharacter::GiveDamage() {
-	float capsuleRadius = 35;
-	float distance = (GetActorLocation() - player->GetActorLocation()).Size() - capsuleRadius * 2;
+	float capsuleRadius = 40;
+	ADaybreakGameMode* gameMode = Cast<ADaybreakGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	float distanceToPlayer = gameMode->GetDistanceToPlayer(GetActorLocation());
+	float distanceToPortal = gameMode->GetDistanceToPortal(GetActorLocation());
 	
-	if (Attacking && canGiveDamage && distance < 40) {
-		if (player != nullptr) {
-			player->ReceiveDamage(AttackDamage);
+	if (Attacking && canGiveDamage) {
+		if (distanceToPlayer < 40) {
+			if (player != nullptr) {
+				player->ReceiveDamage(AttackDamage);
+			}
 		}
+		if (distanceToPortal < 200) {
+			gameMode->DamagePortal(AttackDamage);
+		}
+
 	}
 }
 
@@ -81,7 +89,17 @@ void ADaybreakEnemyCharacter::KillCharacter(float CorpsePersistenceTime) {
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ADaybreakEnemyCharacter::DestroyCharacter, 0.1, false, CorpsePersistenceTime);
 
-	GetController()->UnPossess();
+	int enemyCount = --ADaybreakGameMode::EnemyCount;
+	UE_LOG(LogActor, Warning, TEXT("Enemy Count: %d"), enemyCount);
+
+	if (DayNightController && !DayNightController->GetIsDay()) {
+		float value = ADaybreakGameMode::EnemyValue;
+		DayNightController->AddRotation(value);
+		UE_LOG(LogActor, Warning, TEXT("Progressing night by: %f"), value);
+		UE_LOG(LogActor, Warning, TEXT("New rotation: %f"), DayNightController->CurrentRotation);
+	}
+
+	GetController()->Destroy();
 	GetMesh()->SetSimulatePhysics(true);
 
 	((UPrimitiveComponent*)GetRootComponent())->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);

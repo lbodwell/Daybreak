@@ -5,7 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "DaybreakSword.h"
+#include "DaybreakArmor.h"
+#include "GameFramework/PlayerController.h"
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 #include "DaybreakCharacter.generated.h"
+
+class ADaybreakSword;
 
 UCLASS()
 class ADaybreakCharacter : public ACharacter {
@@ -26,6 +32,11 @@ class ADaybreakCharacter : public ACharacter {
 	
     /** Returns FollowCamera subobject **/
     FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	
+private:
+	APlayerController* playerController;
+	UAudioComponent* attackSwingSound;
+	UAudioComponent* anvilInteractSound;
 
 public:
     ADaybreakCharacter();
@@ -58,10 +69,18 @@ public:
 	/** Player Dark Stone storage. */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category=State)
     float DarkStone;
+
+	/** Player Day Progress storage. */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category=State)
+	int DayCount = 1;
 	
 	/** Player sword object for blueprints. */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=Weapons)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=Equipment)
     class ADaybreakSword* Sword;
+	
+	/** Player armor object for blueprints. */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category=Equipment)
+    class ADaybreakArmor* Armor;
 
 	UFUNCTION(BlueprintCallable)
 	void ReceiveDamage(int amount);
@@ -69,7 +88,19 @@ public:
 	/** Player sword object for C++. */
 	class ADaybreakSword* GetSword();
 	
+	/** Player armor object for C++. */
+	class ADaybreakArmor* GetArmor();
+	
 	UInputComponent* GetPlayerInputComponent();
+	
+	/** Updates BaseHealth based on Armor Protection modifier. */
+	void UpdateHealth();
+	
+	/** Escape button handler */
+	void Exit();
+	
+	/** Destroys character and exits the game */
+	void Destroy();
 
 protected:
 
@@ -80,16 +111,42 @@ protected:
 	/**  Upgrade menu widget object reference. */
 	UUserWidget* UpgradeMenu;
 	
+	/**  Pause menu widget class. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Widgets)
+    TSubclassOf<class UUserWidget> PauseMenuWidget;
+	
+	/**  Pause menu widget object reference. */
+	UUserWidget* PauseMenu;
+	
+
+	/**  Death screen widget class. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Widgets)
+	TSubclassOf<class UUserWidget> DeathScreenWidget;
+
+	/**  Death screen widget object reference. */
+	UUserWidget* DeathScreen;
+
+
 	/** Montages to play for attacking. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
     UAnimMontage* AttackLeftMontage;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
     UAnimMontage* AttackRightMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	USoundCue* AttackSwingCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	USoundCue* AnvilInteractCue;
 	
 	/** Sword actor class. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Weapons)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Equipment)
 	TSubclassOf<class AActor> SwordActor;
+	
+	/** Sword actor class. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Equipment)
+	TSubclassOf<class AActor> ArmorActor;
 	
 	/** Called to start and stop sprinting */
     bool sprinting;
@@ -102,7 +159,6 @@ protected:
 	
 	/** Called for interacting with objects and exiting menus. */
 	void Interact();
-	void Exit();
 	
 	/** Called for jumping. */
 	void StartJumping();
@@ -135,13 +191,14 @@ protected:
 	/** Removes the controller and ragdolls the player */
 	void KillPlayer(float CorpsePersistenceTime);
 
-	/** Destroys character and exits the game */
-	void Destroy();
-
     virtual void SetupPlayerInputComponent(class UInputComponent* playerInputComponent) override;
 
 	FTimerHandle InteractableSphereTraceTimerHandle;
 	
 	UInputComponent* PlayerInputComponent;
+	
+	void SetMouseCursor(bool enabled);
 
+	/** Debug function */
+	void DebugOne();
 };

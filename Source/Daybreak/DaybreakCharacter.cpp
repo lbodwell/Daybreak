@@ -13,7 +13,8 @@
 #include "Blueprint/UserWidget.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetSystemLibrary.h"
-
+#include "UObject/ConstructorHelpers.h"
+#include "GameFramework/PlayerController.h"
 
 ADaybreakCharacter::ADaybreakCharacter() {
     // Set size for collision capsule
@@ -52,18 +53,47 @@ ADaybreakCharacter::ADaybreakCharacter() {
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
     FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+	// Initialize audio components
+	static ConstructorHelpers::FObjectFinder<USoundCue> attackSwingCueObj(TEXT("SoundCue'/Game/Audio/Player/Attack/Player_Attack_Swing_Cue.Player_Attack_Swing_Cue'"));
+	if (attackSwingCueObj.Succeeded()) {
+		AttackSwingCue = attackSwingCueObj.Object;
+		attackSwingSound = CreateDefaultSubobject<UAudioComponent>(TEXT("AttackSwingSound"));
+		attackSwingSound->SetupAttachment(RootComponent);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> anvilInteractSoundObj(TEXT("SoundCue'/Game/Audio/Player/UI/Anvil/UI_Anvil_Interact_Cue.UI_Anvil_Interact_Cue'"));
+	if (anvilInteractSoundObj.Succeeded()) {
+		AnvilInteractCue = anvilInteractSoundObj.Object;
+		anvilInteractSound = CreateDefaultSubobject<UAudioComponent>(TEXT("AnvilInteractSound"));
+		anvilInteractSound->SetupAttachment(RootComponent);
+	}
 }
 
 void ADaybreakCharacter::BeginPlay() {
     Super::BeginPlay();
 	
-	// attach sword to WeaponSocket
+	// get player controller
+	playerController = Cast<APlayerController>(GetController());
+	
+	// create sword and attach to WeaponSocket
 	FVector socketLocation = GetMesh()->GetSocketLocation(FName(TEXT("WeaponSocket")));
 	Sword = GetWorld()->SpawnActor<ADaybreakSword>(SwordActor, socketLocation, socketLocation.Rotation());
 	Sword->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName(TEXT("WeaponSocket")));
 	
+	// create armor
+	Armor = GetWorld()->SpawnActor<ADaybreakArmor>(ArmorActor, FVector(0, 0, 0), FRotator(0, 0, 0));
+	
 	// start sphere tracing for interactables
 	GetWorld()->GetTimerManager().SetTimer(InteractableSphereTraceTimerHandle, this, &ADaybreakCharacter::SphereTraceForInteractables, 0.25, true);
+
+	// Set audio component sound cues
+	if (attackSwingSound && AttackSwingCue) {
+		attackSwingSound->SetSound(AttackSwingCue);
+	}
+	if (anvilInteractSound && AnvilInteractCue) {
+		anvilInteractSound->SetSound(AnvilInteractCue);
+	}
 }
 
 // Called ever frame
@@ -100,10 +130,14 @@ void ADaybreakCharacter::SetupPlayerInputComponent(class UInputComponent* player
 
     // combat
     PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ADaybreakCharacter::Attack);
+	
+	// debug
+	PlayerInputComponent->BindAction("Debug1", IE_Pressed, this, &ADaybreakCharacter::DebugOne);
 }
 
 void ADaybreakCharacter::StartJumping() {
 	if (InputEnabled()) {
+		GetCharacterMovement()->JumpZVelocity = 600 + (150 * Armor->CurrentLevel.MovementSpeed);
 		Jump();
 	}
 }
@@ -165,7 +199,10 @@ void ADaybreakCharacter::CalculateMoveSpeed() {
     if (moveForwardValue != 0 && moveRightValue != 0) {
         speed *= 0.75; // 3/4 diagonal speed
     }
-    GetCharacterMovement()->MaxWalkSpeed = moveForwardValue < 0.0f ? 225 : speed; // backward speed = 225
+	speed = moveForwardValue < 0.0f ? 225 : speed; // backward speed = 225
+	speed = speed + (speed / 4 * Armor->CurrentLevel.MovementSpeed); // add Armor MovementSpeed modifier;
+	
+    GetCharacterMovement()->MaxWalkSpeed = speed; // set MaxWalkSpeed
 }
 
 void ADaybreakCharacter::StartSprinting() {
@@ -184,19 +221,30 @@ void ADaybreakCharacter::Attack() {
         if (duration > 0.f) {
             Attacking = true; // will be unset by AnimNotify::AttackHitEnd in AnimBP
             lastAttack = lastAttack == 0 ? 1 : 0; // alternate between left and right attacks
+			
+			float attackDelay = 0.9 - (Armor->CurrentLevel.AttackSpeed * 0.25); // set attack delay based on Armor AttackSpeed modifier
+			FTimerHandle timerHandle;
+			GetWorld()->GetTimerManager().SetTimer(timerHandle, [&]() { Attacking = false; }, 1, false, attackDelay);
+			if (attackSwingSound) {
+				attackSwingSound->Play(0);
+			}
         }
 	}
 }
 
 void ADaybreakCharacter::Interact() {
 	if (InputEnabled() && interactable) {
-		UE_LOG(LogActor, Warning, TEXT("Interactable: %s"), *(interactable->GetName()));
-		if (interactable->GetName().StartsWith("_Anvil")) {
+		//UE_LOG(LogActor, Warning, TEXT("Interactable: %s"), *(interactable->GetName()));
+		
+		if (interactable->ActorHasTag("Anvil")) {
 			// add upgrade menu widget to viewport
 			if (UpgradeMenuWidget != nullptr) {
 				UpgradeMenu = CreateWidget<UUserWidget>(GetWorld(), UpgradeMenuWidget);
 				if (UpgradeMenu) {
 					UpgradeMenu->AddToViewport();
+					if (anvilInteractSound && !anvilInteractSound->IsPlaying()) {
+						anvilInteractSound->Play(0);
+					}
 				}
 			}
 		}
@@ -204,9 +252,28 @@ void ADaybreakCharacter::Interact() {
 }
 
 void ADaybreakCharacter::Exit() {
-	if (UpgradeMenu != nullptr) {
+	if (UpgradeMenu) {
 		UpgradeMenu->RemoveFromViewport();
 		UpgradeMenu = nullptr;
+	}
+	else if (PauseMenu) {
+		PauseMenu->RemoveFromViewport();
+		PauseMenu = nullptr;
+		SetMouseCursor(false);
+	} 
+	else if (DeathScreen) {
+		DeathScreen->RemoveFromViewport();
+		DeathScreen = nullptr;
+		SetMouseCursor(false);
+	} 
+	else {
+		if (PauseMenuWidget != nullptr) {
+			PauseMenu = CreateWidget<UUserWidget>(GetWorld(), PauseMenuWidget);
+			if (PauseMenu) {
+				PauseMenu->AddToViewport();
+				SetMouseCursor(true);
+			}
+		}
 	}
 }
 
@@ -214,6 +281,7 @@ void ADaybreakCharacter::ReceiveDamage(int amount) {
 	Health -= amount;
 	
 	if (Health <= 0) {
+		Health = 0;
 		KillPlayer(0.2);
 	}
 }
@@ -230,12 +298,18 @@ void ADaybreakCharacter::KillPlayer(float CorpsePersistenceTime) {
 	*/
 
 	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ADaybreakCharacter::Destroy, 0.1, false, CorpsePersistenceTime);
-	
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ADaybreakCharacter::Destroy, 0.1, false, CorpsePersistenceTime);	
 }
 
 void ADaybreakCharacter::Destroy() {
-	UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Type::Quit, false);
+//	UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Type::Quit, false);
+	if (DeathScreenWidget != nullptr) {
+		DeathScreen = CreateWidget<UUserWidget>(GetWorld(), DeathScreenWidget);
+		if (DeathScreen) {
+			DeathScreen->AddToViewport();
+			SetMouseCursor(true);
+		}
+	}
 }
 
 
@@ -292,10 +366,39 @@ ADaybreakSword* ADaybreakCharacter::GetSword() {
 	return Sword;
 }
 
+ADaybreakArmor* ADaybreakCharacter::GetArmor() {
+	return Armor;
+}
+
 bool ADaybreakCharacter::InputEnabled() {
-	return UpgradeMenu == nullptr;
+	return UpgradeMenu == nullptr && PauseMenu == nullptr && DeathScreen == nullptr;
 }
 
 UInputComponent* ADaybreakCharacter::GetPlayerInputComponent() {
 	return PlayerInputComponent;
+}
+
+void ADaybreakCharacter::UpdateHealth() {
+	float percentage = Health / BaseHealth;
+	BaseHealth = 100 + 100 * Armor->CurrentLevel.Protection;
+	Health = BaseHealth * percentage;
+}
+
+void ADaybreakCharacter::SetMouseCursor(bool enabled) {
+	playerController->bShowMouseCursor = enabled;
+	playerController->bEnableClickEvents = enabled;
+	playerController->bEnableMouseOverEvents = enabled;
+	
+	if (enabled) {
+		FInputModeGameAndUI inputMode;
+		playerController->SetInputMode(inputMode);
+	} else {
+		FInputModeGameOnly inputMode;
+		playerController->SetInputMode(inputMode);
+	}
+}
+
+
+void ADaybreakCharacter::DebugOne() {
+	DarkStone += 100;
 }

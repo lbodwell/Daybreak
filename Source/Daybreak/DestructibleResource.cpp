@@ -3,6 +3,7 @@
 #include "DestructibleResource.h"
 #include "Components/BoxComponent.h"
 #include "Components/SceneComponent.h"
+#include "DaybreakSword.h"
 #include "Engine.h"
 #include "DaybreakCharacter.h"
 
@@ -19,20 +20,15 @@ ADestructibleResource::ADestructibleResource() {
 
 	IsDestroyed = false;
 	GotResources = false;
-
-	MaxHealth = 10.f;
-
-	DefaultDamage = 1.f;
-	DefaultImpulse = 1.f;
 }
 
 // Called when the game starts or when spawned
 void ADestructibleResource::BeginPlay() {
 	Super::BeginPlay();
 
-	//DestructibleComponent->OnComponentHit.AddDynamic(this, &ADestructibleResource::Damage);
-
 	CurrentHealth = MaxHealth;
+
+	UE_LOG(LogTemp, Warning, TEXT("Resources Level From DR.cpp: %d"), Level);
 }
 
 // Called every frame
@@ -41,56 +37,19 @@ void ADestructibleResource::Tick(float DeltaTime) {
 
 }
 
-// Called whenever damage is dealt to the Destructible Resource
-void ADestructibleResource::Damage(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
-	/*
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange, __FUNCTION__);
+// Called when resources are damaged by sword swings
+void ADestructibleResource::Damage(float damage) {
+	CurrentHealth -= damage;
 
-	if (!IsDestroyed) {
-		CurrentHealth -= 1.f;
 
-		if (Cast<ADaybreakCharacter>(OtherActor)) {
-			OtherActorRef = OtherActor;
-		}
-
-		if (CurrentHealth <= 0.f) {
-			Destroy(DefaultDamage, Hit.Location, NormalImpulse, DefaultImpulse);
-		}
-	}
-	*/
-}
-
-// Called whenever the destructible resource is completely destroyed
-void ADestructibleResource::Destroy(float Damage, FVector HitLocation, FVector ImpulseDir, float Impulse) {
-	/*
-	 GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, __FUNCTION__);
-
-	if (!IsDestroyed) {
-		IsDestroyed = true;
-
-		if (!GotResources) {
-			ADaybreakCharacter* CharacterRef = Cast<ADaybreakCharacter>(OtherActorRef);
-
-			if (CharacterRef) {
-				CharacterRef->DarkStone += 100;
-				GotResources = true;
-			}
-		}
-
-		DestructibleComponent->ApplyDamage(Damage, HitLocation, ImpulseDir, Impulse);
-	}
-	*/
-}
-
-void ADestructibleResource::Destroy() {
-	if (!IsDestroyed) {
+	if (CurrentHealth <= 0 && !IsDestroyed) {
 		IsDestroyed = true;
 
 		ADaybreakCharacter* player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
 		// add DarkStone
 		if (player != nullptr) {
-			player->DarkStone += 100;
+			player->DarkStone += DarkStoneFound;
 		}
 
 		Explode();
@@ -98,4 +57,4 @@ void ADestructibleResource::Destroy() {
 }
 
  void ADestructibleResource::Explode_Implementation() {
- } 
+ }

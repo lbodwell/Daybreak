@@ -3,14 +3,13 @@
 
 #include "DaybreakUpgradeMenu.h"
 #include "DaybreakSword.h"
+#include "DaybreakArmor.h"
 #include "Kismet/GameplayStatics.h"
+#include "DaybreakEquipment.h"
 
 bool UDaybreakUpgradeMenu::Initialize() {
 	const bool success = Super::Initialize();
 	if (!success) return false;
-	
-	UpgradeProgress = 0;
-	isUpgrading = false;
 	
 	return true;
 }
@@ -19,9 +18,33 @@ void UDaybreakUpgradeMenu::NativeConstruct() {
 	Super::NativeConstruct();
 	
 	player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	sword = player->GetSword();
+	armor = player->GetArmor();
 	
-	player->GetPlayerInputComponent()->BindAction("Interact", IE_Pressed, this, &UDaybreakUpgradeMenu::StartUpgrading);
-    player->GetPlayerInputComponent()->BindAction("Interact", IE_Released, this, &UDaybreakUpgradeMenu::StopUpgrading);
+	player->GetPlayerInputComponent()->BindAction<FOnUpgrade>("Interact", IE_Pressed, this, &UDaybreakUpgradeMenu::StartUpgrading, Cast<IDaybreakEquipment>(sword));
+    player->GetPlayerInputComponent()->BindAction<FOnUpgrade>("Interact", IE_Released, this, &UDaybreakUpgradeMenu::StopUpgrading, Cast<IDaybreakEquipment>(sword));
+	
+	player->GetPlayerInputComponent()->BindAction<FOnUpgrade>("Interact2", IE_Pressed, this, &UDaybreakUpgradeMenu::StartUpgrading, Cast<IDaybreakEquipment>(armor));
+    player->GetPlayerInputComponent()->BindAction<FOnUpgrade>("Interact2", IE_Released, this, &UDaybreakUpgradeMenu::StopUpgrading, Cast<IDaybreakEquipment>(armor));
+	
+	// create timer to upgrade equipment
+	GetWorld()->GetTimerManager().SetTimer(upgradeTimerHandle, [&]() {
+		for (int i = 0; i < equipmentBeingUpgraded.Num(); i++) {
+			IDaybreakEquipment* equipment = equipmentBeingUpgraded[i];
+			
+			if (equipment->GetIsUpgrading() && GetDarkStoneAvailable() >= equipment->Cost) {
+				if (equipment->IncreaseUpgradeProgress(0.01)) {
+					player->DarkStone -= equipment->LastCost;
+					UpdateUI();
+				}
+			} else {
+				if (equipment->DecreaseUpgradeProgress(0.01)) {
+					equipmentBeingUpgraded.Remove(equipment);
+				}
+			}
+			UpdateUI();
+		}
+	}, 0.01, true);
 	
 	UpdateUI();
 }
@@ -31,50 +54,71 @@ void UDaybreakUpgradeMenu::NativeDestruct() {
 	
 	// unbind upgrade actions
 	int lastIndex = player->GetPlayerInputComponent()->GetNumActionBindings() - 1;
-	player->GetPlayerInputComponent()->RemoveActionBinding(lastIndex);
-	player->GetPlayerInputComponent()->RemoveActionBinding(lastIndex - 1);
+	for (int i = 0; i < 4; i++) {
+		player->GetPlayerInputComponent()->RemoveActionBinding(lastIndex - i);
+	}
+	
+	GetWorld()->GetTimerManager().ClearTimer(upgradeTimerHandle);
+	
+	// if there was equipment being upgraded when the menu is closed, reset their upgrade progress
+	for (int i = 0; i < equipmentBeingUpgraded.Num(); i++) {
+		equipmentBeingUpgraded[i]->ResetUpgradeProgress();
+	}
 }
 
-void UDaybreakUpgradeMenu::StartUpgrading() {
-	isUpgrading = true;
-	GetWorld()->GetTimerManager().SetTimer(upgradeTimerHandle, [&]() {
-		if (isUpgrading) {
-			UpgradeProgress += 0.01;
-			if (UpgradeProgress >= 1) {
-				player->GetSword()->Upgrade();
-				UpdateUI();
-				UpgradeProgress = 0;
-			}
-		} else {
-			UpgradeProgress -= 0.01;
-			if (UpgradeProgress <= 0) {
-				GetWorld()->GetTimerManager().ClearTimer(upgradeTimerHandle);
-			}
+void UDaybreakUpgradeMenu::StartUpgrading(IDaybreakEquipment* equipment) {
+	if (equipment && GetDarkStoneAvailable() >= equipment->Cost) {
+		equipment->SetIsUpgrading(true);
+		if (!equipmentBeingUpgraded.Contains(equipment)) {
+			equipmentBeingUpgraded.Add(equipment);
 		}
-	}, 0.01, true);
+	}
 }
 
-void UDaybreakUpgradeMenu::StopUpgrading() {
-	isUpgrading = false;
+void UDaybreakUpgradeMenu::StopUpgrading(IDaybreakEquipment* equipment) {
+	if (equipment) {
+		equipment->SetIsUpgrading(false);
+	}
 }
 
 FSwordLevel UDaybreakUpgradeMenu::GetCurrentSwordLevel() {
-	sword = player->GetSword();
-	
-	if (sword != nullptr) {
+	if (sword) {
 		return sword->CurrentLevel;
 	}
 	return FSwordLevel();
 }
 
 FSwordLevel UDaybreakUpgradeMenu::GetNextSwordLevel() {
-	sword = player->GetSword();
-	int index = sword->CurrentLevel.Index;
-	
-	if (sword != nullptr && index < 5) {
-		return sword->Levels[index + 1];
+	if (sword && sword->CurrentLevel.Index < 5) {
+		return sword->Levels[sword->CurrentLevel.Index + 1];
 	}
 	return FSwordLevel();
+}
+
+FArmorLevel UDaybreakUpgradeMenu::GetCurrentArmorLevel() {
+	if (armor) {
+		return armor->CurrentLevel;
+	}
+	return FArmorLevel();
+}
+
+FArmorLevel UDaybreakUpgradeMenu::GetNextArmorLevel() {
+	if (armor && armor->CurrentLevel.Index < 5) {
+		return armor->Levels[armor->CurrentLevel.Index + 1];
+	}
+	return FArmorLevel();
+}
+
+float UDaybreakUpgradeMenu::GetSwordUpgradeProgress() {
+	return sword ? sword->GetUpgradeProgress() : 0;
+}
+
+float UDaybreakUpgradeMenu::GetArmorUpgradeProgress() {
+	return armor ? armor->GetUpgradeProgress() : 0;
+}
+
+float UDaybreakUpgradeMenu::GetDarkStoneAvailable() {
+	return player->DarkStone;
 }
 
  void UDaybreakUpgradeMenu::UpdateUI_Implementation() {

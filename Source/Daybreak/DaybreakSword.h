@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "DaybreakEnemyCharacter.h"
 #include "DestructibleResource.h"
 #include <vector>
+#include "DaybreakEquipment.h"
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 #include "DaybreakSword.generated.h"
 
 USTRUCT(BlueprintType)
@@ -26,10 +28,10 @@ struct FSwordLevel {
     float Damage;
 
     UPROPERTY(BlueprintReadOnly)
-    float Speed;
+    float EffectDamage;
 	
 	UPROPERTY(BlueprintReadOnly)
-    float Range;
+    FString Effect;
 	
 	UPROPERTY(BlueprintReadOnly)
     int Cost;
@@ -37,26 +39,26 @@ struct FSwordLevel {
     FSwordLevel() {
         Index = 0;
         Name = "Steel Sword";
-		Color = FLinearColor(0.2, 0.3, 1, 1);
+		Color = FLinearColor(0.25, 0.25, 0.25, 1);
         Damage = 0;
-        Speed = 0;
-        Range = 0;
+        EffectDamage = 0;
+        Effect = "Fire";
 		Cost = 0;
     }
 	
-	FSwordLevel(int index, FString name, FLinearColor color, float damage, float speed, float range, int cost) {
+	FSwordLevel(int index, FString name, FLinearColor color, float damage, float effectDamage, FString effect, int cost) {
         Index = index;
         Name = name;
 		Color = color;
         Damage = damage;
-        Speed = speed;
-        Range = range;
+        EffectDamage = effectDamage;
+        Effect = effect;
 		Cost = cost;
     }
 };
 
 UCLASS()
-class DAYBREAK_API ADaybreakSword : public AActor {
+class DAYBREAK_API ADaybreakSword : public AActor, public IDaybreakEquipment {
 	GENERATED_BODY()
 	
 public:	
@@ -68,6 +70,15 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	bool Hitting;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	USoundCue* AttackImpactCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	USoundCue* DarkstoneCollectCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	USoundCue* WeaponUpgradeCue;
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void UpdateEffect();
@@ -76,15 +87,16 @@ public:
 	void Attack(class AActor* overlappedActor, class AActor* otherActor);
 		
 	TArray<struct FSwordLevel> Levels;
-	
-	void Upgrade();
+
+private:
+	UAudioComponent* attackImpactSound;
+	UAudioComponent* darkstoneCollectSound;
+	UAudioComponent* weaponUpgradeSound;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	
+	void Upgrade();
 
 };

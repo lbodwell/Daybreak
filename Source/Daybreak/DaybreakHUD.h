@@ -7,6 +7,7 @@
 #include "DayNightCycle.h"
 #include "DaybreakCharacter.h"
 #include "DaybreakSword.h"
+#include "DaybreakArmor.h"
 #include "DaybreakHUD.generated.h"
 
 /**
@@ -21,6 +22,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	FSwordLevel GetCurrentSwordLevel();
+	
+	UFUNCTION(BlueprintCallable)
+	FArmorLevel GetCurrentArmorLevel();
 
 protected:
 	virtual bool Initialize() override;
@@ -30,6 +34,10 @@ protected:
 	void OnMediaPlayerOpen(FString url);
 	
 	void SeekFromDegrees(float degrees);
+	
+	void RefreshMediaPlayer();
+	
+	int dayLengthSeconds;
 	
 	void UpdateDayNightIndicator();
 	
@@ -44,12 +52,7 @@ protected:
 	
 	ADaybreakCharacter* player;
 	ADaybreakSword* sword;
+	ADaybreakArmor* armor;
 	
 	bool mediaPlayerReady;
-	
-	float lastRotation;
-	float lastRotationTime;
-	float rateOfRotation;
-	
-	void TrackRateOfRotation();
 };

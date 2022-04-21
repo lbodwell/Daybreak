@@ -24,11 +24,22 @@ private:
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	TArray<AActor*> SpawnFields;
+	
+	UPROPERTY(EditAnywhere)
+    TSoftObjectPtr<ADayNightCycle> DayNightController;
+	
+	UFUNCTION()
+	void OnDayStart(int DayLengthSeconds);
 
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
-	ADayNightCycle* DayNightCycle;
-
-	FTimerHandle TimerHandle;
+	int enemiesSpawned;
+	
+	float spawnExponential;
+	float spawnFactor;
+	float DayLengthSeconds;
+	
+	FTimerHandle spawnTimerHandle;
+	
+	void SpawnTick();
 
 	ACharacter* Player;
 	UCameraComponent* PlayerCamera;
@@ -45,7 +56,4 @@ public:
 	AEnemySpawnController();
 
 	void SpawnActor();
-	int enemyCount;
-
-
 };

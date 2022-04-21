@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "DaybreakCharacter.h"
 #include "DaybreakGameMode.generated.h"
 
 UCLASS(minimalapi)
@@ -23,10 +24,23 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category=State)
     float PortalHealth;
 
+	UFUNCTION(BlueprintCallable)
+	void DamagePortal(int DamageAmount);
+	
+	float GetDistanceToPlayer(FVector point);
+	float GetDistanceToPortal(FVector point);
+	
+	static int EnemyCount;
+	static float EnemyValue;
+
 protected:
 	/**  HUD widget. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Widgets)
     TSubclassOf<class UUserWidget> HUDWidget;
+	
+	AActor* portal;
+	
+	ADaybreakCharacter* player;
 };
 
 
