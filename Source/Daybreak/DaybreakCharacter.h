@@ -98,6 +98,9 @@ public:
 	
 	/** Escape button handler */
 	void Exit();
+	
+	/** Destroys character and exits the game */
+	void Destroy();
 
 protected:
 
@@ -187,9 +190,6 @@ protected:
 
 	/** Removes the controller and ragdolls the player */
 	void KillPlayer(float CorpsePersistenceTime);
-
-	/** Destroys character and exits the game */
-	void Destroy();
 
     virtual void SetupPlayerInputComponent(class UInputComponent* playerInputComponent) override;
 

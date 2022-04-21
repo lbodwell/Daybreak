@@ -6,9 +6,7 @@
 #include "EnemySpawnController.h"
 #include "EnemySpawnField.h"
 #include "DaybreakCharacter.h"
-
-int AEnemySpawnController::EnemyCount = 0;
-float AEnemySpawnController::EnemyValue = 0;
+#include "DaybreakGameMode.h"
 
 AEnemySpawnController::AEnemySpawnController() {
 	PrimaryActorTick.bCanEverTick = false;
@@ -35,9 +33,6 @@ void AEnemySpawnController::BeginPlay() {
 		// listen to DayNightController for when day starts
 		DayNightController->OnDayStart.AddDynamic(this, &AEnemySpawnController::OnDayStart);
 	}
-
-	EnemyCount = 0;
-	EnemyValue = 0;
 }
 
 void AEnemySpawnController::OnDayStart(int dayLengthSeconds) {
@@ -55,13 +50,13 @@ void AEnemySpawnController::SpawnTick() {
 	
 		while (expectedEnemyCount - (float) enemiesSpawned >= 1) {
 			SpawnActor();
-			UE_LOG(LogActor, Warning, TEXT("Enemy count: %d"), EnemyCount);
+			UE_LOG(LogActor, Warning, TEXT("Enemy count: %d"), ADaybreakGameMode::EnemyCount);
 		}
 		
 		if (enemiesSpawned >= expectedEnemyCount) {
 			GetWorldTimerManager().ClearTimer(spawnTimerHandle);
-			EnemyValue = 180.0f / EnemyCount;
-			UE_LOG(LogActor, Warning, TEXT("Set enemy value to %f"), EnemyValue);
+			ADaybreakGameMode::EnemyValue = 180.0f / ADaybreakGameMode::EnemyCount;
+			UE_LOG(LogActor, Warning, TEXT("Set enemy value to %f"), ADaybreakGameMode::EnemyValue);
 			enemiesSpawned = 0;
 		}
 	}
@@ -83,7 +78,7 @@ void AEnemySpawnController::SpawnActor() {
 
 	GetWorld()->SpawnActor<APawn>(EnemyToSpawn, Location, Rotation);
 	enemiesSpawned++;
-	EnemyCount++;
+	ADaybreakGameMode::EnemyCount++;
 }
 
 AEnemySpawnField* AEnemySpawnController::GetRandomSpawnField() {

@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PortalController.h"
-#include "EnemySpawnController.h"
+#include "DaybreakGameMode.h"
 
 // Sets default values for this component's properties
 UPortalController::UPortalController() {
@@ -15,6 +15,8 @@ void UPortalController::BeginPlay() {
 	Super::BeginPlay();
 	FTimerHandle portalTickTimer;
 	GetWorld()->GetTimerManager().SetTimer(portalTickTimer, this, &UPortalController::PortalTick, 1, true);
+	UpdatePortalEffect();
+	UpdatePortalEffect();
 }
 
 void UPortalController::PortalTick() {
@@ -30,6 +32,7 @@ void UPortalController::PortalTick() {
 					UE_LOG(LogTemp, Warning, TEXT("Portal inactive"));
 					// Broadcast portal deactivated here
 					OnPortalDeactivate.Broadcast();
+					UpdatePortalEffect();
 					IsActive = false;
 					timeActiveSeconds = 0;
 				} else {
@@ -37,12 +40,12 @@ void UPortalController::PortalTick() {
 				}
 			// Ensure we haven't reached maximum portal activations for the night.
 			// If it's night but no enemies are alive, we must be transitioning into next day. Don't allow portal to activate.
-			} else if (numActivationsThisNight < MaxActivationsPerNight && AEnemySpawnController::EnemyCount > 0) {
-				float enemiesAtNightStart = 180.0f / AEnemySpawnController::EnemyValue;
+			} else if (numActivationsThisNight < MaxActivationsPerNight && ADaybreakGameMode::EnemyCount > 0) {
+				float enemiesAtNightStart = 180.0f / ADaybreakGameMode::EnemyValue;
 
 				// Chance of portal activating increases the more enemies are killed.
 				// Once half of enemies are killed, probability has increased by 0.25.
-				float killPity = (enemiesAtNightStart - AEnemySpawnController::EnemyCount) / (float)(2 * enemiesAtNightStart);
+				float killPity = (enemiesAtNightStart - ADaybreakGameMode::EnemyCount) / (float)(2 * enemiesAtNightStart);
 				UE_LOG(LogTemp, Warning, TEXT("kill pity: %f"), killPity);
 
 				// Chance of portal activating is higher when fewer activations have already occured.
@@ -65,6 +68,7 @@ void UPortalController::PortalTick() {
 					UE_LOG(LogTemp, Warning, TEXT("Portal active"));
 					// Broadcast portal activated here
 					OnPortalActivate.Broadcast();
+					UpdatePortalEffect();
 					IsActive = true;
 					timeInactiveSeconds = 0;
 					numActivationsThisNight++;
@@ -75,3 +79,10 @@ void UPortalController::PortalTick() {
 		}
 	}
 }
+
+ void UPortalController::UpdatePortalEffect() {
+	 TArray<UActorComponent*> portalPlanes = GetOwner()->GetComponentsByTag(UActorComponent::StaticClass(), FName("PortalPlane"));
+	 if (portalPlanes[0]) {
+		portalPlanes[0]->ToggleActive();
+	 }
+ } 

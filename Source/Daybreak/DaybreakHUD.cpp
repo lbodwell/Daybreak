@@ -9,6 +9,8 @@
 #include "DaybreakCharacter.h"
 #include "DaybreakSword.h"
 #include "DaybreakArmor.h"
+#include "DaybreakGameMode.h"
+
 
 bool UDaybreakHUD::Initialize() {
 	const bool success = Super::Initialize();
@@ -63,13 +65,13 @@ void UDaybreakHUD::SeekFromDegrees(float degrees) {
 // update day/night rotator text
 void UDaybreakHUD::UpdateDayNightIndicator() { 
 	if (DayNightController) {
-		// check if day length changes
-		if (dayLengthSeconds != DayNightController->GetDayLengthSeconds()) {
-			RefreshMediaPlayer();
-		}
-		
 		// display minutes:seconds of daylight remaining
-		if (DayNightController->CurrentRotation >= 180) {
+		if (DayNightController->CurrentRotation > 180) {
+			// check if day length changes
+			if (dayLengthSeconds != DayNightController->GetDayLengthSeconds()) {
+				RefreshMediaPlayer();
+			}
+			
 			int totalSeconds = DayNightController->GetDayLengthSecondsRemaining();
 			int minutes = floor((float)totalSeconds / 60);
 			int seconds = totalSeconds - minutes * 60;
@@ -77,7 +79,13 @@ void UDaybreakHUD::UpdateDayNightIndicator() {
 		}
 		// display enemy count remaining for nighttime
 		else {
-			DayNightText = FString(TEXT("0"));
+			if (MediaPlayer->GetRate() != 0) {
+				MediaPlayer->Pause();
+			}
+			SeekFromDegrees(DayNightController->CurrentRotation);
+			UE_LOG(LogActor, Warning, TEXT("%f"), DayNightController->CurrentRotation);
+			
+			DayNightText = FString::FromInt(ADaybreakGameMode::EnemyCount);
 		}
 	}
 }

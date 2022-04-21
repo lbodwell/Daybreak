@@ -222,7 +222,7 @@ void ADaybreakCharacter::Attack() {
             Attacking = true; // will be unset by AnimNotify::AttackHitEnd in AnimBP
             lastAttack = lastAttack == 0 ? 1 : 0; // alternate between left and right attacks
 			
-			float attackDelay = 0.6 - (Armor->CurrentLevel.AttackSpeed * 0.25); // set attack delay based on Armor AttackSpeed modifier
+			float attackDelay = 0.9 - (Armor->CurrentLevel.AttackSpeed * 0.25); // set attack delay based on Armor AttackSpeed modifier
 			FTimerHandle timerHandle;
 			GetWorld()->GetTimerManager().SetTimer(timerHandle, [&]() { Attacking = false; }, 1, false, attackDelay);
 			if (attackSwingSound) {
@@ -235,7 +235,8 @@ void ADaybreakCharacter::Attack() {
 void ADaybreakCharacter::Interact() {
 	if (InputEnabled() && interactable) {
 		//UE_LOG(LogActor, Warning, TEXT("Interactable: %s"), *(interactable->GetName()));
-		if (interactable->GetName().StartsWith("_Anvil")) {
+		
+		if (interactable->ActorHasTag("Anvil")) {
 			// add upgrade menu widget to viewport
 			if (UpgradeMenuWidget != nullptr) {
 				UpgradeMenu = CreateWidget<UUserWidget>(GetWorld(), UpgradeMenuWidget);

@@ -25,7 +25,7 @@ void ADaybreakAIController::BeginPlay() {
 	TArray<AActor*> PortalMeshes;
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Portal"), PortalMeshes);
 	PortalLocation = PortalMeshes[0]->GetActorLocation();
-
+	
 	PortalController = PortalMeshes[0]->FindComponentByClass<UPortalController>();
 
 	TArray<AActor*> DayNightCycles;
@@ -116,7 +116,9 @@ FVector ADaybreakAIController::GetRandomNearbyLocation() {
 
 void ADaybreakAIController::CheckPawns() {
 	if (pawn == nullptr || playerActor == nullptr) {
-		pawn = Cast<ADaybreakEnemyCharacter>(GetPawn());
+		if (GetPawn()) {
+			pawn = Cast<ADaybreakEnemyCharacter>(GetPawn());
+		}
 
 		ACharacter* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 		playerActor = Cast<AActor>(player);
