@@ -13,8 +13,7 @@ int ADaybreakGameMode::EnemyCount = 0;
 float ADaybreakGameMode::EnemyValue = 0;
 
 ADaybreakGameMode::ADaybreakGameMode() {
-	// set default pawn class to our Blueprinted character
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Character/Sword_Base_Character"));
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Character/MainCharacter"));
 	if (PlayerPawnBPClass.Class != NULL) {
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}

@@ -10,7 +10,6 @@
 #include "Camera/CameraActor.h"
 
 AMainMenuGameMode::AMainMenuGameMode() {
-	
 }
 
 void AMainMenuGameMode::BeginPlay() {
