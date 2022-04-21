@@ -8,6 +8,10 @@
 #include "DestructibleResource.h"
 #include "Math/UnrealMathUtility.h"
 
+
+int ADaybreakGameMode::EnemyCount = 0;
+float ADaybreakGameMode::EnemyValue = 0;
+
 ADaybreakGameMode::ADaybreakGameMode() {
 	// set default pawn class to our Blueprinted character
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Character/Sword_Base_Character"));
@@ -37,6 +41,15 @@ void ShuffleAndRemove(TArray<AActor*> ResourcesToShuffle) {
 
 void ADaybreakGameMode::BeginPlay() {
 	Super::BeginPlay();
+	
+	EnemyCount = 0;
+	EnemyValue = 0;
+	
+	TArray<AActor*> portals;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Portal"), portals);
+	portal = portals[0];
+	
+	player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
 	// add HUD widget to viewport
 	if (HUDWidget != nullptr) {
@@ -92,6 +105,14 @@ void ADaybreakGameMode::DamagePortal(int DamageAmount) {
 
 	if (PortalHealth <= 0) {
 		//kill player
-		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->Destroy();
+		player->Destroy();
 	}
+}
+
+float ADaybreakGameMode::GetDistanceToPlayer(FVector point) {
+	return (point - player->GetActorLocation()).Size() - 70;
+}
+
+float ADaybreakGameMode::GetDistanceToPortal(FVector point) {
+	return (point - portal->GetActorLocation()).Size() - 70;
 }

@@ -1,8 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "DaybreakEnemyCharacter.h"
-#include "EnemySpawnController.h"
-#include "DaybreakAIController.h"
 #include "Engine.h"
 #include "DaybreakGameMode.h"
 
@@ -47,9 +45,10 @@ void ADaybreakEnemyCharacter::Attack() {
 // Called by AnimNotify::AttackFarthestReach in AnimBP
 void ADaybreakEnemyCharacter::GiveDamage() {
 	float capsuleRadius = 40;
-	float distanceToPlayer = (GetActorLocation() - player->GetActorLocation()).Size() - capsuleRadius * 2;
-	float distanceToPortal = dynamic_cast<ADaybreakAIController*>(GetController())->GetDistanceToPortal();
-
+	ADaybreakGameMode* gameMode = Cast<ADaybreakGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	float distanceToPlayer = gameMode->GetDistanceToPlayer(GetActorLocation());
+	float distanceToPortal = gameMode->GetDistanceToPortal(GetActorLocation());
+	
 	if (Attacking && canGiveDamage) {
 		if (distanceToPlayer < 40) {
 			if (player != nullptr) {
@@ -57,7 +56,7 @@ void ADaybreakEnemyCharacter::GiveDamage() {
 			}
 		}
 		if (distanceToPortal < 200) {
-			dynamic_cast<ADaybreakGameMode*>(UGameplayStatics::GetGameMode(GetWorld()))->DamagePortal(AttackDamage);
+			gameMode->DamagePortal(AttackDamage);
 		}
 
 	}
@@ -90,11 +89,11 @@ void ADaybreakEnemyCharacter::KillCharacter(float CorpsePersistenceTime) {
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ADaybreakEnemyCharacter::DestroyCharacter, 0.1, false, CorpsePersistenceTime);
 
-	int enemyCount = --AEnemySpawnController::EnemyCount;
+	int enemyCount = --ADaybreakGameMode::EnemyCount;
 	UE_LOG(LogActor, Warning, TEXT("Enemy Count: %d"), enemyCount);
 
 	if (DayNightController && !DayNightController->GetIsDay()) {
-		float value = AEnemySpawnController::EnemyValue;
+		float value = ADaybreakGameMode::EnemyValue;
 		DayNightController->AddRotation(value);
 		UE_LOG(LogActor, Warning, TEXT("Progressing night by: %f"), value);
 		UE_LOG(LogActor, Warning, TEXT("New rotation: %f"), DayNightController->CurrentRotation);

@@ -9,7 +9,8 @@
 #include "DaybreakCharacter.h"
 #include "DaybreakSword.h"
 #include "DaybreakArmor.h"
-#include "EnemySpawnController.h"
+#include "DaybreakGameMode.h"
+
 
 bool UDaybreakHUD::Initialize() {
 	const bool success = Super::Initialize();
@@ -84,7 +85,7 @@ void UDaybreakHUD::UpdateDayNightIndicator() {
 			SeekFromDegrees(DayNightController->CurrentRotation);
 			UE_LOG(LogActor, Warning, TEXT("%f"), DayNightController->CurrentRotation);
 			
-			DayNightText = FString::FromInt(AEnemySpawnController::EnemyCount);
+			DayNightText = FString::FromInt(ADaybreakGameMode::EnemyCount);
 		}
 	}
 }
