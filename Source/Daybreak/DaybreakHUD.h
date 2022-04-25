@@ -25,6 +25,12 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	FArmorLevel GetCurrentArmorLevel();
+	
+	UFUNCTION(BlueprintNativeEvent)
+	void ShowMessage(const FString& message);
+	
+	UFUNCTION(BlueprintNativeEvent)
+	void HideMessage();
 
 protected:
 	virtual bool Initialize() override;
