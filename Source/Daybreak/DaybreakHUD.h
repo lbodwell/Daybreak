@@ -17,6 +17,12 @@ UCLASS()
 class DAYBREAK_API UDaybreakHUD : public UUserWidget {
 	GENERATED_BODY()
 	
+private:
+	bool mediaPlayerReady;
+	
+	bool messageShown;
+	FString nextMessage;
+	
 public:
 	ADayNightCycle* DayNightController;
 	
@@ -26,11 +32,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FArmorLevel GetCurrentArmorLevel();
 	
-	UFUNCTION(BlueprintNativeEvent)
-	void ShowMessage(const FString& message);
-	
-	UFUNCTION(BlueprintNativeEvent)
-	void HideMessage();
+	void AddMessage(FString message);
+	void RemoveMessage();
 
 protected:
 	virtual bool Initialize() override;
@@ -60,5 +63,9 @@ protected:
 	ADaybreakSword* sword;
 	ADaybreakArmor* armor;
 	
-	bool mediaPlayerReady;
+	UFUNCTION(BlueprintNativeEvent)
+	void ShowMessage(const FString& message);
+	
+	UFUNCTION(BlueprintNativeEvent)
+	void HideMessage();
 };

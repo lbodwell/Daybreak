@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "DaybreakCharacter.h"
 #include "DaybreakHUD.h"
+#include "DayNightCycle.h"
 #include "DaybreakGameMode.generated.h"
 
 UCLASS(minimalapi)
@@ -16,6 +17,12 @@ class ADaybreakGameMode : public AGameModeBase {
 	
 private:
 	void TriggerDarkstoneTutorial();
+	void TriggerAnvilTutorial();
+	void TriggerPortalTutorial();
+	
+	FTimerHandle TooltipUpdateHandle;
+	void UpdateTooltip();
+	int tooltipStage;
 
 public:
 	ADaybreakGameMode();
@@ -50,6 +57,7 @@ protected:
 	AActor* tutorialDarkstone;
 	
 	ADaybreakCharacter* player;
+	ADayNightCycle* dayNightController;
 };
 
 

@@ -8,6 +8,7 @@
 #include "DestructibleResource.h"
 #include "DaybreakHUD.h"
 #include "Math/UnrealMathUtility.h"
+#include "DayNightCycle.h"
 
 
 int ADaybreakGameMode::EnemyCount = 0;
@@ -18,6 +19,10 @@ ADaybreakGameMode::ADaybreakGameMode() {
 	if (PlayerPawnBPClass.Class != NULL) {
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
+	
+	EnemyCount = 0;
+	EnemyValue = 0;
+	tooltipStage = 0;
 }
 
 
@@ -35,9 +40,9 @@ void ShuffleAndRemove(TArray<AActor*> ResourcesToShuffle) {
 	for (int i = 0; i < ResourcesToShuffle.Num() / 2; i++) {
 		if (!ResourcesToShuffle[i]->ActorHasTag("Tutorial")) {
 			ResourcesToShuffle[i]->Destroy();
+			//ResourcesToShuffle[i]->SetActorHiddenInGame(true);
+			//ResourcesToShuffle[i]->SetActorEnableCollision(false);
 		}
-		//ResourcesToShuffle[i]->SetActorHiddenInGame(true);
-		//ResourcesToShuffle[i]->SetActorEnableCollision(false);
 	}
 }
 
@@ -45,13 +50,17 @@ void ShuffleAndRemove(TArray<AActor*> ResourcesToShuffle) {
 void ADaybreakGameMode::BeginPlay() {
 	Super::BeginPlay();
 	
-	EnemyCount = 0;
-	EnemyValue = 0;
-	
+	// get portal
 	TArray<AActor*> portals;
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Portal"), portals);
 	portal = portals[0];
 	
+	// get day/night controller
+	TArray<AActor*> dayNightCycles;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADayNightCycle::StaticClass(), dayNightCycles);
+	dayNightController = Cast<ADayNightCycle>(dayNightCycles[0]);
+	
+	// get player
 	player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
 	// add HUD widget to viewport
@@ -60,6 +69,7 @@ void ADaybreakGameMode::BeginPlay() {
 		HUD->AddToViewport();
 	}
 	
+	// get player controller
 	APlayerController* playerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	
 	// disable mouse
@@ -103,8 +113,8 @@ void ADaybreakGameMode::BeginPlay() {
 	ShuffleAndRemove(ResourcesLevel2);
 	ShuffleAndRemove(ResourcesLevel3);
 	
-	// begin tutorial with collecting Darkstone
-	TriggerDarkstoneTutorial();
+	// begin tutorial update timer
+	GetWorld()->GetTimerManager().SetTimer(TooltipUpdateHandle, this, &ADaybreakGameMode::UpdateTooltip, 1, true);
 }
 
 void ADaybreakGameMode::DamagePortal(int DamageAmount) {
@@ -129,11 +139,72 @@ UDaybreakHUD* ADaybreakGameMode::GetHUD() {
 }
 
 void ADaybreakGameMode::TriggerDarkstoneTutorial() {
-	if (HUD && tutorialDarkstone) {
-		HUD->ShowMessage("Gather Darkstone until sun sets...");
-		TArray<UActorComponent*> components = tutorialDarkstone->GetComponentsByTag(UActorComponent::StaticClass(), "Outline");
-		if (components.Num() > 0) {
-			Cast<UPrimitiveComponent>(components[0])->SetRenderCustomDepth(true);
+	tooltipStage = 1;
+	if (HUD) {
+		HUD->AddMessage("Gather Darkstone until sun sets...");
+		
+		// outline tutorial darkstone
+		if (tutorialDarkstone) {
+			TArray<UActorComponent*> components = tutorialDarkstone->GetComponentsByTag(UActorComponent::StaticClass(), "Outline");
+			if (components.Num() > 0) {
+				Cast<UPrimitiveComponent>(components[0])->SetRenderCustomDepth(true);
+			}
 		}
 	}	
+}
+
+void ADaybreakGameMode::TriggerAnvilTutorial() {
+	tooltipStage = 2;
+	if (HUD) {
+		HUD->AddMessage("Upgrade your equipment before the horde arrives...");
+		
+		// outline anvil
+		TArray<AActor*> anvils;
+		UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Anvil"), anvils);
+		if (anvils.Num() > 0) {
+			TArray<UActorComponent*> components = anvils[0]->GetComponentsByTag(UActorComponent::StaticClass(), "Outline");
+			if (components.Num() > 0) {
+				Cast<UPrimitiveComponent>(components[0])->SetRenderCustomDepth(true);
+			}
+		}
+	}	
+}
+
+void ADaybreakGameMode::TriggerPortalTutorial() {
+	tooltipStage = 3;
+	if (HUD) {
+		HUD->AddMessage("Defend the portal at all costs!");
+		
+		// outline portal
+		if (portal) {
+			TArray<UActorComponent*> components = portal->GetComponentsByTag(UActorComponent::StaticClass(), "Outline");
+			if (components.Num() > 0) {
+				Cast<UPrimitiveComponent>(components[0])->SetRenderCustomDepth(true);
+			}
+		}
+	}	
+}
+
+void ADaybreakGameMode::UpdateTooltip() {
+	// wait to progress tutorial until:
+	//   - the day has progressed 10 seconds
+	if (tooltipStage == 0 && dayNightController->GetDayLengthSeconds() - dayNightController->GetDayLengthSecondsRemaining() >= 10) {
+		TriggerDarkstoneTutorial();
+	}
+	// wait to progress tutorial until:
+	//   - the player collects 600 Darkstone
+	//   - or there is only 60 seconds remaining in the day
+	else if (tooltipStage == 1 && (player->DarkStone >= 600 || dayNightController->GetDayLengthSecondsRemaining() < 60)) {
+		TriggerAnvilTutorial();
+	}
+	// wait to progress tutorial until:
+	//   - the first day has ended
+	else if (tooltipStage == 2 && dayNightController->GetDayLengthSecondsRemaining() == 0) {
+		TriggerPortalTutorial();
+	}
+	// wait to progress tutorial until:
+	//   - the first night has ended
+	else if (tooltipStage == 3 && dayNightController->GetDayLengthSecondsRemaining() > 0 && HUD) {
+		HUD->RemoveMessage();
+	}
 }

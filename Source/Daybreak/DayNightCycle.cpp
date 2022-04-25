@@ -20,7 +20,7 @@ ADayNightCycle::ADayNightCycle() {
 void ADayNightCycle::BeginPlay() {
 	Super::BeginPlay();
 
-	SetRotation(170); // begin the game at sunrise
+	SetRotation(180); // begin the game at sunrise
 	
 	tickRotation = 180 / (DayLengthSeconds * (1 / tickRate)); // calculate sky rotation per tick
 	
