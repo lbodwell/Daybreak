@@ -30,6 +30,8 @@ public:
 	float GetDistanceToPlayer(FVector point);
 	float GetDistanceToPortal(FVector point);
 	
+	UUserWidget* GetHUD();
+	
 	static int EnemyCount;
 	static float EnemyValue;
 
@@ -37,6 +39,8 @@ protected:
 	/**  HUD widget. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Widgets)
     TSubclassOf<class UUserWidget> HUDWidget;
+	
+	UUserWidget* HUD;
 	
 	AActor* portal;
 	

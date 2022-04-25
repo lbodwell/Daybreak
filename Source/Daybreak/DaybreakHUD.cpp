@@ -50,7 +50,6 @@ void UDaybreakHUD::RefreshMediaPlayer() {
 		SeekFromDegrees(DayNightController->CurrentRotation);
 		dayLengthSeconds = DayNightController->GetDayLengthSeconds();
 		MediaPlayer->SetRate(15 / (float)dayLengthSeconds); // video spans 30 seconds (15 second day/night)
-		ShowMessage("Gather Darkstone before sun sets...");
 	}
 }
 

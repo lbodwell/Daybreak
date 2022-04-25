@@ -52,7 +52,7 @@ void ADaybreakGameMode::BeginPlay() {
 
 	// add HUD widget to viewport
 	if (HUDWidget != nullptr) {
-		UUserWidget* HUD = CreateWidget<UUserWidget>(GetWorld(), HUDWidget);
+		HUD = CreateWidget<UUserWidget>(GetWorld(), HUDWidget);
 		if (HUD) {
 			HUD->AddToViewport();
 		}
@@ -114,4 +114,8 @@ float ADaybreakGameMode::GetDistanceToPlayer(FVector point) {
 
 float ADaybreakGameMode::GetDistanceToPortal(FVector point) {
 	return (point - portal->GetActorLocation()).Size() - 70;
+}
+
+UUserWidget* ADaybreakGameMode::GetHUD() {
+	return HUD;
 }
