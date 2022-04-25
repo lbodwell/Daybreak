@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "DaybreakCharacter.h"
+#include "DaybreakHUD.h"
 #include "DaybreakGameMode.generated.h"
 
 UCLASS(minimalapi)
@@ -12,6 +13,9 @@ class ADaybreakGameMode : public AGameModeBase {
 	GENERATED_BODY()
 	
 	virtual void BeginPlay() override;
+	
+private:
+	void TriggerDarkstoneTutorial();
 
 public:
 	ADaybreakGameMode();
@@ -30,7 +34,7 @@ public:
 	float GetDistanceToPlayer(FVector point);
 	float GetDistanceToPortal(FVector point);
 	
-	UUserWidget* GetHUD();
+	UDaybreakHUD* GetHUD();
 	
 	static int EnemyCount;
 	static float EnemyValue;
@@ -40,9 +44,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Widgets)
     TSubclassOf<class UUserWidget> HUDWidget;
 	
-	UUserWidget* HUD;
+	UDaybreakHUD* HUD;
 	
 	AActor* portal;
+	AActor* tutorialDarkstone;
 	
 	ADaybreakCharacter* player;
 };

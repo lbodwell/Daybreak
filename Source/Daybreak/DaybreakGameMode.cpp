@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "DestructibleResource.h"
+#include "DaybreakHUD.h"
 #include "Math/UnrealMathUtility.h"
 
 
@@ -32,8 +33,11 @@ void ShuffleAndRemove(TArray<AActor*> ResourcesToShuffle) {
 
 	// "Remove" the first half (number can be adjusted) of the Resources in the TArray
 	for (int i = 0; i < ResourcesToShuffle.Num() / 2; i++) {
-		ResourcesToShuffle[i]->SetActorHiddenInGame(true);
-		ResourcesToShuffle[i]->SetActorEnableCollision(false);
+		if (!ResourcesToShuffle[i]->ActorHasTag("Tutorial")) {
+			ResourcesToShuffle[i]->Destroy();
+		}
+		//ResourcesToShuffle[i]->SetActorHiddenInGame(true);
+		//ResourcesToShuffle[i]->SetActorEnableCollision(false);
 	}
 }
 
@@ -51,11 +55,9 @@ void ADaybreakGameMode::BeginPlay() {
 	player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
 	// add HUD widget to viewport
-	if (HUDWidget != nullptr) {
-		HUD = CreateWidget<UUserWidget>(GetWorld(), HUDWidget);
-		if (HUD) {
-			HUD->AddToViewport();
-		}
+	HUD = Cast<UDaybreakHUD>(CreateWidget<UUserWidget>(GetWorld(), HUDWidget));
+	if (HUD) {
+		HUD->AddToViewport();
 	}
 	
 	APlayerController* playerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
@@ -78,17 +80,20 @@ void ADaybreakGameMode::BeginPlay() {
 
 	// Separate all resources based on level
 	for (int32 i = 0; i < AllResources.Num(); i++) {
+		if (AllResources[i]->ActorHasTag("Tutorial")) {
+			tutorialDarkstone = AllResources[i];
+			continue;
+		}
+		
 		ADestructibleResource* Resource = Cast<ADestructibleResource>(AllResources[i]);
 
 		if (Resource->Level == 1) {
 			ResourcesLevel1.Add(AllResources[i]);
 		}
-
-		if (Resource->Level == 2) {
+		else if (Resource->Level == 2) {
 			ResourcesLevel2.Add(AllResources[i]);
 		}
-
-		if (Resource->Level == 3) {
+		else if (Resource->Level == 3) {
 			ResourcesLevel3.Add(AllResources[i]);
 		}
 	}
@@ -97,6 +102,9 @@ void ADaybreakGameMode::BeginPlay() {
 	ShuffleAndRemove(ResourcesLevel1);
 	ShuffleAndRemove(ResourcesLevel2);
 	ShuffleAndRemove(ResourcesLevel3);
+	
+	// begin tutorial with collecting Darkstone
+	TriggerDarkstoneTutorial();
 }
 
 void ADaybreakGameMode::DamagePortal(int DamageAmount) {
@@ -116,6 +124,16 @@ float ADaybreakGameMode::GetDistanceToPortal(FVector point) {
 	return (point - portal->GetActorLocation()).Size() - 70;
 }
 
-UUserWidget* ADaybreakGameMode::GetHUD() {
+UDaybreakHUD* ADaybreakGameMode::GetHUD() {
 	return HUD;
+}
+
+void ADaybreakGameMode::TriggerDarkstoneTutorial() {
+	if (HUD && tutorialDarkstone) {
+		HUD->ShowMessage("Gather Darkstone until sun sets...");
+		TArray<UActorComponent*> components = tutorialDarkstone->GetComponentsByTag(UActorComponent::StaticClass(), "Outline");
+		if (components.Num() > 0) {
+			Cast<UPrimitiveComponent>(components[0])->SetRenderCustomDepth(true);
+		}
+	}	
 }
