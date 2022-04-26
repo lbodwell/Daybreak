@@ -27,8 +27,6 @@ void ADestructibleResource::BeginPlay() {
 	Super::BeginPlay();
 
 	CurrentHealth = MaxHealth;
-
-	UE_LOG(LogTemp, Warning, TEXT("Resources Level From DR.cpp: %d"), Level);
 }
 
 // Called every frame

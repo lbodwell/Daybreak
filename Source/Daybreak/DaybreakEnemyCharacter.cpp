@@ -95,8 +95,7 @@ void ADaybreakEnemyCharacter::KillCharacter(float CorpsePersistenceTime) {
 	if (DayNightController && !DayNightController->GetIsDay()) {
 		float value = ADaybreakGameMode::EnemyValue;
 		DayNightController->AddRotation(value);
-		UE_LOG(LogActor, Warning, TEXT("Progressing night by: %f"), value);
-		UE_LOG(LogActor, Warning, TEXT("New rotation: %f"), DayNightController->CurrentRotation);
+		//UE_LOG(LogActor, Warning, TEXT("Progressing night by: %f"), value);
 	}
 
 	GetController()->Destroy();

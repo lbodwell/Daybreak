@@ -36,7 +36,6 @@ void AEnemySpawnController::BeginPlay() {
 }
 
 void AEnemySpawnController::OnDayStart(int dayLengthSeconds) {
-	UE_LOG(LogTemp, Warning, TEXT("OnDayStart in Spawn Controller"));
 	DayLengthSeconds = dayLengthSeconds;
 	float enemiesToSpawn = 25;
 	spawnFactor = enemiesToSpawn / (float) pow(DayLengthSeconds, spawnExponential);

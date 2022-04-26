@@ -73,22 +73,22 @@ void ADaybreakAIController::Attack() {
 
 //Listener Functions
 void ADaybreakAIController::OnDayStart(int DayLengthSeconds) {
-	UE_LOG(LogTemp, Warning, TEXT("OnDayStart"));
+	//UE_LOG(LogTemp, Warning, TEXT("OnDayStart"));
 	SetState(new Daytime);
 }
 
 void ADaybreakAIController::OnNightStart() {
-	UE_LOG(LogTemp, Warning, TEXT("OnNightStart"));
+	//UE_LOG(LogTemp, Warning, TEXT("OnNightStart"));
 	SetState(new Nighttime);
 }
 
 void ADaybreakAIController::OnPortalActivate() {
-	UE_LOG(LogTemp, Warning, TEXT("OnPortalActivate"));
+	//UE_LOG(LogTemp, Warning, TEXT("OnPortalActivate"));
 	SetState(new SwarmPortal);
 }
 
 void ADaybreakAIController::OnPortalDeactivate() {
-	UE_LOG(LogTemp, Warning, TEXT("OnPortalDeactivate"));
+	//UE_LOG(LogTemp, Warning, TEXT("OnPortalDeactivate"));
 	SetState(new ChasePlayerNight);
 }
 
