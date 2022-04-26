@@ -4,12 +4,13 @@
 #include "DaybreakKillVolume.h"
 #include "DaybreakCharacter.h"
 
-ADaybreakKillVolume::ADaybreakKillVolume() {
-	OnActorBeginOverlap.AddDynamic(this, &ADaybreakKillVolume::ActorEnteredVolume);
+void ADaybreakKillVolume::BeginPlay() {
+	Super::BeginPlay();
+	
+	OnActorBeginOverlap.AddDynamic(this, &ADaybreakKillVolume::KillPlayer);
 }
 
-void ADaybreakKillVolume::ActorEnteredVolume(AActor* thisActor, AActor* otherActor) {
-	UE_LOG(LogActor, Warning, TEXT("ACTOR!"));
+void ADaybreakKillVolume::KillPlayer(AActor* thisActor, AActor* otherActor) {
 	ADaybreakCharacter* player = Cast<ADaybreakCharacter>(otherActor);
 
 	if (player) {

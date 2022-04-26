@@ -3,18 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Volume.h"
+#include "GameFramework/Actor.h"
 #include "DaybreakKillVolume.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DAYBREAK_API ADaybreakKillVolume : public AVolume {
+class DAYBREAK_API ADaybreakKillVolume : public AActor {
 	GENERATED_BODY()
-
-	ADaybreakKillVolume();
 	
-private:
-	void ActorEnteredVolume(AActor* thisActor, AActor* otherActor);
+protected:
+	UFUNCTION()
+	void KillPlayer(AActor* thisActor, AActor* otherActor);
+
+	virtual void BeginPlay() override;
 };
