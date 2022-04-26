@@ -261,12 +261,7 @@ void ADaybreakCharacter::Exit() {
 		PauseMenu = nullptr;
 		SetMouseCursor(false);
 	} 
-	else if (DeathScreen) {
-		DeathScreen->RemoveFromViewport();
-		DeathScreen = nullptr;
-		SetMouseCursor(false);
-	} 
-	else {
+	else if (!DeathScreen) {
 		if (PauseMenuWidget != nullptr) {
 			PauseMenu = CreateWidget<UUserWidget>(GetWorld(), PauseMenuWidget);
 			if (PauseMenu) {
@@ -302,7 +297,7 @@ void ADaybreakCharacter::KillPlayer(float CorpsePersistenceTime) {
 }
 
 void ADaybreakCharacter::Destroy() {
-//	UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Type::Quit, false);
+	//	UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Type::Quit, false);
 	if (DeathScreenWidget != nullptr) {
 		DeathScreen = CreateWidget<UUserWidget>(GetWorld(), DeathScreenWidget);
 		if (DeathScreen) {
