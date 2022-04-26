@@ -22,8 +22,10 @@ class DAYBREAK_API ADayNightCycle : public AActor {
 public:
     // Sets default values for this actor's properties
     ADayNightCycle();
-
-	void AddRotation(float Angle);
+	
+	// update sky position by specified angle
+	UFUNCTION()
+	void AddRotation(float angle);
 
     bool GetIsDay();
 
@@ -66,8 +68,7 @@ private:
 	*/
 	void SetRotation(float angle);
 
-	// tick event for updating sky position over specified day length
-	void UpdateRotation();
+	void BeginAutoRotation();
 
 	// rate at which UpdateRotation is called
 	float tickRate;
@@ -75,5 +76,5 @@ private:
 	// amount of sky rotation per tick
 	float tickRotation;
 
-	FTimerHandle timerHandle;
+	FTimerHandle autoRotateTimerHandle;
 };
