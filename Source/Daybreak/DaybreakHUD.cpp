@@ -84,7 +84,6 @@ void UDaybreakHUD::UpdateDayNightIndicator() {
 				MediaPlayer->Pause();
 			}
 			SeekFromDegrees(DayNightController->CurrentRotation);
-			UE_LOG(LogActor, Warning, TEXT("%f"), DayNightController->CurrentRotation);
 			
 			DayNightText = FString::FromInt(ADaybreakGameMode::EnemyCount);
 		}
