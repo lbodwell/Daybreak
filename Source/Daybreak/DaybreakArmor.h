@@ -7,6 +7,8 @@
 #include "DaybreakEnemyCharacter.h"
 #include "DestructibleResource.h"
 #include <vector>
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 #include "DaybreakEquipment.h"
 #include "DaybreakArmor.generated.h"
 
@@ -71,8 +73,14 @@ public:
 	
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	FArmorLevel CurrentLevel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	USoundCue* ArmorUpgradeCue;
 		
 	TArray<struct FArmorLevel> Levels;
+
+private:
+	UAudioComponent* armorUpgradeSound;
 
 protected:
 	// Called when the game starts or when spawned

@@ -25,7 +25,7 @@ void ADaybreakAIController::BeginPlay() {
 	TArray<AActor*> PortalMeshes;
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Portal"), PortalMeshes);
 	PortalLocation = PortalMeshes[0]->GetActorLocation();
-
+	
 	PortalController = PortalMeshes[0]->FindComponentByClass<UPortalController>();
 
 	TArray<AActor*> DayNightCycles;
@@ -73,22 +73,22 @@ void ADaybreakAIController::Attack() {
 
 //Listener Functions
 void ADaybreakAIController::OnDayStart(int DayLengthSeconds) {
-	UE_LOG(LogTemp, Warning, TEXT("OnDayStart"));
+	//UE_LOG(LogTemp, Warning, TEXT("OnDayStart"));
 	SetState(new Daytime);
 }
 
 void ADaybreakAIController::OnNightStart() {
-	UE_LOG(LogTemp, Warning, TEXT("OnNightStart"));
+	//UE_LOG(LogTemp, Warning, TEXT("OnNightStart"));
 	SetState(new Nighttime);
 }
 
 void ADaybreakAIController::OnPortalActivate() {
-	UE_LOG(LogTemp, Warning, TEXT("OnPortalActivate"));
+	//UE_LOG(LogTemp, Warning, TEXT("OnPortalActivate"));
 	SetState(new SwarmPortal);
 }
 
 void ADaybreakAIController::OnPortalDeactivate() {
-	UE_LOG(LogTemp, Warning, TEXT("OnPortalDeactivate"));
+	//UE_LOG(LogTemp, Warning, TEXT("OnPortalDeactivate"));
 	SetState(new ChasePlayerNight);
 }
 
@@ -116,7 +116,9 @@ FVector ADaybreakAIController::GetRandomNearbyLocation() {
 
 void ADaybreakAIController::CheckPawns() {
 	if (pawn == nullptr || playerActor == nullptr) {
-		pawn = Cast<ADaybreakEnemyCharacter>(GetPawn());
+		if (GetPawn()) {
+			pawn = Cast<ADaybreakEnemyCharacter>(GetPawn());
+		}
 
 		ACharacter* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 		playerActor = Cast<AActor>(player);

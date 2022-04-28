@@ -9,12 +9,15 @@
 #include "DaybreakCharacter.h"
 #include "DaybreakSword.h"
 #include "DaybreakArmor.h"
+#include "DaybreakGameMode.h"
+
 
 bool UDaybreakHUD::Initialize() {
 	const bool success = Super::Initialize();
 	if (!success) return false;
 	
 	mediaPlayerReady = false;
+	messageShown = false;
 	
 	return true;
 }
@@ -33,7 +36,7 @@ void UDaybreakHUD::NativeConstruct() {
 	
 	// update day/night indicator once a second
 	FTimerHandle timerHandle2;
-	GetWorld()->GetTimerManager().SetTimer(timerHandle2, this, &UDaybreakHUD::UpdateDayNightIndicator, 1, true);
+	GetWorld()->GetTimerManager().SetTimer(timerHandle2, this, &UDaybreakHUD::UpdateDayNightIndicator, 0.1, true);
 }
 
 void UDaybreakHUD::OnMediaPlayerOpen(FString url) {
@@ -63,13 +66,13 @@ void UDaybreakHUD::SeekFromDegrees(float degrees) {
 // update day/night rotator text
 void UDaybreakHUD::UpdateDayNightIndicator() { 
 	if (DayNightController) {
-		// check if day length changes
-		if (dayLengthSeconds != DayNightController->GetDayLengthSeconds()) {
-			RefreshMediaPlayer();
-		}
-		
 		// display minutes:seconds of daylight remaining
-		if (DayNightController->CurrentRotation >= 180) {
+		if (DayNightController->CurrentRotation > 180) {
+			// check if day length changes
+			if (dayLengthSeconds != DayNightController->GetDayLengthSeconds()) {
+				RefreshMediaPlayer();
+			}
+			
 			int totalSeconds = DayNightController->GetDayLengthSecondsRemaining();
 			int minutes = floor((float)totalSeconds / 60);
 			int seconds = totalSeconds - minutes * 60;
@@ -77,7 +80,12 @@ void UDaybreakHUD::UpdateDayNightIndicator() {
 		}
 		// display enemy count remaining for nighttime
 		else {
-			DayNightText = FString(TEXT("0"));
+			if (MediaPlayer->GetRate() != 0) {
+				MediaPlayer->Pause();
+			}
+			SeekFromDegrees(DayNightController->CurrentRotation);
+			
+			DayNightText = FString::FromInt(ADaybreakGameMode::EnemyCount);
 		}
 	}
 }
@@ -103,3 +111,25 @@ FArmorLevel UDaybreakHUD::GetCurrentArmorLevel() {
 	}
 	return FArmorLevel();
 }
+
+void UDaybreakHUD::AddMessage(FString message) {
+	if (messageShown) {
+		RemoveMessage();
+		
+		nextMessage = message;
+		FTimerHandle timerHandle;
+		GetWorld()->GetTimerManager().SetTimer(timerHandle, [&]{ AddMessage(nextMessage); }, 1, false, 0.75);
+	} else {
+		messageShown = true;
+		ShowMessage(message);
+	}
+}
+
+void UDaybreakHUD::RemoveMessage() {
+	messageShown = false;
+	HideMessage();
+}
+
+void UDaybreakHUD::ShowMessage_Implementation(const FString& message) {}
+
+void UDaybreakHUD::HideMessage_Implementation() {}

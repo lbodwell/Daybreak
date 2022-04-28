@@ -13,8 +13,8 @@
 #include "Blueprint/UserWidget.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "UObject/ConstructorHelpers.h"
 #include "GameFramework/PlayerController.h"
-
 
 ADaybreakCharacter::ADaybreakCharacter() {
     // Set size for collision capsule
@@ -53,6 +53,21 @@ ADaybreakCharacter::ADaybreakCharacter() {
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
     FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+	// Initialize audio components
+	static ConstructorHelpers::FObjectFinder<USoundCue> attackSwingCueObj(TEXT("SoundCue'/Game/Audio/Player/Attack/Player_Attack_Swing_Cue.Player_Attack_Swing_Cue'"));
+	if (attackSwingCueObj.Succeeded()) {
+		AttackSwingCue = attackSwingCueObj.Object;
+		attackSwingSound = CreateDefaultSubobject<UAudioComponent>(TEXT("AttackSwingSound"));
+		attackSwingSound->SetupAttachment(RootComponent);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> anvilInteractSoundObj(TEXT("SoundCue'/Game/Audio/Player/UI/Anvil/UI_Anvil_Interact_Cue.UI_Anvil_Interact_Cue'"));
+	if (anvilInteractSoundObj.Succeeded()) {
+		AnvilInteractCue = anvilInteractSoundObj.Object;
+		anvilInteractSound = CreateDefaultSubobject<UAudioComponent>(TEXT("AnvilInteractSound"));
+		anvilInteractSound->SetupAttachment(RootComponent);
+	}
 }
 
 void ADaybreakCharacter::BeginPlay() {
@@ -71,6 +86,14 @@ void ADaybreakCharacter::BeginPlay() {
 	
 	// start sphere tracing for interactables
 	GetWorld()->GetTimerManager().SetTimer(InteractableSphereTraceTimerHandle, this, &ADaybreakCharacter::SphereTraceForInteractables, 0.25, true);
+
+	// Set audio component sound cues
+	if (attackSwingSound && AttackSwingCue) {
+		attackSwingSound->SetSound(AttackSwingCue);
+	}
+	if (anvilInteractSound && AnvilInteractCue) {
+		anvilInteractSound->SetSound(AnvilInteractCue);
+	}
 }
 
 // Called ever frame
@@ -199,9 +222,12 @@ void ADaybreakCharacter::Attack() {
             Attacking = true; // will be unset by AnimNotify::AttackHitEnd in AnimBP
             lastAttack = lastAttack == 0 ? 1 : 0; // alternate between left and right attacks
 			
-			float attackDelay = 0.6 - (Armor->CurrentLevel.AttackSpeed * 0.25); // set attack delay based on Armor AttackSpeed modifier
+			float attackDelay = 0.9 - (Armor->CurrentLevel.AttackSpeed * 0.25); // set attack delay based on Armor AttackSpeed modifier
 			FTimerHandle timerHandle;
 			GetWorld()->GetTimerManager().SetTimer(timerHandle, [&]() { Attacking = false; }, 1, false, attackDelay);
+			if (attackSwingSound) {
+				attackSwingSound->Play(0);
+			}
         }
 	}
 }
@@ -209,12 +235,16 @@ void ADaybreakCharacter::Attack() {
 void ADaybreakCharacter::Interact() {
 	if (InputEnabled() && interactable) {
 		//UE_LOG(LogActor, Warning, TEXT("Interactable: %s"), *(interactable->GetName()));
-		if (interactable->GetName().StartsWith("_Anvil")) {
+		
+		if (interactable->ActorHasTag("Anvil")) {
 			// add upgrade menu widget to viewport
 			if (UpgradeMenuWidget != nullptr) {
 				UpgradeMenu = CreateWidget<UUserWidget>(GetWorld(), UpgradeMenuWidget);
 				if (UpgradeMenu) {
 					UpgradeMenu->AddToViewport();
+					if (anvilInteractSound && !anvilInteractSound->IsPlaying()) {
+						anvilInteractSound->Play(0);
+					}
 				}
 			}
 		}
@@ -231,12 +261,7 @@ void ADaybreakCharacter::Exit() {
 		PauseMenu = nullptr;
 		SetMouseCursor(false);
 	} 
-	else if (DeathScreen) {
-		DeathScreen->RemoveFromViewport();
-		DeathScreen = nullptr;
-		SetMouseCursor(false);
-	} 
-	else {
+	else if (!DeathScreen) {
 		if (PauseMenuWidget != nullptr) {
 			PauseMenu = CreateWidget<UUserWidget>(GetWorld(), PauseMenuWidget);
 			if (PauseMenu) {
@@ -272,7 +297,7 @@ void ADaybreakCharacter::KillPlayer(float CorpsePersistenceTime) {
 }
 
 void ADaybreakCharacter::Destroy() {
-//	UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Type::Quit, false);
+	//	UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Type::Quit, false);
 	if (DeathScreenWidget != nullptr) {
 		DeathScreen = CreateWidget<UUserWidget>(GetWorld(), DeathScreenWidget);
 		if (DeathScreen) {

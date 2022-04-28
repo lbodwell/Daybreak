@@ -56,6 +56,4 @@ public:
 	AEnemySpawnController();
 
 	void SpawnActor();
-	static int EnemyCount;
-	static float EnemyValue;
 };
