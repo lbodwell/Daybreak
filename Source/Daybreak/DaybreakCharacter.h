@@ -102,9 +102,6 @@ public:
 	/** Destroys character and exits the game */
 	void Destroy();
 
-	/** Destroys character and exits the game */
-	void Destroy();
-
 protected:
 
 	/**  Upgrade menu widget class. */

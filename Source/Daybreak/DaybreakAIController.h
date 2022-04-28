@@ -7,6 +7,7 @@
 #include "DaybreakEnemyCharacter.h"
 #include "EnemyState.h"
 #include "DayNightCycle.h"
+#include "PathfindingWaypoint.h"
 #include "PortalController.h"
 #include "DaybreakAIController.generated.h"
 
@@ -30,7 +31,10 @@ class DAYBREAK_API ADaybreakAIController : public AAIController {
 		float GetDistanceToPortal();
 		FVector GetPortalLocation();
 		FVector GetRandomNearbyLocation();
-		bool GetIsDay();
+		FVector GetRandomWaypoint();
+		void SetWaypointVisited(bool isVisited);
+		bool GetIsDay() const;
+		bool GetWaypointIsVisited() const;
 
 		void SetState(EnemyState* newState);
 
@@ -45,6 +49,8 @@ class DAYBREAK_API ADaybreakAIController : public AAIController {
 		EnemyState* CurrentState;
 		ADayNightCycle* DayNightCycle;
 		UPortalController* PortalController;
+		TArray<AActor*> Waypoints;
+		bool WaypointVisited;
 		
 		void RunState();
 		void CheckPawns();
