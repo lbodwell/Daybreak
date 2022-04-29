@@ -49,7 +49,7 @@ ADaybreakSword::ADaybreakSword() : IDaybreakEquipment() {
 		weaponUpgradeSound->SetupAttachment(RootComponent);
 	}
 
-	ParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("MyPSC"));
+	ParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Blood Spatter"));
 }
 
 // Called when the game starts or when spawned
@@ -91,14 +91,12 @@ void ADaybreakSword::Attack(class AActor* overlappedActor, class AActor* otherAc
 	if (otherActor != nullptr && otherActor != this) {
 		ADaybreakEnemyCharacter* enemy = Cast<ADaybreakEnemyCharacter>(otherActor);
 		ADestructibleResource* resource = Cast<ADestructibleResource>(otherActor);
-		UE_LOG(LogTemp, Warning, TEXT("Particles?"));
+
 		// if sword hits an enemy
 		if (enemy != nullptr && Hitting) {
 			enemy->ReceiveDamage(10 + CurrentLevel.Damage * 10);
 
-			if (UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem->Template, GetTransform(), false, EPSCPoolMethod::None, true) != NULL) {
-				UE_LOG(LogTemp, Warning, TEXT("Particles?"));
-			}
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem->Template, GetTransform(), false, EPSCPoolMethod::None, true);
 			
 			if (attackImpactSound && !attackImpactSound->IsPlaying()) {
 				attackImpactSound->Play(0);
