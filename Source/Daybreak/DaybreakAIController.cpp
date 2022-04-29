@@ -118,6 +118,8 @@ FVector ADaybreakAIController::GetRandomNearbyLocation() {
 }
 
 FVector ADaybreakAIController::GetRandomWaypoint() {
+	if (Waypoints.Num() == 0) { SetState(new SwarmPortal); }
+
 	int index = FMath::RandRange(0, Waypoints.Num() - 1);
 
 	return Waypoints[index]->GetActorLocation();

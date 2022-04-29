@@ -126,13 +126,10 @@ void VisitWaypoint::run(ADaybreakAIController* controller) {
 	if (controller->GetWaypointIsVisited()) { controller->SetState(new SwarmPortal); }
 	
 	if (controller->MoveToLocation(WaypointLocation, 200.0f, true, true, true, true, NULL, true) == EPathFollowingRequestResult::AlreadyAtGoal) {
+		controller->SetWaypointVisited(true);
 		controller->SetState(new SwarmPortal);
 	}
 
-}
-
-void VisitWaypoint::exit(ADaybreakAIController* controller) {
-	controller->SetWaypointVisited(true);
 }
 
 
