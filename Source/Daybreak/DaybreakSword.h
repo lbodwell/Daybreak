@@ -9,6 +9,7 @@
 #include "DaybreakEquipment.h"
 #include "Sound/SoundCue.h"
 #include "Components/AudioComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "DaybreakSword.generated.h"
 
 USTRUCT(BlueprintType)
@@ -88,10 +89,15 @@ public:
 		
 	TArray<struct FSwordLevel> Levels;
 
+	
+
 private:
 	UAudioComponent* attackImpactSound;
 	UAudioComponent* darkstoneCollectSound;
 	UAudioComponent* weaponUpgradeSound;
+
+	UPROPERTY(EditAnywhere, Category = Particles)
+	class UParticleSystemComponent* ParticleSystem;
 
 protected:
 	// Called when the game starts or when spawned
