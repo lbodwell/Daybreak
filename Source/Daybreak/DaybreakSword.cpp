@@ -86,6 +86,7 @@ void ADaybreakSword::Upgrade() {
 
 void ADaybreakSword::Attack(class AActor* overlappedActor, class AActor* otherActor) {
 	if (otherActor != nullptr && otherActor != this) {
+		UE_LOG(LogActor, Warning, TEXT("OVERLAP"));
 		ADaybreakEnemyCharacter* enemy = Cast<ADaybreakEnemyCharacter>(otherActor);
 		ADestructibleResource* resource = Cast<ADestructibleResource>(otherActor);
 
