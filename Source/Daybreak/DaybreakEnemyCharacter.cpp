@@ -9,7 +9,6 @@ ADaybreakEnemyCharacter::ADaybreakEnemyCharacter() {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	Health = 20;
-	AttackDamage = 10;
 	canReceiveDamage = true;
 	canGiveDamage = true;
 	Attacking = false;
@@ -44,13 +43,12 @@ void ADaybreakEnemyCharacter::Attack() {
 
 // Called by AnimNotify::AttackFarthestReach in AnimBP
 void ADaybreakEnemyCharacter::GiveDamage() {
-	float capsuleRadius = 40;
 	ADaybreakGameMode* gameMode = Cast<ADaybreakGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 	float distanceToPlayer = gameMode->GetDistanceToPlayer(GetActorLocation());
 	float distanceToPortal = gameMode->GetDistanceToPortal(GetActorLocation());
 	
 	if (Attacking && canGiveDamage) {
-		if (distanceToPlayer < 40) {
+		if (distanceToPlayer < CapsuleRadius) {
 			if (player != nullptr) {
 				player->ReceiveDamage(AttackDamage);
 			}

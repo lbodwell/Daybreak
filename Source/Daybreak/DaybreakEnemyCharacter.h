@@ -61,7 +61,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State)
 	int Health;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Vars)
 	int AttackDamage;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Vars)
+	float CapsuleRadius;
 
 	bool IsAlive;
 

@@ -125,6 +125,13 @@ void ADaybreakAIController::CheckPawns() {
 	}
 }
 
+float ADaybreakAIController::GetCapsuleRadius() {
+	CheckPawns();
+	pawn = Cast<ADaybreakEnemyCharacter>(GetPawn());
+	
+	return pawn->CapsuleRadius;
+}
+
 FVector ADaybreakAIController::GetPortalLocation() {
 	return PortalLocation;
 }

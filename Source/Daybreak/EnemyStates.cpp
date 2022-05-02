@@ -75,7 +75,7 @@ void ChasePlayerDay::run(ADaybreakAIController* controller)
 
 	if (playerDist > 1000) { controller->SetState(new Patrol); return; }
 
-	else if (PlayerDistanceCheck(controller, 40, new AttackPlayer)) { return; }
+	else if (PlayerDistanceCheck(controller, controller->GetCapsuleRadius(), new AttackPlayer)) { return; }
 
 	else { controller->ChasePlayer(); }
 	
@@ -93,7 +93,7 @@ void AttackPlayer::enter(ADaybreakAIController* controller) {
 void AttackPlayer::run(ADaybreakAIController* controller)
 {
 	//if out of range transition to chase player
-	if (controller->GetDistanceToPlayer() > 40) {
+	if (controller->GetDistanceToPlayer() > controller->GetCapsuleRadius()) {
 		if (IsDay) { controller->SetState(new ChasePlayerDay); return; }
 		else { controller->SetState(new ChasePlayerNight); return; }
 	}
@@ -162,7 +162,7 @@ void ChasePlayerNight::run(ADaybreakAIController* controller)
 
 	//if (playerDist > 700) { controller->SetState(new SwarmPortal); return; }
 
-	if (PlayerDistanceCheck(controller, 40, new AttackPlayer)) { return; }
+	if (PlayerDistanceCheck(controller, controller->GetCapsuleRadius(), new AttackPlayer)) { return; }
 
 	else { controller->ChasePlayer(); }
 
