@@ -37,6 +37,8 @@ class DAYBREAK_API ADaybreakAIController : public AAIController {
 		void ChasePlayer();
 		void Attack();
 		
+		float GetCapsuleRadius();
+		
 	protected:
 		ADaybreakEnemyCharacter* pawn;
 		AActor* playerActor;
