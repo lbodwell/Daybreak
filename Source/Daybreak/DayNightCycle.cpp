@@ -20,66 +20,51 @@ ADayNightCycle::ADayNightCycle() {
 void ADayNightCycle::BeginPlay() {
 	Super::BeginPlay();
 
-	SetRotation(170); // begin the game at sunrise
+	SetRotation(180); // begin the game at sunrise
+	
+	// broadcast start of first day
+	OnDayStart.Broadcast(DayLengthSeconds);
+	UE_LOG(LogActor, Warning, TEXT("OnDayStart"));
 	
 	tickRotation = 180 / (DayLengthSeconds * (1 / tickRate)); // calculate sky rotation per tick
 	
-	GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &ADayNightCycle::UpdateRotation, tickRate, true);
+	BeginAutoRotation();
 }
 
-void ADayNightCycle::UpdateRotation() {
-	if (Sun != nullptr && Moon != nullptr && SkyLight != nullptr) {
-		float newRotation = CurrentRotation + tickRotation;
+void ADayNightCycle::BeginAutoRotation() {
+	FTimerDelegate timerDelegate;
+	timerDelegate.BindUFunction(this, FName("AddRotation"), tickRotation);
+	GetWorld()->GetTimerManager().SetTimer(autoRotateTimerHandle, timerDelegate, tickRate, true);
+}
+
+void ADayNightCycle::AddRotation(float angle) {
+	if (Sun != nullptr && Moon != nullptr && SkyLight != nullptr && angle > 0 && angle < 360) {
+		float newRotation = CurrentRotation + angle;
 		if (newRotation >= 360) {
 			newRotation -= 360;
-			GetWorld()->GetTimerManager().ClearTimer(timerHandle);
-			UE_LOG(LogActor, Warning, TEXT("It should be night now"));
-			FTimerHandle TimerHandle;
-			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&]()
-				{
-					OnNightStart.Broadcast();
-				}, 1, false);
-		} else if (CurrentRotation < 180 && newRotation >= 180) {
-			OnDayStart.Broadcast(DayLengthSeconds);
+			GetWorld()->GetTimerManager().ClearTimer(autoRotateTimerHandle);
 			
-			UE_LOG(LogActor, Warning, TEXT("It should be day now"));
-			GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &ADayNightCycle::UpdateRotation, tickRate, true);
+			// broadcast OnNightStart in 1 second
+			FTimerHandle broadcastTimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(broadcastTimerHandle, [&]() { OnNightStart.Broadcast(); UE_LOG(LogActor, Warning, TEXT("OnNightStart")); }, 1, false);
+		} else if (CurrentRotation < 180 && newRotation >= 180) {
+			BeginAutoRotation();
 
 			ADaybreakCharacter* player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 			player->DayCount += 1;
+			
+			// broadcast OnDayStart in 1 second
+			FTimerHandle broadcastTimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(broadcastTimerHandle, [&]() { OnDayStart.Broadcast(DayLengthSeconds); UE_LOG(LogActor, Warning, TEXT("OnDayStart")); }, 1, false);
 		}
 
 		SetRotation(newRotation);
 	}
 }
 
-void ADayNightCycle::AddRotation(float Angle) {
-	if (Sun != nullptr && Moon != nullptr && SkyLight != nullptr && Angle > 0 && Angle < 360) {
-		float newRotation = CurrentRotation + Angle;
-		if (newRotation >= 360) {
-			newRotation -= 360;
-			GetWorld()->GetTimerManager().ClearTimer(timerHandle);
-			UE_LOG(LogActor, Warning, TEXT("It should be night now"));
-			FTimerHandle TimerHandle;
-			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&]()
-				{
-					OnNightStart.Broadcast();
-				}, 1, false);
-		} else if (CurrentRotation < 180 && newRotation >= 180) {
-			OnDayStart.Broadcast(DayLengthSeconds);
-			UE_LOG(LogActor, Warning, TEXT("It should be day now"));
-			GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &ADayNightCycle::UpdateRotation, tickRate, true);
-		}
-
-		SetRotation(newRotation);
-
-		CurrentRotation = newRotation;
-	}
-}
-
-void ADayNightCycle::SetRotation(float Angle) {
-	if (Sun != nullptr && Moon != nullptr && SkyLight != nullptr && Angle >= 0 && Angle <=360) {
-		float rotation = Angle - CurrentRotation;
+void ADayNightCycle::SetRotation(float angle) {
+	if (Sun != nullptr && Moon != nullptr && SkyLight != nullptr && angle >= 0 && angle <=360) {
+		float rotation = angle - CurrentRotation;
 		
 		// change in rotation must be at least 0.1 to turn from turn over from -90 to 90
 		if (std::abs(rotation) < 0.1 && Sun->GetActorRotation().Pitch == -90) {
@@ -90,7 +75,7 @@ void ADayNightCycle::SetRotation(float Angle) {
 		Moon->AddActorLocalRotation(FRotator(rotation, 0, 0));
 		SkyLight->GetLightComponent()->RecaptureSky();
 		
-		CurrentRotation = Angle;
+		CurrentRotation = angle;
 	}
 }
 
