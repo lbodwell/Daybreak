@@ -62,11 +62,19 @@ ADaybreakCharacter::ADaybreakCharacter() {
 		attackSwingSound->SetupAttachment(RootComponent);
 	}
 
-	static ConstructorHelpers::FObjectFinder<USoundCue> anvilInteractSoundObj(TEXT("SoundCue'/Game/Audio/Player/UI/Anvil/UI_Anvil_Interact_Cue.UI_Anvil_Interact_Cue'"));
-	if (anvilInteractSoundObj.Succeeded()) {
-		AnvilInteractCue = anvilInteractSoundObj.Object;
+	static ConstructorHelpers::FObjectFinder<USoundCue> anvilInteractCueObj(TEXT("SoundCue'/Game/Audio/Player/UI/Anvil/UI_Anvil_Interact_Cue.UI_Anvil_Interact_Cue'"));
+	if (anvilInteractCueObj.Succeeded()) {
+		AnvilInteractCue = anvilInteractCueObj.Object;
 		anvilInteractSound = CreateDefaultSubobject<UAudioComponent>(TEXT("AnvilInteractSound"));
 		anvilInteractSound->SetupAttachment(RootComponent);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> playerHurtCueObj(TEXT("SoundCue'/Game/Audio/Player/Hurt/Player_Hurt_Cue.Player_Hurt_Cue'"));
+	if (playerHurtCueObj.Succeeded()) {
+
+		PlayerHurtCue = playerHurtCueObj.Object;
+		playerHurtSound = CreateDefaultSubobject<UAudioComponent>(TEXT("PlayerHurtSound"));
+		playerHurtSound->SetupAttachment(RootComponent);
 	}
 }
 
@@ -93,6 +101,10 @@ void ADaybreakCharacter::BeginPlay() {
 	}
 	if (anvilInteractSound && AnvilInteractCue) {
 		anvilInteractSound->SetSound(AnvilInteractCue);
+	}
+	if (playerHurtSound && PlayerHurtCue) {
+		playerHurtSound->SetSound(PlayerHurtCue);
+		UE_LOG(LogActor, Warning, TEXT("Set player hurt cue"));
 	}
 }
 
@@ -278,6 +290,13 @@ void ADaybreakCharacter::ReceiveDamage(int amount) {
 	if (Health <= 0) {
 		Health = 0;
 		KillPlayer(0.2);
+		// death sound
+	}
+	
+	UE_LOG(LogActor, Warning, TEXT("Trying to play hurt sound"));
+	if (playerHurtSound && !playerHurtSound->IsPlaying()) {
+		UE_LOG(LogActor, Warning, TEXT("Playing hurt sound"));
+		playerHurtSound->Play(0);
 	}
 }
 
