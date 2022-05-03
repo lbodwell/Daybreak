@@ -108,8 +108,9 @@ AEnemySpawnField* AEnemySpawnController::GetRandomSpawnField() {
 		NormalDirection.Normalize();
 		DotProductAngle = UKismetMathLibrary::RadiansToDegrees(UKismetMathLibrary::Acos(FVector::DotProduct(PlayerCamera->GetForwardVector(), NormalDirection)));
 
-		//if outside of FOV, add to list to choose from
-		if (UKismetMathLibrary::Abs(DotProductAngle) > PlayerCamera->FieldOfView / 2) {	
+		// if very far OR (outside of FOV and suitably far), add to list to choose from
+		float distance = (Player->GetActorLocation() - SpawnFields[i]->GetActorLocation()).Size();
+		if (distance > 7500 || ((UKismetMathLibrary::Abs(DotProductAngle) > PlayerCamera->FieldOfView / 2) && distance > 5000)) {	
 			SpawnFieldsOutOfView.Add(SpawnFields[i]);
 			FieldsInView--;
 		}
