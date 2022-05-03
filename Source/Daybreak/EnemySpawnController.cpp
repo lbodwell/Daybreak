@@ -15,13 +15,14 @@ AEnemySpawnController::AEnemySpawnController() {
 	Player = nullptr;
 	PlayerCamera = nullptr;
 	spawnExponential = 2;
+	ThiccBoiChance = 0.f;
 }
 
 // Called when the game starts or when spawned
 void AEnemySpawnController::BeginPlay() {
 	Super::BeginPlay();
 	
-	Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	Player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	PlayerCamera = Player->FindComponentByClass<UCameraComponent>();
 	
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemySpawnField::StaticClass(), SpawnFields);
@@ -37,8 +38,12 @@ void AEnemySpawnController::BeginPlay() {
 
 void AEnemySpawnController::OnDayStart(int dayLengthSeconds) {
 	DayLengthSeconds = dayLengthSeconds;
-	float enemiesToSpawn = 25;
+	float enemiesToSpawn = 25 + ((Player->DayCount - 1) * 5);
 	spawnFactor = enemiesToSpawn / (float) pow(DayLengthSeconds, spawnExponential);
+	
+	if (ThiccBoiChance >= 0.20) { ThiccBoiChance = 0.20; }
+	else { ThiccBoiChance = (Player->DayCount - 1) * 0.04; }
+	
 	
 	GetWorldTimerManager().SetTimer(spawnTimerHandle, this, &AEnemySpawnController::SpawnTick, 0.25, true);
 }
@@ -73,7 +78,13 @@ void AEnemySpawnController::SpawnActor() {
 		Location = FVector(0, 0, 600);
 		UE_LOG(LogTemp, Warning, TEXT("Spawn Field Not Found"));
 	}
+
+	TSubclassOf<ADaybreakEnemyCharacter> EnemyToSpawn;
+	if (FMath::RandRange(0.f, 1.0f) < ThiccBoiChance) { EnemyToSpawn = ThiccBoi; }
+	else { EnemyToSpawn = Steve; }
 	
+	//This line for testing
+	//EnemyToSpawn = ThiccBoi;
 
 	GetWorld()->SpawnActor<APawn>(EnemyToSpawn, Location, Rotation);
 	enemiesSpawned++;
