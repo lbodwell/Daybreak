@@ -69,5 +69,8 @@ class DAYBREAK_API ADaybreakAIController : public AAIController {
 
 		UFUNCTION()
 		void OnPortalDeactivate();
+		
+	private:
+		bool CompareActorsByLocation(const AActor& a1, const AActor& a2);
 
 };

@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include <functional>
 #include "DaybreakAIController.h"
 #include "EnemyStates.h"
 #include "Kismet/GameplayStatics.h"
@@ -122,10 +123,21 @@ FVector ADaybreakAIController::GetRandomWaypoint() {
 		SetState(new SwarmPortal); 
 		return PortalLocation;
 	}
+	
+	Waypoints.Sort(std::bind(&ADaybreakAIController::CompareActorsByLocation, 
+                     this,
+                     std::placeholders::_1,
+                     std::placeholders::_2));
 
-	int index = FMath::RandRange(0, Waypoints.Num() - 1);
+	int index = FMath::RandRange(0, 2);
 
 	return Waypoints[index]->GetActorLocation();
+}
+
+bool ADaybreakAIController::CompareActorsByLocation(const AActor& a1, const AActor& a2) {
+	float d1 = (GetPawn()->GetActorLocation() - a1.GetActorLocation()).Size();
+	float d2 = (GetPawn()->GetActorLocation() - a2.GetActorLocation()).Size();
+    return d1 < d2;
 }
 
 void ADaybreakAIController::CheckPawns() {
