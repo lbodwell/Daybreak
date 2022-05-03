@@ -86,7 +86,6 @@ void ADaybreakSword::Upgrade() {
 
 void ADaybreakSword::Attack(class AActor* overlappedActor, class AActor* otherActor) {
 	if (otherActor != nullptr && otherActor != this) {
-		UE_LOG(LogActor, Warning, TEXT("OVERLAP"));
 		ADaybreakEnemyCharacter* enemy = Cast<ADaybreakEnemyCharacter>(otherActor);
 		ADestructibleResource* resource = Cast<ADestructibleResource>(otherActor);
 
@@ -101,6 +100,7 @@ void ADaybreakSword::Attack(class AActor* overlappedActor, class AActor* otherAc
 
 		// if sword hits a resource
 		if (resource != nullptr && Hitting) {
+			UE_LOG(LogActor, Warning, TEXT("RESOURCE"));
 			if (darkstoneCollectSound) {
 				darkstoneCollectSound->Play(0);
 			}
