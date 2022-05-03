@@ -129,7 +129,7 @@ FVector ADaybreakAIController::GetRandomWaypoint() {
                      std::placeholders::_1,
                      std::placeholders::_2));
 
-	int index = FMath::RandRange(0, 1);
+	int index = FMath::RandRange(0, 2);
 
 	return Waypoints[index]->GetActorLocation();
 }
