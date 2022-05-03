@@ -22,9 +22,12 @@ void ADayNightCycle::BeginPlay() {
 
 	SetRotation(180); // begin the game at sunrise
 	
-	// broadcast start of first day
-	OnDayStart.Broadcast(DayLengthSeconds);
-	UE_LOG(LogActor, Warning, TEXT("OnDayStart"));
+	// broadcast first OnDayStart in 1 second
+	FTimerHandle broadcastTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(broadcastTimerHandle, [&]() { 
+		OnDayStart.Broadcast(DayLengthSeconds); 
+		UE_LOG(LogActor, Warning, TEXT("OnDayStart")); 
+	}, 1, false);
 	
 	tickRotation = 180 / (DayLengthSeconds * (1 / tickRate)); // calculate sky rotation per tick
 	
@@ -46,7 +49,10 @@ void ADayNightCycle::AddRotation(float angle) {
 			
 			// broadcast OnNightStart in 1 second
 			FTimerHandle broadcastTimerHandle;
-			GetWorld()->GetTimerManager().SetTimer(broadcastTimerHandle, [&]() { OnNightStart.Broadcast(); UE_LOG(LogActor, Warning, TEXT("OnNightStart")); }, 1, false);
+			GetWorld()->GetTimerManager().SetTimer(broadcastTimerHandle, [&]() { 
+				OnNightStart.Broadcast(); 
+				UE_LOG(LogActor, Warning, TEXT("OnNightStart"));
+			}, 1, false);
 		} else if (CurrentRotation < 180 && newRotation >= 180) {
 			BeginAutoRotation();
 
@@ -55,7 +61,10 @@ void ADayNightCycle::AddRotation(float angle) {
 			
 			// broadcast OnDayStart in 1 second
 			FTimerHandle broadcastTimerHandle;
-			GetWorld()->GetTimerManager().SetTimer(broadcastTimerHandle, [&]() { OnDayStart.Broadcast(DayLengthSeconds); UE_LOG(LogActor, Warning, TEXT("OnDayStart")); }, 1, false);
+			GetWorld()->GetTimerManager().SetTimer(broadcastTimerHandle, [&]() { 
+				OnDayStart.Broadcast(DayLengthSeconds); 
+				UE_LOG(LogActor, Warning, TEXT("OnDayStart"));
+			}, 1, false);
 		}
 
 		SetRotation(newRotation);
