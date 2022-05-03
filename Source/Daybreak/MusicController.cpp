@@ -55,9 +55,9 @@ void AMusicController::Tick(float DeltaTime) {
 	} else {
 		if (nightMusic && !nightMusic->IsPlaying()) {
 			if (dayMusic) {
-				dayMusic->FadeOut(1, 0);
+				dayMusic->FadeOut(2, 0);
 			}
-			nightMusic->FadeIn(1);
+			nightMusic->FadeIn(2);
 		}
 	}
 }
