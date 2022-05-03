@@ -39,7 +39,7 @@ struct FSwordLevel {
 
     FSwordLevel() {
         Index = 0;
-        Name = "Steel Sword";
+        Name = "Steel Hammer";
 		Color = FLinearColor(0.25, 0.25, 0.25, 1);
         Damage = 0;
         EffectDamage = 0;

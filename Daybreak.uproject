@@ -19,10 +19,6 @@
 			"Enabled": true
 		},
 		{
-			"Name": "HoudiniEngine",
-			"Enabled": true
-		},
-		{
 			"Name": "AlembicHairImporter",
 			"Enabled": true
 		},
