@@ -23,6 +23,7 @@ ADaybreakGameMode::ADaybreakGameMode() {
 	EnemyCount = 0;
 	EnemyValue = 0;
 	PortalHealth = 500;
+	BasePortalHealth = 500;
 	tooltipStage = 0;
 }
 
