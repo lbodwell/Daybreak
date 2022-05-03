@@ -15,7 +15,7 @@ int ADaybreakGameMode::EnemyCount = 0;
 float ADaybreakGameMode::EnemyValue = 0;
 
 ADaybreakGameMode::ADaybreakGameMode() {
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Character/MainCharacter"));
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Main_Character/MainCharacter"));
 	if (PlayerPawnBPClass.Class != NULL) {
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
