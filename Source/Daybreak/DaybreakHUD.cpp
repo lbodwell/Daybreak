@@ -118,7 +118,7 @@ void UDaybreakHUD::AddMessage(FString message) {
 		
 		nextMessage = message;
 		FTimerHandle timerHandle;
-		GetWorld()->GetTimerManager().SetTimer(timerHandle, [&]{ AddMessage(nextMessage); }, 1, false, 0.75);
+		GetWorld()->GetTimerManager().SetTimer(timerHandle, [&]{ AddMessage(nextMessage); }, 1.25, false);
 	} else {
 		messageShown = true;
 		ShowMessage(message);
