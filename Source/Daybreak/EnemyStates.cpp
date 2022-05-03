@@ -113,6 +113,27 @@ void Nighttime::run(ADaybreakAIController* controller) {
 
 
 /**
+*	Visit Waypoint
+*/
+
+void VisitWaypoint::enter(ADaybreakAIController* controller) {
+	WaypointLocation = controller->GetRandomWaypoint();
+}
+
+void VisitWaypoint::run(ADaybreakAIController* controller) {
+	PlayerDistanceCheck(controller, 250, new ChasePlayerNight);
+
+	if (controller->GetWaypointIsVisited()) { controller->SetState(new SwarmPortal); }
+	
+	if (controller->MoveToLocation(WaypointLocation, 200.0f, true, true, true, true, NULL, true) == EPathFollowingRequestResult::AlreadyAtGoal) {
+		controller->SetWaypointVisited(true);
+		controller->SetState(new SwarmPortal);
+	}
+
+}
+
+
+/**
 *	SWARM PORTAL
 */
 
@@ -140,7 +161,7 @@ void SwarmPortal::run(ADaybreakAIController* controller) {
 
 void AttackPortal::run(ADaybreakAIController* controller) {
 
-	UE_LOG(LogTemp, Warning, TEXT("In Attack Portal"));
+	//UE_LOG(LogTemp, Warning, TEXT("In Attack Portal"));
 
 	if (controller->GetDistanceToPortal() > 200) {
 		controller->SetState(new SwarmPortal);
