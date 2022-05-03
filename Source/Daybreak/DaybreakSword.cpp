@@ -5,6 +5,7 @@
 #include "DaybreakEnemyCharacter.h"
 #include "DaybreakCharacter.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Kismet/GameplayStatics.h"
 #include <Engine.h>
 
 // Sets default values
@@ -47,6 +48,8 @@ ADaybreakSword::ADaybreakSword() : IDaybreakEquipment() {
 		weaponUpgradeSound = CreateDefaultSubobject<UAudioComponent>(TEXT("WeaponUpgradeSound"));
 		weaponUpgradeSound->SetupAttachment(RootComponent);
 	}
+
+	ParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Blood Spatter"));
 }
 
 // Called when the game starts or when spawned
@@ -93,6 +96,8 @@ void ADaybreakSword::Attack(class AActor* overlappedActor, class AActor* otherAc
 		if (enemy != nullptr && Hitting) {
 			enemy->ReceiveDamage(10 + CurrentLevel.Damage * 10);
 
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem->Template, GetTransform(), false, EPSCPoolMethod::None, true);
+			
 			if (attackImpactSound && !attackImpactSound->IsPlaying()) {
 				attackImpactSound->Play(0);
 			}
@@ -110,3 +115,4 @@ void ADaybreakSword::Attack(class AActor* overlappedActor, class AActor* otherAc
 
 void ADaybreakSword::UpdateEffect_Implementation() {
 }
+
