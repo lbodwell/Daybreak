@@ -9,6 +9,7 @@
 #include "DaybreakEquipment.h"
 #include "Sound/SoundCue.h"
 #include "Components/AudioComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "DaybreakSword.generated.h"
 
 USTRUCT(BlueprintType)
@@ -60,7 +61,7 @@ struct FSwordLevel {
 UCLASS()
 class DAYBREAK_API ADaybreakSword : public AActor, public IDaybreakEquipment {
 	GENERATED_BODY()
-	
+
 public:	
 	// Sets default values for this actor's properties
 	ADaybreakSword();
@@ -92,6 +93,9 @@ private:
 	UAudioComponent* attackImpactSound;
 	UAudioComponent* darkstoneCollectSound;
 	UAudioComponent* weaponUpgradeSound;
+
+	UPROPERTY(EditAnywhere, Category = Particles)
+	class UParticleSystemComponent* ParticleSystem;
 
 protected:
 	// Called when the game starts or when spawned

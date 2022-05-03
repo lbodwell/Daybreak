@@ -7,7 +7,7 @@
 #include "GameFramework/Character.h"
 #include "Navigation/CrowdFollowingComponent.h"
 
-ADaybreakAIController:: ADaybreakAIController(const FObjectInitializer& ObjectInitializer)
+ADaybreakAIController::ADaybreakAIController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent"))) {
 
 }
@@ -31,6 +31,9 @@ void ADaybreakAIController::BeginPlay() {
 	TArray<AActor*> DayNightCycles;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADayNightCycle::StaticClass(), DayNightCycles);
 	DayNightCycle = dynamic_cast<ADayNightCycle*>(DayNightCycles[0]);
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APathfindingWaypoint::StaticClass(), Waypoints);
+	WaypointVisited = false;
 
 	//attach listeners
 	if (DayNightCycle) {
@@ -84,7 +87,7 @@ void ADaybreakAIController::OnNightStart() {
 
 void ADaybreakAIController::OnPortalActivate() {
 	//UE_LOG(LogTemp, Warning, TEXT("OnPortalActivate"));
-	SetState(new SwarmPortal);
+	SetState(new VisitWaypoint);
 }
 
 void ADaybreakAIController::OnPortalDeactivate() {
@@ -114,6 +117,14 @@ FVector ADaybreakAIController::GetRandomNearbyLocation() {
 	return pawn->GetActorLocation() + FVector(FMath::RandRange(-2000, 2000), FMath::RandRange(-2000, 2000), 0);
 }
 
+FVector ADaybreakAIController::GetRandomWaypoint() {
+	if (Waypoints.Num() == 0) { SetState(new SwarmPortal); }
+
+	int index = FMath::RandRange(0, Waypoints.Num() - 1);
+
+	return Waypoints[index]->GetActorLocation();
+}
+
 void ADaybreakAIController::CheckPawns() {
 	if (pawn == nullptr || playerActor == nullptr) {
 		if (GetPawn()) {
@@ -136,6 +147,14 @@ FVector ADaybreakAIController::GetPortalLocation() {
 	return PortalLocation;
 }
 
-bool ADaybreakAIController::GetIsDay() {
+bool ADaybreakAIController::GetIsDay() const {
 	return DayNightCycle->GetIsDay();
+}
+
+bool ADaybreakAIController::GetWaypointIsVisited() const {
+	return WaypointVisited;
+}
+
+void ADaybreakAIController::SetWaypointVisited(bool newIsVisited) {
+	WaypointVisited = newIsVisited;
 }
