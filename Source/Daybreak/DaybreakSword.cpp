@@ -3,7 +3,6 @@
 
 #include "DaybreakSword.h"
 #include "DaybreakEnemyCharacter.h"
-#include "DaybreakCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include <Engine.h>

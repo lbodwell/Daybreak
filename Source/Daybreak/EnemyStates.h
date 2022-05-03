@@ -104,6 +104,22 @@ private:
 
 
 /**
+*	Visit Waypoint
+*/
+
+class DAYBREAK_API VisitWaypoint : public EnemyState {
+public:
+	void enter(ADaybreakAIController* controller);
+	void run(ADaybreakAIController* controller);
+	void exit(ADaybreakAIController* controller) {}
+	VisitWaypoint() {}
+
+private:
+	FVector WaypointLocation;
+};
+
+
+/**
 *	SWARM PORTAL
 */
 
