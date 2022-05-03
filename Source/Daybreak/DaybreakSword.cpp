@@ -115,3 +115,4 @@ void ADaybreakSword::Attack(class AActor* overlappedActor, class AActor* otherAc
 
 void ADaybreakSword::UpdateEffect_Implementation() {
 }
+

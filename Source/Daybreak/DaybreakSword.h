@@ -61,7 +61,7 @@ struct FSwordLevel {
 UCLASS()
 class DAYBREAK_API ADaybreakSword : public AActor, public IDaybreakEquipment {
 	GENERATED_BODY()
-	
+
 public:	
 	// Sets default values for this actor's properties
 	ADaybreakSword();
@@ -88,8 +88,6 @@ public:
 	void Attack(class AActor* overlappedActor, class AActor* otherActor);
 		
 	TArray<struct FSwordLevel> Levels;
-
-	
 
 private:
 	UAudioComponent* attackImpactSound;
