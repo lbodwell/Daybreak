@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PortalController.h"
+#include "UObject/ConstructorHelpers.h"
 #include "DaybreakGameMode.h"
 
 // Sets default values for this component's properties
@@ -8,6 +9,12 @@ UPortalController::UPortalController() {
 	PrimaryComponentTick.bCanEverTick = false;
 	IsActive = false;
 	numActivationsThisNight = 0;
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> portalActivationCueObj(TEXT("SoundCue'/Game/Audio/Portal_Activation_Cue.Portal_Activation_Cue'"));
+	if (portalActivationCueObj.Succeeded()) {
+		PortalActivationCue = portalActivationCueObj.Object;
+		portalActivationSound = CreateDefaultSubobject<UAudioComponent>(TEXT("PortalActivationSound"));
+	}
 }
 
 // Called when the game starts
@@ -17,6 +24,10 @@ void UPortalController::BeginPlay() {
 	GetWorld()->GetTimerManager().SetTimer(portalTickTimer, this, &UPortalController::PortalTick, 1, true);
 	UpdatePortalEffect();
 	UpdatePortalEffect();
+
+	if (portalActivationSound && PortalActivationCue) {
+		portalActivationSound->SetSound(PortalActivationCue);
+	}
 }
 
 void UPortalController::PortalTick() {
@@ -64,12 +75,15 @@ void UPortalController::PortalTick() {
 				float rand = FMath::FRandRange(0, 1);
 				//UE_LOG(LogTemp, Warning, TEXT("rand: %f"), rand);
 
-				if (rand <= activationProbability) {
+				if (rand < activationProbability) {
 					UE_LOG(LogTemp, Warning, TEXT("Portal Activated"));
 					// Broadcast portal activated here
 					OnPortalActivate.Broadcast();
 					UpdatePortalEffect();
 					IsActive = true;
+					if (portalActivationSound) {
+						portalActivationSound->Play(0);
+					}
 					timeInactiveSeconds = 0;
 					numActivationsThisNight++;
 				} else {

@@ -37,6 +37,7 @@ private:
 	APlayerController* playerController;
 	UAudioComponent* attackSwingSound;
 	UAudioComponent* anvilInteractSound;
+	UAudioComponent* playerHurtSound;
 
 public:
     ADaybreakCharacter();
@@ -139,6 +140,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 	USoundCue* AnvilInteractCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	USoundCue* PlayerHurtCue;
 	
 	/** Sword actor class. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Equipment)

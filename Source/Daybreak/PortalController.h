@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "DayNightCycle.h"
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 #include "PortalController.generated.h"
 
 
@@ -40,6 +42,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	int ActivationDurationSeconds;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	USoundCue* PortalActivationCue;
+
 	bool IsActive;
 	
 	void UpdatePortalEffect();
@@ -50,4 +55,5 @@ private:
 	int numActivationsThisNight;
 	int timeInactiveSeconds;
 	int timeActiveSeconds;
+	UAudioComponent* portalActivationSound;
 };
