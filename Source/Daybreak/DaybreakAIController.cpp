@@ -83,6 +83,10 @@ void ADaybreakAIController::OnDayStart(int DayLengthSeconds) {
 
 void ADaybreakAIController::OnNightStart() {
 	//UE_LOG(LogTemp, Warning, TEXT("OnNightStart"));
+	// autokill enemy after 3 mins
+	// FTimerHandle timerHandle;
+	// GetWorld()->GetTimerManager().SetTimer(timerHandle, [&](){ Cast<ADaybreakEnemyCharacter>(GetPawn())->ReceiveDamage(1000); }, 180, false);
+	
 	SetState(new Nighttime);
 }
 

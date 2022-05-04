@@ -89,10 +89,10 @@ void AEnemySpawnController::SpawnActor() {
 	ADaybreakEnemyCharacter* spawned = GetWorld()->SpawnActor<ADaybreakEnemyCharacter>(EnemyToSpawn, Location, Rotation);
 	if (spawned) {
 		spawned->GetCharacterMovement()->MaxWalkSpeed *= FMath::RandRange(0.85f, 1.15f);
-		UE_LOG(LogTemp, Warning, TEXT("Speed = %f"), spawned->GetCharacterMovement()->MaxWalkSpeed);
+		enemiesSpawned++;
+		ADaybreakGameMode::EnemyCount++;
+		//UE_LOG(LogTemp, Warning, TEXT("Speed = %f"), spawned->GetCharacterMovement()->MaxWalkSpeed);
 	}
-	enemiesSpawned++;
-	ADaybreakGameMode::EnemyCount++;
 }
 
 AEnemySpawnField* AEnemySpawnController::GetRandomSpawnField() {
