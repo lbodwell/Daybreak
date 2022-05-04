@@ -69,5 +69,4 @@ public:
 	float CapsuleRadius;
 
 	bool IsAlive;
-
 };

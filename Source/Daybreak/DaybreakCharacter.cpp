@@ -71,7 +71,6 @@ ADaybreakCharacter::ADaybreakCharacter() {
 
 	static ConstructorHelpers::FObjectFinder<USoundCue> playerHurtCueObj(TEXT("SoundCue'/Game/Audio/Player/Hurt/Player_Hurt_Cue.Player_Hurt_Cue'"));
 	if (playerHurtCueObj.Succeeded()) {
-
 		PlayerHurtCue = playerHurtCueObj.Object;
 		playerHurtSound = CreateDefaultSubobject<UAudioComponent>(TEXT("PlayerHurtSound"));
 		playerHurtSound->SetupAttachment(RootComponent);
@@ -104,7 +103,6 @@ void ADaybreakCharacter::BeginPlay() {
 	}
 	if (playerHurtSound && PlayerHurtCue) {
 		playerHurtSound->SetSound(PlayerHurtCue);
-		UE_LOG(LogActor, Warning, TEXT("Set player hurt cue"));
 	}
 }
 
@@ -293,9 +291,7 @@ void ADaybreakCharacter::ReceiveDamage(int amount) {
 		// death sound
 	}
 	
-	UE_LOG(LogActor, Warning, TEXT("Trying to play hurt sound"));
 	if (playerHurtSound && !playerHurtSound->IsPlaying()) {
-		UE_LOG(LogActor, Warning, TEXT("Playing hurt sound"));
 		playerHurtSound->Play(0);
 	}
 }
