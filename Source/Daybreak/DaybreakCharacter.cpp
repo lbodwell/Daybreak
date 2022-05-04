@@ -142,7 +142,7 @@ void ADaybreakCharacter::SetupPlayerInputComponent(class UInputComponent* player
     PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ADaybreakCharacter::Attack);
 	
 	// debug
-	PlayerInputComponent->BindAction("Debug1", IE_Pressed, this, &ADaybreakCharacter::DebugOne);
+	//PlayerInputComponent->BindAction("Debug1", IE_Pressed, this, &ADaybreakCharacter::DebugOne);
 }
 
 void ADaybreakCharacter::StartJumping() {
