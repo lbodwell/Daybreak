@@ -17,6 +17,7 @@ bool UDaybreakHUD::Initialize() {
 	if (!success) return false;
 	
 	mediaPlayerReady = false;
+	messageShown = false;
 	
 	return true;
 }
@@ -35,7 +36,7 @@ void UDaybreakHUD::NativeConstruct() {
 	
 	// update day/night indicator once a second
 	FTimerHandle timerHandle2;
-	GetWorld()->GetTimerManager().SetTimer(timerHandle2, this, &UDaybreakHUD::UpdateDayNightIndicator, 1, true);
+	GetWorld()->GetTimerManager().SetTimer(timerHandle2, this, &UDaybreakHUD::UpdateDayNightIndicator, 0.1, true);
 }
 
 void UDaybreakHUD::OnMediaPlayerOpen(FString url) {
@@ -83,7 +84,6 @@ void UDaybreakHUD::UpdateDayNightIndicator() {
 				MediaPlayer->Pause();
 			}
 			SeekFromDegrees(DayNightController->CurrentRotation);
-			UE_LOG(LogActor, Warning, TEXT("%f"), DayNightController->CurrentRotation);
 			
 			DayNightText = FString::FromInt(ADaybreakGameMode::EnemyCount);
 		}
@@ -111,3 +111,25 @@ FArmorLevel UDaybreakHUD::GetCurrentArmorLevel() {
 	}
 	return FArmorLevel();
 }
+
+void UDaybreakHUD::AddMessage(FString message) {
+	if (messageShown) {
+		RemoveMessage();
+		
+		nextMessage = message;
+		FTimerHandle timerHandle;
+		GetWorld()->GetTimerManager().SetTimer(timerHandle, [&]{ AddMessage(nextMessage); }, 1.25, false);
+	} else {
+		messageShown = true;
+		ShowMessage(message);
+	}
+}
+
+void UDaybreakHUD::RemoveMessage() {
+	messageShown = false;
+	HideMessage();
+}
+
+void UDaybreakHUD::ShowMessage_Implementation(const FString& message) {}
+
+void UDaybreakHUD::HideMessage_Implementation() {}

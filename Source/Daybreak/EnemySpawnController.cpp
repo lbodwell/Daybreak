@@ -15,13 +15,14 @@ AEnemySpawnController::AEnemySpawnController() {
 	Player = nullptr;
 	PlayerCamera = nullptr;
 	spawnExponential = 2;
+	ThiccBoiChance = 0.f;
 }
 
 // Called when the game starts or when spawned
 void AEnemySpawnController::BeginPlay() {
 	Super::BeginPlay();
 	
-	Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	Player = Cast<ADaybreakCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	PlayerCamera = Player->FindComponentByClass<UCameraComponent>();
 	
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemySpawnField::StaticClass(), SpawnFields);
@@ -36,10 +37,13 @@ void AEnemySpawnController::BeginPlay() {
 }
 
 void AEnemySpawnController::OnDayStart(int dayLengthSeconds) {
-	UE_LOG(LogTemp, Warning, TEXT("OnDayStart in Spawn Controller"));
 	DayLengthSeconds = dayLengthSeconds;
-	float enemiesToSpawn = 25;
+	float enemiesToSpawn = 25 + ((Player->DayCount - 1) * 5);
 	spawnFactor = enemiesToSpawn / (float) pow(DayLengthSeconds, spawnExponential);
+	
+	if (ThiccBoiChance >= 0.20) { ThiccBoiChance = 0.20; }
+	else { ThiccBoiChance = (Player->DayCount - 1) * 0.04; }
+	
 	
 	GetWorldTimerManager().SetTimer(spawnTimerHandle, this, &AEnemySpawnController::SpawnTick, 0.25, true);
 }
@@ -74,11 +78,21 @@ void AEnemySpawnController::SpawnActor() {
 		Location = FVector(0, 0, 600);
 		UE_LOG(LogTemp, Warning, TEXT("Spawn Field Not Found"));
 	}
-	
 
-	GetWorld()->SpawnActor<APawn>(EnemyToSpawn, Location, Rotation);
-	enemiesSpawned++;
-	ADaybreakGameMode::EnemyCount++;
+	TSubclassOf<ADaybreakEnemyCharacter> EnemyToSpawn;
+	if (FMath::RandRange(0.f, 1.0f) < ThiccBoiChance) { EnemyToSpawn = ThiccBoi; }
+	else { EnemyToSpawn = Steve; }
+	
+	//This line for testing
+	//EnemyToSpawn = ThiccBoi;
+
+	ADaybreakEnemyCharacter* spawned = GetWorld()->SpawnActor<ADaybreakEnemyCharacter>(EnemyToSpawn, Location, Rotation);
+	if (spawned) {
+		spawned->GetCharacterMovement()->MaxWalkSpeed *= FMath::RandRange(0.85f, 1.15f);
+		enemiesSpawned++;
+		ADaybreakGameMode::EnemyCount++;
+		//UE_LOG(LogTemp, Warning, TEXT("Speed = %f"), spawned->GetCharacterMovement()->MaxWalkSpeed);
+	}
 }
 
 AEnemySpawnField* AEnemySpawnController::GetRandomSpawnField() {
@@ -98,8 +112,9 @@ AEnemySpawnField* AEnemySpawnController::GetRandomSpawnField() {
 		NormalDirection.Normalize();
 		DotProductAngle = UKismetMathLibrary::RadiansToDegrees(UKismetMathLibrary::Acos(FVector::DotProduct(PlayerCamera->GetForwardVector(), NormalDirection)));
 
-		//if outside of FOV, add to list to choose from
-		if (UKismetMathLibrary::Abs(DotProductAngle) > PlayerCamera->FieldOfView / 2) {	
+		// if very far OR (outside of FOV and suitably far), add to list to choose from
+		float distance = (Player->GetActorLocation() - SpawnFields[i]->GetActorLocation()).Size();
+		if (distance > 7500 || ((UKismetMathLibrary::Abs(DotProductAngle) > PlayerCamera->FieldOfView / 2) && distance > 5000)) {	
 			SpawnFieldsOutOfView.Add(SpawnFields[i]);
 			FieldsInView--;
 		}

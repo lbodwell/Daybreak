@@ -1,13 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include <functional>
 #include "DaybreakAIController.h"
 #include "EnemyStates.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 #include "Navigation/CrowdFollowingComponent.h"
 
-ADaybreakAIController:: ADaybreakAIController(const FObjectInitializer& ObjectInitializer)
+ADaybreakAIController::ADaybreakAIController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent"))) {
 
 }
@@ -31,6 +32,9 @@ void ADaybreakAIController::BeginPlay() {
 	TArray<AActor*> DayNightCycles;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADayNightCycle::StaticClass(), DayNightCycles);
 	DayNightCycle = dynamic_cast<ADayNightCycle*>(DayNightCycles[0]);
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APathfindingWaypoint::StaticClass(), Waypoints);
+	WaypointVisited = false;
 
 	//attach listeners
 	if (DayNightCycle) {
@@ -73,22 +77,26 @@ void ADaybreakAIController::Attack() {
 
 //Listener Functions
 void ADaybreakAIController::OnDayStart(int DayLengthSeconds) {
-	UE_LOG(LogTemp, Warning, TEXT("OnDayStart"));
+	//UE_LOG(LogTemp, Warning, TEXT("OnDayStart"));
 	SetState(new Daytime);
 }
 
 void ADaybreakAIController::OnNightStart() {
-	UE_LOG(LogTemp, Warning, TEXT("OnNightStart"));
+	//UE_LOG(LogTemp, Warning, TEXT("OnNightStart"));
+	// autokill enemy after 3 mins
+	// FTimerHandle timerHandle;
+	// GetWorld()->GetTimerManager().SetTimer(timerHandle, [&](){ Cast<ADaybreakEnemyCharacter>(GetPawn())->ReceiveDamage(1000); }, 180, false);
+	
 	SetState(new Nighttime);
 }
 
 void ADaybreakAIController::OnPortalActivate() {
-	UE_LOG(LogTemp, Warning, TEXT("OnPortalActivate"));
-	SetState(new SwarmPortal);
+	//UE_LOG(LogTemp, Warning, TEXT("OnPortalActivate"));
+	SetState(new VisitWaypoint);
 }
 
 void ADaybreakAIController::OnPortalDeactivate() {
-	UE_LOG(LogTemp, Warning, TEXT("OnPortalDeactivate"));
+	//UE_LOG(LogTemp, Warning, TEXT("OnPortalDeactivate"));
 	SetState(new ChasePlayerNight);
 }
 
@@ -114,6 +122,28 @@ FVector ADaybreakAIController::GetRandomNearbyLocation() {
 	return pawn->GetActorLocation() + FVector(FMath::RandRange(-2000, 2000), FMath::RandRange(-2000, 2000), 0);
 }
 
+FVector ADaybreakAIController::GetRandomWaypoint() {
+	if (Waypoints.Num() == 0) { 
+		SetState(new SwarmPortal); 
+		return PortalLocation;
+	}
+	
+	Waypoints.Sort(std::bind(&ADaybreakAIController::CompareActorsByLocation, 
+                     this,
+                     std::placeholders::_1,
+                     std::placeholders::_2));
+
+	int index = FMath::RandRange(0, 2);
+
+	return Waypoints[index]->GetActorLocation();
+}
+
+bool ADaybreakAIController::CompareActorsByLocation(const AActor& a1, const AActor& a2) {
+	float d1 = (GetPawn()->GetActorLocation() - a1.GetActorLocation()).Size();
+	float d2 = (GetPawn()->GetActorLocation() - a2.GetActorLocation()).Size();
+    return d1 < d2;
+}
+
 void ADaybreakAIController::CheckPawns() {
 	if (pawn == nullptr || playerActor == nullptr) {
 		if (GetPawn()) {
@@ -125,10 +155,25 @@ void ADaybreakAIController::CheckPawns() {
 	}
 }
 
+float ADaybreakAIController::GetCapsuleRadius() {
+	CheckPawns();
+	pawn = Cast<ADaybreakEnemyCharacter>(GetPawn());
+	
+	return pawn->CapsuleRadius;
+}
+
 FVector ADaybreakAIController::GetPortalLocation() {
 	return PortalLocation;
 }
 
-bool ADaybreakAIController::GetIsDay() {
+bool ADaybreakAIController::GetIsDay() const {
 	return DayNightCycle->GetIsDay();
+}
+
+bool ADaybreakAIController::GetWaypointIsVisited() const {
+	return WaypointVisited;
+}
+
+void ADaybreakAIController::SetWaypointVisited(bool newIsVisited) {
+	WaypointVisited = newIsVisited;
 }

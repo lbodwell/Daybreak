@@ -3,8 +3,8 @@
 
 #include "DaybreakSword.h"
 #include "DaybreakEnemyCharacter.h"
-#include "DaybreakCharacter.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Kismet/GameplayStatics.h"
 #include <Engine.h>
 
 // Sets default values
@@ -13,11 +13,11 @@ ADaybreakSword::ADaybreakSword() : IDaybreakEquipment() {
 	PrimaryActorTick.bCanEverTick = false;
 	
 	Levels.Emplace(); // default
-	Levels.Emplace(1, "Darkened Steel Sword", FLinearColor(0, 0.5, 0.1, 1), 0.1, 0.1, "Fire", 400);
-	Levels.Emplace(2, "Draconic Steel Sword", FLinearColor(0, 0.05, 0.75, 1), 0.3, 0.2, "Fire", 800);
-	Levels.Emplace(3, "Darkonium Sword", FLinearColor(0.25, 0.05, 1, 1), 0.6, 0.4, "Fire", 1400);
-	Levels.Emplace(4, "Emblazened Darkonium Sword", FLinearColor(1, 0.25, 0.05, 1), 0.75, 0.8, "Fire", 2000);
-	Levels.Emplace(5, "The Sword of Darkosius", FLinearColor(0.55, 0.55, 0, 1), 1, 1, "Fire", 2400);
+	Levels.Emplace(1, "Darkened Steel Hammer", FLinearColor(0, 0.5, 0.1, 1), 0.1, 0.1, "Fire", 400);
+	Levels.Emplace(2, "Draconic Steel Hammer", FLinearColor(0, 0.05, 0.75, 1), 0.3, 0.2, "Fire", 800);
+	Levels.Emplace(3, "Darkonium Hammer", FLinearColor(0.25, 0.05, 1, 1), 0.6, 0.4, "Fire", 1400);
+	Levels.Emplace(4, "Emblazened Darkonium Hammer", FLinearColor(1, 0.25, 0.05, 1), 0.75, 0.8, "Fire", 2000);
+	Levels.Emplace(5, "The Hammer of Darkosius", FLinearColor(0.55, 0.55, 0, 1), 1, 1, "Fire", 2400);
 	
 	CurrentLevel = Levels[0];
 	LastCost = CurrentLevel.Cost;
@@ -47,6 +47,8 @@ ADaybreakSword::ADaybreakSword() : IDaybreakEquipment() {
 		weaponUpgradeSound = CreateDefaultSubobject<UAudioComponent>(TEXT("WeaponUpgradeSound"));
 		weaponUpgradeSound->SetupAttachment(RootComponent);
 	}
+
+	ParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Blood Spatter"));
 }
 
 // Called when the game starts or when spawned
@@ -93,6 +95,8 @@ void ADaybreakSword::Attack(class AActor* overlappedActor, class AActor* otherAc
 		if (enemy != nullptr && Hitting) {
 			enemy->ReceiveDamage(10 + CurrentLevel.Damage * 10);
 
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem->Template, GetTransform(), false, EPSCPoolMethod::None, true);
+			
 			if (attackImpactSound && !attackImpactSound->IsPlaying()) {
 				attackImpactSound->Play(0);
 			}
@@ -110,3 +114,4 @@ void ADaybreakSword::Attack(class AActor* overlappedActor, class AActor* otherAc
 
 void ADaybreakSword::UpdateEffect_Implementation() {
 }
+

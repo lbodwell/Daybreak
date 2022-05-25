@@ -75,7 +75,7 @@ void ChasePlayerDay::run(ADaybreakAIController* controller)
 
 	if (playerDist > 1000) { controller->SetState(new Patrol); return; }
 
-	else if (PlayerDistanceCheck(controller, 40, new AttackPlayer)) { return; }
+	else if (PlayerDistanceCheck(controller, controller->GetCapsuleRadius(), new AttackPlayer)) { return; }
 
 	else { controller->ChasePlayer(); }
 	
@@ -93,7 +93,7 @@ void AttackPlayer::enter(ADaybreakAIController* controller) {
 void AttackPlayer::run(ADaybreakAIController* controller)
 {
 	//if out of range transition to chase player
-	if (controller->GetDistanceToPlayer() > 40) {
+	if (controller->GetDistanceToPlayer() > controller->GetCapsuleRadius()) {
 		if (IsDay) { controller->SetState(new ChasePlayerDay); return; }
 		else { controller->SetState(new ChasePlayerNight); return; }
 	}
@@ -109,6 +109,27 @@ void AttackPlayer::run(ADaybreakAIController* controller)
 
 void Nighttime::run(ADaybreakAIController* controller) {
 	controller->SetState(new ChasePlayerNight);
+}
+
+
+/**
+*	Visit Waypoint
+*/
+
+void VisitWaypoint::enter(ADaybreakAIController* controller) {
+	WaypointLocation = controller->GetRandomWaypoint();
+}
+
+void VisitWaypoint::run(ADaybreakAIController* controller) {
+	PlayerDistanceCheck(controller, 250, new ChasePlayerNight);
+
+	if (controller->GetWaypointIsVisited()) { controller->SetState(new SwarmPortal); }
+	
+	if (controller->MoveToLocation(WaypointLocation, 200.0f, true, true, true, true, NULL, true) == EPathFollowingRequestResult::AlreadyAtGoal) {
+		controller->SetWaypointVisited(true);
+		controller->SetState(new SwarmPortal);
+	}
+
 }
 
 
@@ -140,7 +161,7 @@ void SwarmPortal::run(ADaybreakAIController* controller) {
 
 void AttackPortal::run(ADaybreakAIController* controller) {
 
-	UE_LOG(LogTemp, Warning, TEXT("In Attack Portal"));
+	//UE_LOG(LogTemp, Warning, TEXT("In Attack Portal"));
 
 	if (controller->GetDistanceToPortal() > 200) {
 		controller->SetState(new SwarmPortal);
@@ -162,7 +183,7 @@ void ChasePlayerNight::run(ADaybreakAIController* controller)
 
 	//if (playerDist > 700) { controller->SetState(new SwarmPortal); return; }
 
-	if (PlayerDistanceCheck(controller, 40, new AttackPlayer)) { return; }
+	if (PlayerDistanceCheck(controller, controller->GetCapsuleRadius(), new AttackPlayer)) { return; }
 
 	else { controller->ChasePlayer(); }
 

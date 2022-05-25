@@ -62,11 +62,18 @@ ADaybreakCharacter::ADaybreakCharacter() {
 		attackSwingSound->SetupAttachment(RootComponent);
 	}
 
-	static ConstructorHelpers::FObjectFinder<USoundCue> anvilInteractSoundObj(TEXT("SoundCue'/Game/Audio/Player/UI/Anvil/UI_Anvil_Interact_Cue.UI_Anvil_Interact_Cue'"));
-	if (anvilInteractSoundObj.Succeeded()) {
-		AnvilInteractCue = anvilInteractSoundObj.Object;
+	static ConstructorHelpers::FObjectFinder<USoundCue> anvilInteractCueObj(TEXT("SoundCue'/Game/Audio/Player/UI/Anvil/UI_Anvil_Interact_Cue.UI_Anvil_Interact_Cue'"));
+	if (anvilInteractCueObj.Succeeded()) {
+		AnvilInteractCue = anvilInteractCueObj.Object;
 		anvilInteractSound = CreateDefaultSubobject<UAudioComponent>(TEXT("AnvilInteractSound"));
 		anvilInteractSound->SetupAttachment(RootComponent);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> playerHurtCueObj(TEXT("SoundCue'/Game/Audio/Player/Hurt/Player_Hurt_Cue.Player_Hurt_Cue'"));
+	if (playerHurtCueObj.Succeeded()) {
+		PlayerHurtCue = playerHurtCueObj.Object;
+		playerHurtSound = CreateDefaultSubobject<UAudioComponent>(TEXT("PlayerHurtSound"));
+		playerHurtSound->SetupAttachment(RootComponent);
 	}
 }
 
@@ -93,6 +100,9 @@ void ADaybreakCharacter::BeginPlay() {
 	}
 	if (anvilInteractSound && AnvilInteractCue) {
 		anvilInteractSound->SetSound(AnvilInteractCue);
+	}
+	if (playerHurtSound && PlayerHurtCue) {
+		playerHurtSound->SetSound(PlayerHurtCue);
 	}
 }
 
@@ -132,7 +142,7 @@ void ADaybreakCharacter::SetupPlayerInputComponent(class UInputComponent* player
     PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ADaybreakCharacter::Attack);
 	
 	// debug
-	PlayerInputComponent->BindAction("Debug1", IE_Pressed, this, &ADaybreakCharacter::DebugOne);
+	//PlayerInputComponent->BindAction("Debug1", IE_Pressed, this, &ADaybreakCharacter::DebugOne);
 }
 
 void ADaybreakCharacter::StartJumping() {
@@ -261,12 +271,7 @@ void ADaybreakCharacter::Exit() {
 		PauseMenu = nullptr;
 		SetMouseCursor(false);
 	} 
-	else if (DeathScreen) {
-		DeathScreen->RemoveFromViewport();
-		DeathScreen = nullptr;
-		SetMouseCursor(false);
-	} 
-	else {
+	else if (!DeathScreen) {
 		if (PauseMenuWidget != nullptr) {
 			PauseMenu = CreateWidget<UUserWidget>(GetWorld(), PauseMenuWidget);
 			if (PauseMenu) {
@@ -283,6 +288,11 @@ void ADaybreakCharacter::ReceiveDamage(int amount) {
 	if (Health <= 0) {
 		Health = 0;
 		KillPlayer(0.2);
+		// death sound
+	}
+	
+	if (playerHurtSound && !playerHurtSound->IsPlaying()) {
+		playerHurtSound->Play(0);
 	}
 }
 
@@ -302,7 +312,7 @@ void ADaybreakCharacter::KillPlayer(float CorpsePersistenceTime) {
 }
 
 void ADaybreakCharacter::Destroy() {
-//	UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Type::Quit, false);
+	//	UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Type::Quit, false);
 	if (DeathScreenWidget != nullptr) {
 		DeathScreen = CreateWidget<UUserWidget>(GetWorld(), DeathScreenWidget);
 		if (DeathScreen) {
